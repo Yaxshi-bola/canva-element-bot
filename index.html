@@ -337,13 +337,11 @@
         </div>
 
         <div class="form-group">
-          <label for="form-element-cat">Kategoriya / Bo'lim *</label>
-          <div class="input-with-select">
-            <input type="text" id="form-element-cat" placeholder="masalan: Trenddagi 3D Elementlar" list="categories-datalist" required />
-            <datalist id="categories-datalist">
-              <!-- Dynamically populated -->
-            </datalist>
-          </div>
+          <label for="form-element-cat-select">Kategoriya / Bo'lim *</label>
+          <select id="form-element-cat-select" class="form-control-select">
+            <!-- Dynamically populated -->
+          </select>
+          <input type="text" id="form-element-cat-custom" class="form-control-input hidden" placeholder="Yangi kategoriya nomini yozing..." style="margin-top:8px;" />
         </div>
 
         <div class="form-group">

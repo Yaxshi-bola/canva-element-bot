@@ -630,10 +630,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const isFav = Array.isArray(favorites) && (favorites.includes(itemId) || favorites.includes(String(itemId)));
       const favClass = isFav ? 'active fa-solid' : 'fa-regular';
       const newBadgeHTML = item.isNew ? `<span class="new-badge">NEW</span>` : '';
-      const safeDesc = item.description ? String(item.description) : '';
+      const safeDesc = item.description ? String(item.description).replace(/"/g, '&quot;') : '';
       const safeCode = item.code ? String(item.code) : '';
       const safeCategory = item.category ? String(item.category) : 'Elementlar';
-      const descHTML = highlightMatches(safeDesc, currentSearchQuery);
+      const descHTML = highlightMatches(item.description ? String(item.description) : '', currentSearchQuery);
 
       return `
         <div class="element-card" data-id="${itemId}">
@@ -655,7 +655,10 @@ document.addEventListener('DOMContentLoaded', () => {
           
           <div class="card-actions">
             <button class="btn-copy" data-code="${safeCode}">
-              <i class="fa-solid fa-copy"></i> Kodni Nusxalash
+              <i class="fa-solid fa-copy"></i> Nusxalash
+            </button>
+            <button class="btn-share" data-code="${safeCode}" data-desc="${safeDesc}" title="Ulashish">
+              <i class="fa-solid fa-share-nodes"></i>
             </button>
           </div>
         </div>
@@ -811,13 +814,59 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function populateCategoryDropdowns() {
+    const catSelect = document.getElementById('form-element-cat-select');
+    const adminCatFilter = document.getElementById('admin-category-filter');
+    const categoriesDatalist = document.getElementById('categories-datalist');
+    const catMap = getCategoriesMap();
+    const allCategories = Array.from(new Set([...Object.keys(CATEGORY_ICONS), ...Object.keys(catMap)]));
+
+    if (catSelect) {
+      let optionsHTML = allCategories.map(c => `<option value="${c}">${c}</option>`).join('');
+      optionsHTML += `<option value="__custom__">➕ Yangi kategoriya kiritish...</option>`;
+      catSelect.innerHTML = optionsHTML;
+    }
+
+    if (adminCatFilter) {
+      let filterHTML = `<option value="all">Barcha Bo'limlar</option>`;
+      filterHTML += allCategories.map(c => `<option value="${c}">${c}</option>`).join('');
+      adminCatFilter.innerHTML = filterHTML;
+    }
+
+    if (categoriesDatalist) {
+      categoriesDatalist.innerHTML = allCategories.map(c => `<option value="${c}">`).join('');
+    }
+  }
+
+  // Handle Category Select Change
+  const formElementCatSelect = document.getElementById('form-element-cat-select');
+  const formElementCatCustom = document.getElementById('form-element-cat-custom');
+
+  if (formElementCatSelect) {
+    formElementCatSelect.addEventListener('change', () => {
+      if (formElementCatSelect.value === '__custom__') {
+        formElementCatCustom?.classList.remove('hidden');
+        formElementCatCustom?.focus();
+      } else {
+        formElementCatCustom?.classList.add('hidden');
+      }
+    });
+  }
+
   function openAddElementModal() {
     if (!modalElementForm) return;
+    populateCategoryDropdowns();
     if (modalElementTitle) modalElementTitle.innerHTML = '<i class="fa-solid fa-plus-circle"></i> Yangi Element Qo\'shish';
     if (formElementId) formElementId.value = '';
     if (formElementCode) formElementCode.value = '';
     if (formElementDesc) formElementDesc.value = '';
-    if (formElementCat) formElementCat.value = 'Trenddagi 3D Elementlar';
+    
+    if (formElementCatSelect) formElementCatSelect.value = 'Trenddagi 3D Elementlar';
+    if (formElementCatCustom) {
+      formElementCatCustom.value = '';
+      formElementCatCustom.classList.add('hidden');
+    }
+    
     if (formElementIcon) formElementIcon.value = 'fa-box-open';
     if (formIconPreview) formIconPreview.className = 'fa-solid fa-box-open';
     if (formElementKeywords) formElementKeywords.value = '';
@@ -830,11 +879,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const item = allElements.find(e => e && e.id == id);
     if (!item || !modalElementForm) return;
 
+    populateCategoryDropdowns();
     if (modalElementTitle) modalElementTitle.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Elementni Tahrirlash';
     if (formElementId) formElementId.value = item.id;
     if (formElementCode) formElementCode.value = item.code || '';
     if (formElementDesc) formElementDesc.value = item.description || '';
-    if (formElementCat) formElementCat.value = item.category || 'Trenddagi 3D Elementlar';
+    
+    const targetCat = item.category || 'Trenddagi 3D Elementlar';
+    if (formElementCatSelect) {
+      const hasOption = Array.from(formElementCatSelect.options).some(opt => opt.value === targetCat);
+      if (hasOption) {
+        formElementCatSelect.value = targetCat;
+        if (formElementCatCustom) formElementCatCustom.classList.add('hidden');
+      } else {
+        formElementCatSelect.value = '__custom__';
+        if (formElementCatCustom) {
+          formElementCatCustom.value = targetCat;
+          formElementCatCustom.classList.remove('hidden');
+        }
+      }
+    }
+
     if (formElementIcon) formElementIcon.value = CATEGORY_ICONS[item.category] || 'fa-box-open';
     if (formIconPreview) formIconPreview.className = `fa-solid ${formElementIcon.value}`;
     if (formElementKeywords) formElementKeywords.value = (item.keywords || []).join(', ');
@@ -847,7 +912,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const id = formElementId ? formElementId.value : '';
     const code = formElementCode ? formElementCode.value.trim() : '';
     const description = formElementDesc ? formElementDesc.value.trim() : '';
-    const category = (formElementCat ? formElementCat.value.trim() : '') || 'Trenddagi 3D Elementlar';
+    
+    let category = formElementCatSelect ? formElementCatSelect.value : 'Trenddagi 3D Elementlar';
+    if (category === '__custom__') {
+      category = formElementCatCustom ? formElementCatCustom.value.trim() : '';
+    }
+    if (!category) category = 'Trenddagi 3D Elementlar';
+
     const iconClass = (formElementIcon ? formElementIcon.value.trim() : '') || 'fa-box-open';
     const keywordsStr = formElementKeywords ? formElementKeywords.value.trim() : '';
     const isNew = formElementIsNew ? formElementIsNew.checked : true;
@@ -1166,8 +1237,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Global Event Delegation for Elements Grid & Admin Table
   document.addEventListener('click', (e) => {
     const copyBtn = e.target.closest('.btn-copy');
+    const shareBtn = e.target.closest('.btn-share');
     const codeBox = e.target.closest('.code-box');
-    const canvaBtn = e.target.closest('.btn-canva');
     const favBtn = e.target.closest('.fav-btn');
     const catCard = e.target.closest('.category-card');
 
@@ -1179,6 +1250,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (copyBtn || codeBox) {
       const code = (copyBtn || codeBox).dataset.code;
       copyToClipboard(code);
+    } else if (shareBtn) {
+      const code = shareBtn.dataset.code;
+      const desc = shareBtn.dataset.desc;
+      shareElement(code, desc);
     } else if (favBtn) {
       const id = parseInt(favBtn.dataset.id, 10) || favBtn.dataset.id;
       toggleFavorite(id);
