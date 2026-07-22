@@ -52,7 +52,7 @@ body {
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-  padding-bottom: 75px; /* Room for Bottom Navbar */
+  padding-bottom: 90px; /* Space for Floating Bottom Navbar */
 }
 
 /* Background Glowing Orbs */
@@ -674,21 +674,26 @@ body {
   color: var(--primary-pink);
 }
 
-/* Bottom Navigation Bar */
+/* Floating Glassmorphic Bottom Navigation Bar */
 .bottom-navbar {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(14px);
-  border-top: 1.5px solid var(--card-border);
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 480px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 182, 217, 0.6);
+  border-radius: 35px;
   display: flex;
   align-items: center;
   justify-content: space-around;
-  z-index: 2000;
-  box-shadow: 0 -4px 20px rgba(255, 46, 147, 0.08);
+  z-index: 10000;
+  box-shadow: 0 10px 30px rgba(255, 46, 147, 0.2);
+  padding: 0 6px;
 }
 
 .nav-item {
@@ -697,49 +702,49 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  background: none;
+  gap: 2px;
+  background: transparent;
   border: none;
-  color: var(--text-muted);
+  color: #7a6370;
   cursor: pointer;
   position: relative;
-  height: 100%;
-  transition: var(--transition);
+  height: 44px;
+  border-radius: 22px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-item i {
-  font-size: 17px;
-  transition: var(--transition);
+  font-size: 16px;
+  color: #8c7382;
+  transition: all 0.25s ease;
 }
 
 .nav-item span {
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 9px;
+  font-weight: 700;
+  color: #7a6370;
 }
 
 .nav-badge {
   position: absolute;
-  top: 6px;
-  right: 22%;
+  top: 4px;
+  right: 18%;
   background: var(--primary-pink);
   color: #ffffff;
-  font-size: 8px;
+  font-size: 7px;
   font-weight: 800;
   padding: 1px 4px;
   border-radius: 6px;
 }
 
 .nav-item.active {
-  color: var(--primary-pink);
+  background: linear-gradient(135deg, #ff4d9e, #ff0077);
+  box-shadow: 0 4px 14px rgba(255, 0, 119, 0.35);
 }
 
-.nav-item.active i {
-  transform: translateY(-2px) scale(1.1);
-  color: var(--primary-pink);
-}
-
+.nav-item.active i,
 .nav-item.active span {
-  font-weight: 800;
+  color: #ffffff !important;
 }
 
 /* Searching State Collapsing for Keyboard Visibility */
@@ -892,7 +897,7 @@ body.is-searching .sticky-search-section {
 /* Toast Notification */
 .toast {
   position: fixed;
-  bottom: 72px;
+  bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
   background: #ffffff;

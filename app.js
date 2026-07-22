@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------
- * Canva Element Kodlari Telegram Mini App — Logic v2 with Navbar
+ * Canva Element Kodlari Telegram Mini App — Logic v2
  * Author: Zuhra Olimova
  * ------------------------------------------------------------- */
 
@@ -91,15 +91,31 @@ document.addEventListener('DOMContentLoaded', () => {
     'Pushti elementlar': 'fa-heart'
   };
 
+  // Safe Escape Regex
+  function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  // Highlight Matches
+  function highlightMatches(text, query) {
+    if (!query || query.trim().length < 2) return text;
+    try {
+      const escaped = escapeRegExp(query.trim());
+      const regex = new RegExp(`(${escaped})`, 'gi');
+      return text.replace(regex, '<span class="highlight-text">$1</span>');
+    } catch (e) {
+      return text;
+    }
+  }
+
   // Fetch dynamic custom elements from bot API
   async function fetchCustomElements() {
     try {
       const res = await fetch('https://canva-element-bot.onrender.com/api/custom-elements');
       if (res.ok) {
         const data = await res.json();
-        if (data.success && data.elements) {
+        if (data.success && data.elements && data.elements.length > 0) {
           customElements = data.elements;
-          // Prepend custom elements
           const formattedCustom = customElements.map((item, idx) => ({
             id: `c_${item.id || idx}`,
             category: item.category,
@@ -117,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     } catch (e) {
-      console.log('Custom elements API offline, using local data');
+      console.log('Custom elements API offline, using static data');
     }
   }
 
@@ -327,6 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isFav = favorites.includes(item.id);
     const favClass = isFav ? 'active fa-solid' : 'fa-regular';
     const newBadgeHTML = item.isNew ? `<span class="new-badge">YANGI ✨</span>` : '';
+    const descHTML = highlightMatches(item.description, currentSearchQuery);
 
     return `
       <div class="element-card" data-id="${item.id}">
@@ -338,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         
         <div class="element-description">
-          ${item.description}
+          ${descHTML}
         </div>
         
         <div class="code-box" data-code="${item.code}" title="Nusxalash uchun bosing">
@@ -426,12 +443,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function switchTab(tabName) {
     activeTab = tabName;
 
-    // Update Nav Bar Items Active Class
     document.querySelectorAll('.bottom-navbar .nav-item').forEach(item => {
       item.classList.toggle('active', item.dataset.tab === tabName);
     });
 
-    // Update Views Visibility
     document.querySelectorAll('.tab-view').forEach(view => {
       view.classList.add('hidden');
     });
