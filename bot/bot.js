@@ -126,11 +126,11 @@ function sendWelcomeMessage(chatId, userId) {
   const { inlineKeyboard, replyKeyboard } = getUserKeyboard(userId);
 
   const welcomeText = `<tg-emoji emoji-id="5440354006335495210">🌸</tg-emoji> <b>Canva Element Kodlari — Zuhra Olimova</b>\n\n` +
-    `Assalomu alaykum! <tg-emoji emoji-id="5465540480538254161">👋</tg-emoji>\n\n` +
+    `Assalomu alaykum! <tg-emoji emoji-id="5465540480538254161">💖</tg-emoji>\n\n` +
     `Ushbu bot orqali siz Canva dizaynlaringiz uchun 400+ saralangan element kodlarini bir bosishda topishingiz mumkin:\n\n` +
-    `• <tg-emoji emoji-id="5472164874886846699">📦</tg-emoji> <b>3D elementlar</b>\n` +
-    `• <tg-emoji emoji-id="5404835520150773707">✨</tg-emoji> <b>Estetik bezaklar</b>\n` +
-    `• <tg-emoji emoji-id="5458795341774083865">📢</tg-emoji> <b>SMM elementlari</b>\n` +
+    `• <tg-emoji emoji-id="5472164874886846699">✨</tg-emoji> <b>3D elementlar</b>\n` +
+    `• <tg-emoji emoji-id="5404835520150773707">🌷</tg-emoji> <b>Estetik bezaklar</b>\n` +
+    `• <tg-emoji emoji-id="5458795341774083865">🎯</tg-emoji> <b>SMM elementlari</b>\n` +
     `• <tg-emoji emoji-id="5375464961822695044">🎬</tg-emoji> <b>Animatsiyali elementlar</b>\n\n` +
     `<tg-emoji emoji-id="5431449001532594346">⚡</tg-emoji> <b>Tezkor qidiruv</b> • <tg-emoji emoji-id="5987635334945444280">📋</tg-emoji> <b>Oson nusxalash</b>\n\n` +
     `<tg-emoji emoji-id="5406745015365943482">👇</tg-emoji> <b>Mini App’ni ochish uchun pastdagi tugmani bosing!</b>`;
@@ -143,8 +143,12 @@ function sendWelcomeMessage(chatId, userId) {
   });
 
   if (isAdmin(userId) && replyKeyboard.length > 0) {
-    const adminName = Number(userId) === 8544023815 ? "Yaxshi Bola 🩵" : "Zuhra 🩷";
-    bot.sendMessage(chatId, `👑 Assalomu alaykum, <b>${adminName}</b>! Siz <b>Admin</b> hisoblanasiz. Boshqaruv paneli menyuda faollashtirildi.`, {
+    const isSuper = Number(userId) === 8544023815;
+    const adminTag = isSuper 
+      ? `Yaxshi Bola <tg-emoji emoji-id="5433856365061746058">🩵</tg-emoji>` 
+      : `Zuhra <tg-emoji emoji-id="5213147217015122287">🩷</tg-emoji>`;
+
+    bot.sendMessage(chatId, `<tg-emoji emoji-id="5229011542011299168">👑</tg-emoji> Assalomu alaykum, <b>${adminTag}</b>! Siz <b>Admin</b> hisoblanasiz. Boshqaruv paneli menyuda faollashtirildi.`, {
       parse_mode: 'HTML',
       reply_markup: {
         keyboard: replyKeyboard,
@@ -188,8 +192,15 @@ bot.on('message', async (msg) => {
   // Handle Admin Menu Buttons
   if (text === '👑 Admin Panel') {
     adminState[userId] = null;
-    const adminName = Number(userId) === 8544023815 ? "Yaxshi Bola 🩵" : "Zuhra 🩷";
-    return bot.sendMessage(chatId, `👑 **${adminName} Admin Paneli**\n\nBoshqaruv bo'limini tanlang:`, getAdminKeyboard());
+    const isSuper = Number(userId) === 8544023815;
+    const adminTag = isSuper 
+      ? `Yaxshi Bola <tg-emoji emoji-id="5433856365061746058">🩵</tg-emoji>` 
+      : `Zuhra <tg-emoji emoji-id="5213147217015122287">🩷</tg-emoji>`;
+
+    return bot.sendMessage(chatId, `<tg-emoji emoji-id="5229011542011299168">👑</tg-emoji> <b>${adminTag} Admin Paneli</b>\n\nBoshqaruv bo'limini tanlang:`, {
+      parse_mode: 'HTML',
+      ...getAdminKeyboard()
+    });
   }
 
   if (text === '🏠 Bosh Menyuga Qaytish') {
