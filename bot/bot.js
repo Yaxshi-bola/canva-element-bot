@@ -15,8 +15,8 @@ const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 
 console.log('🤖 Canva Element Kodlari Bot starting...');
 
-// Admin state tracking (for broadcast or channel setting)
-const adminState = {}; // { [adminId]: 'awaiting_broadcast' | 'awaiting_channel' }
+// Admin state tracking
+const adminState = {};
 
 // Helper: Check Admin
 function isAdmin(userId) {
@@ -35,8 +35,7 @@ async function checkUserSubscription(userId) {
     const validStatuses = ['creator', 'administrator', 'member'];
     return validStatuses.includes(member.status);
   } catch (err) {
-    console.error('Error checking subscription for channel', settings.forceChannel, err.message);
-    // If bot is not admin in channel, allow access temporarily to avoid breaking app
+    console.error('Error checking subscription:', err.message);
     return true;
   }
 }
@@ -69,7 +68,7 @@ function getAdminKeyboard() {
     reply_markup: {
       keyboard: [
         [{ text: '📊 Statistika' }, { text: '📢 Barchaga Xabar Yuborish' }],
-        [{ text: '🔗 Majburiy Obuna Kanalini Sozlash' }, { text: '🔄 Obuna Holatini O\'zgartirish' }],
+        [{ text: '🔗 Majburiy Obuna Kanalini Sozlash' }, { text: "🔄 Obuna Holatini O'zgartirish" }],
         [{ text: '🏠 Bosh Menyuga Qaytish' }]
       ],
       resize_keyboard: true
@@ -100,7 +99,7 @@ bot.onText(/\/start/, async (msg) => {
         parse_mode: 'Markdown',
         reply_markup: {
           inline_keyboard: [
-            [{ text: '📢 Kanalga a\'zo bo'lib olish', url: channelLink }],
+            [{ text: "📢 Kanalga a'zo bo'lish", url: channelLink }],
             [{ text: '✅ Obunani tekshirish', callback_data: 'check_sub' }]
           ]
         }
@@ -113,9 +112,10 @@ bot.onText(/\/start/, async (msg) => {
 
 function sendWelcomeMessage(chatId, userId) {
   const { inlineKeyboard, replyKeyboard } = getUserKeyboard(userId);
+  const firstName = userId;
 
   const welcomeText = `🌸 **Canva Element Kodlari Katalogi — Zuhra Olimova**\n\n` +
-    `Assalomu alaykum, **${userId}**!\n\n` +
+    `Assalomu alaykum!\n\n` +
     `Ushbu bot orqali siz Canva dizaynlaringiz uchun 400+ saralangan 3D, Estetik, SMM va Animatsiyali element kodlarini bir bosishda topishingiz mumkin.\n\n` +
     `👇 **Mini App-ni ochish uchun pastdagi tugmani bosing:**`;
 
@@ -148,7 +148,7 @@ bot.on('callback_query', async (query) => {
       await bot.deleteMessage(chatId, query.message.message_id).catch(() => {});
       sendWelcomeMessage(chatId, userId);
     } else {
-      await bot.answerCallbackQuery(query.id, { text: '❌ Siz hali kanalga obuna bo\'lmadingiz!', show_alert: true });
+      await bot.answerCallbackQuery(query.id, { text: "❌ Siz hali kanalga obuna bo'lmadingiz!", show_alert: true });
     }
   }
 });
@@ -190,11 +190,11 @@ bot.on('message', async (msg) => {
     return bot.sendMessage(chatId, statsText, { parse_mode: 'Markdown', ...getAdminKeyboard() });
   }
 
-  if (text === '🔄 Obuna Holatini O\'zgartirish') {
+  if (text === "🔄 Obuna Holatini O'zgartirish") {
     const settings = db.getSettings();
     const newStatus = !settings.forceSubActive;
     db.toggleForceSub(newStatus);
-    return bot.sendMessage(chatId, `⚙️ Majburiy obuna holati o'zgartirildi: **${newStatus ? 'YOQILDI ✅' : 'O\'CHIRILDI ❌'}**`, getAdminKeyboard());
+    return bot.sendMessage(chatId, `⚙️ Majburiy obuna holati o'zgartirildi: **${newStatus ? 'YOQILDI ✅' : "O'CHIRILDI ❌"}**`, getAdminKeyboard());
   }
 
   if (text === '🔗 Majburiy Obuna Kanalini Sozlash') {
