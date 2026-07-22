@@ -494,6 +494,8 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.removeChild(textArea);
       showToast(customToastMsg, text);
     });
+  }
+
   // Share Element to Friends / Telegram Chats
   function shareElement(code, desc) {
     if (!code) return;
