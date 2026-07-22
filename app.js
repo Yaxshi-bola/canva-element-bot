@@ -20,8 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const SUPABASE_URL = 'https://mjenunxgakcvyzcikjmi.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_nSt8XQyZetNEC7ROiU3XeA_iPBDMPRn';
 
-  // Super Admin Default ID
+  // Core Admin Default IDs
   const SUPER_ADMIN_ID = 8544023815;
+  const ZUHRA_ADMIN_ID = 8112688757;
+  const CORE_ADMINS = [8544023815, 8112688757];
 
   // Data State with Safe LocalStorage Parsers
   let allElements = Array.isArray(window.CANVA_DATA) ? window.CANVA_DATA : [];
@@ -37,16 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
     favorites = [];
   }
 
-  let adminList = [SUPER_ADMIN_ID];
+  let adminList = [SUPER_ADMIN_ID, ZUHRA_ADMIN_ID];
   try {
-    const rawAdmins = localStorage.getItem('zo_canva_admins');
-    if (rawAdmins) {
-      const parsed = JSON.parse(rawAdmins);
-      if (Array.isArray(parsed)) adminList = parsed;
-    }
-  } catch (e) {
-    adminList = [SUPER_ADMIN_ID];
-  }
+    localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
+  } catch (e) {}
 
   let currentCategory = 'all';
   let currentSearchQuery = '';
@@ -217,15 +213,16 @@ document.addEventListener('DOMContentLoaded', () => {
       let userId = tgUser?.id || paramUserId;
       let username = tgUser?.username;
 
-      const validUsernames = ['yomonbola', 'yomonboia', 'zuhraolimova', 'zuhra_olimova'];
+      const validUsernames = ['yomonbola', 'yomonboia', 'zuhraolimova', 'zuhra_olimova', 'sokin_notalar'];
 
-      if (localAuth || paramAdmin) {
-        isUserAdmin = true;
-      } else if (userId && (Number(userId) === SUPER_ADMIN_ID || isAdminMatch(adminList, userId))) {
-        isUserAdmin = true;
-      } else if (username && (validUsernames.includes(String(username).toLowerCase()) || isAdminMatch(adminList, username))) {
-        isUserAdmin = true;
-      } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      if (
+        localAuth ||
+        paramAdmin ||
+        (userId && CORE_ADMINS.includes(Number(userId))) ||
+        (username && validUsernames.includes(String(username).toLowerCase())) ||
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1'
+      ) {
         isUserAdmin = true;
       } else {
         isUserAdmin = false;
@@ -257,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Submit Admin Passcode Login
   function handleAdminLoginSubmit() {
     const code = adminPasscodeInput ? adminPasscodeInput.value.trim() : '';
-    const validCodes = ['12060704', '8544023815'];
+    const validCodes = ['12060704', '8544023815', '8112688757'];
 
     if (validCodes.includes(code) || isAdminMatch(adminList, code)) {
       localStorage.setItem('zo_admin_auth', 'true');
@@ -349,35 +346,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Fetch admins from Supabase bot_users table
+  // Fetch admins & ensure designated core admins list
   async function fetchSupabaseAdmins() {
     try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/bot_users?select=*`, {
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`
-        }
-      });
-      if (res.ok) {
-        const users = await res.json();
-        if (Array.isArray(users)) {
-          users.forEach(u => {
-            if (u.id && !adminList.includes(u.id) && !adminList.includes(Number(u.id))) {
-              adminList.push(Number(u.id));
-            }
-            if (u.username && !adminList.includes(u.username.toLowerCase())) {
-              adminList.push(u.username.toLowerCase());
-            }
-          });
-          try {
-            localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
-          } catch (e) {}
-          updateStats();
-          if (isUserAdmin) renderAdminsList();
-        }
-      }
+      adminList = [SUPER_ADMIN_ID, ZUHRA_ADMIN_ID];
+      localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
+      updateStats();
+      if (isUserAdmin) renderAdminsList();
     } catch (e) {
-      console.log('Supabase admins fetch info:', e);
+      console.log('Admins list sync info:', e);
     }
   }
 
@@ -1006,15 +983,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderAdminsList() {
     if (!adminsListContainer) return;
+    const ADMIN_NAMES = {
+      8544023815: "Yaxshi Bola 🩵",
+      "8544023815": "Yaxshi Bola 🩵",
+      8112688757: "Zuhra 🩷",
+      "8112688757": "Zuhra 🩷"
+    };
+
+    // Strictly enforce the 2 core admins
+    adminList = [SUPER_ADMIN_ID, ZUHRA_ADMIN_ID];
+
     adminsListContainer.innerHTML = adminList.map(admin => {
-      const isSuper = Number(admin) === SUPER_ADMIN_ID;
+      const numAdmin = Number(admin);
+      const isSuper = numAdmin === SUPER_ADMIN_ID;
+      const isZuhra = numAdmin === ZUHRA_ADMIN_ID;
+      const displayName = ADMIN_NAMES[numAdmin] || ADMIN_NAMES[String(admin)] || (isSuper ? "Yaxshi Bola 🩵" : "Zuhra 🩷");
+      const badgeText = isSuper ? '(Asosiy Admin)' : '(Admin)';
+      const iconColor = isSuper ? '#0ea5e9' : '#ec4899';
+
       return `
-        <div class="admin-user-row">
-          <div class="admin-user-info">
-            <i class="fa-solid ${isSuper ? 'fa-crown' : 'fa-user-shield'}" style="color: ${isSuper ? '#f59e0b' : '#8b5cf6'}"></i>
-            <span>${admin} ${isSuper ? '(Bosh Admin)' : ''}</span>
+        <div class="admin-user-row" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:rgba(255,255,255,0.95); margin-bottom:10px; border-radius:14px; border:1px solid ${isSuper ? 'rgba(14,165,233,0.3)' : 'rgba(236,72,153,0.3)'}; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+          <div class="admin-user-info" style="display:flex; align-items:center; gap:12px;">
+            <i class="fa-solid ${isSuper ? 'fa-crown' : 'fa-user-shield'}" style="color: ${iconColor}; font-size: 18px;"></i>
+            <div>
+              <strong style="color:#1e293b; font-size:15px; display:block;">${displayName}</strong>
+              <small style="opacity:0.75; font-size:12px; color:#64748b;">ID: ${admin} <span style="color:${iconColor}; font-weight:600;">${badgeText}</span></small>
+            </div>
           </div>
-          ${!isSuper ? `<button class="btn-remove-admin" data-admin="${admin}"><i class="fa-solid fa-xmark"></i></button>` : '<span style="font-size: 9px; color: var(--text-muted); font-weight:700;">ASOSIY</span>'}
+          <span style="font-size:11px; color:${iconColor}; font-weight:700; background:${isSuper ? 'rgba(14,165,233,0.12)' : 'rgba(236,72,153,0.12)'}; padding:4px 12px; border-radius:20px; border: 1px solid ${isSuper ? 'rgba(14,165,233,0.2)' : 'rgba(236,72,153,0.2)'};">
+            ${isSuper ? 'ASOSIY ADMIN' : 'ADMIN'}
+          </span>
         </div>
       `;
     }).join('');
@@ -1059,8 +1057,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function removeAdmin(item) {
-    if (item == SUPER_ADMIN_ID || Number(item) === SUPER_ADMIN_ID) {
-      return showToast('❌ Bosh adminni o\'chirib bo\'lmaydi!');
+    if (item == SUPER_ADMIN_ID || Number(item) === SUPER_ADMIN_ID || item == ZUHRA_ADMIN_ID || Number(item) === ZUHRA_ADMIN_ID) {
+      return showToast('❌ Asosiy adminlarni o\'chirib bo\'lmaydi!');
     }
     adminList = adminList.filter(a => String(a) !== String(item));
     try {

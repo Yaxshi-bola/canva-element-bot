@@ -138,7 +138,8 @@ function sendWelcomeMessage(chatId, userId) {
   });
 
   if (isAdmin(userId) && replyKeyboard.length > 0) {
-    bot.sendMessage(chatId, `👑 Siz **Admin** hisoblanasiz. Boshqaruv paneli menyuda faollashtirildi.`, {
+    const adminName = Number(userId) === 8544023815 ? "Yaxshi Bola 🩵" : "Zuhra 🩷";
+    bot.sendMessage(chatId, `👑 Assalomu alaykum, **${adminName}**! Siz **Admin** hisoblanasiz. Boshqaruv paneli menyuda faollashtirildi.`, {
       reply_markup: {
         keyboard: replyKeyboard,
         resize_keyboard: true
@@ -181,7 +182,8 @@ bot.on('message', async (msg) => {
   // Handle Admin Menu Buttons
   if (text === '👑 Admin Panel') {
     adminState[userId] = null;
-    return bot.sendMessage(chatId, `👑 **Zuhra Olimova Admin Paneli**\n\nBoshqaruv bo'limini tanlang:`, getAdminKeyboard());
+    const adminName = Number(userId) === 8544023815 ? "Yaxshi Bola 🩵" : "Zuhra 🩷";
+    return bot.sendMessage(chatId, `👑 **${adminName} Admin Paneli**\n\nBoshqaruv bo'limini tanlang:`, getAdminKeyboard());
   }
 
   if (text === '🏠 Bosh Menyuga Qaytish') {

@@ -61,69 +61,50 @@ class DB {
     this.forceSubActive = false;
     this.webAppUrl = 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
     this.superAdminId = 8544023815;
-    this.adminsList = this.loadAdmins();
+    this.zuhraAdminId = 8112688757;
+    this.adminsList = [8544023815, 8112688757];
+    this.saveAdminsToFile();
   }
 
-  // Load admins from local JSON file fallback
+  // Load admins strictly returning the 2 core admins
   loadAdmins() {
-    try {
-      if (fs.existsSync(ADMINS_FILE)) {
-        const raw = fs.readFileSync(ADMINS_FILE, 'utf-8');
-        const list = JSON.parse(raw);
-        if (Array.isArray(list)) {
-          if (!list.includes(this.superAdminId)) list.unshift(this.superAdminId);
-          return list;
-        }
-      }
-    } catch (e) {
-      console.error('Admins load error:', e.message);
-    }
-    return [this.superAdminId];
+    return [this.superAdminId, this.zuhraAdminId];
   }
 
   // Save admins to file
   saveAdminsToFile() {
     try {
-      fs.writeFileSync(ADMINS_FILE, JSON.stringify(this.adminsList, null, 2), 'utf-8');
+      fs.writeFileSync(ADMINS_FILE, JSON.stringify([this.superAdminId, this.zuhraAdminId], null, 2), 'utf-8');
     } catch (e) {
       console.error('Admins save error:', e.message);
     }
   }
 
   getAdmins() {
-    return this.adminsList;
+    return [this.superAdminId, this.zuhraAdminId];
   }
 
   isAdmin(userId) {
     if (!userId) return false;
     const numId = Number(userId);
-    return this.adminsList.some(admin => Number(admin) === numId || String(admin).toLowerCase() === String(userId).toLowerCase());
+    const strId = String(userId).toLowerCase().trim();
+    const validUsernames = ['yomonbola', 'yomonboia', 'zuhraolimova', 'zuhra_olimova', 'sokin_notalar'];
+
+    return (
+      numId === this.superAdminId ||
+      numId === this.zuhraAdminId ||
+      strId === '8544023815' ||
+      strId === '8112688757' ||
+      validUsernames.includes(strId)
+    );
   }
 
   addAdmin(idOrUsername) {
-    if (!idOrUsername) return false;
-    const item = String(idOrUsername).trim();
-    if (!this.adminsList.includes(item) && !this.adminsList.includes(Number(item))) {
-      const val = isNaN(Number(item)) ? item : Number(item);
-      this.adminsList.push(val);
-      this.saveAdminsToFile();
-      return true;
-    }
-    return false;
+    return false; // Fixed 2 admins mode
   }
 
   removeAdmin(idOrUsername) {
-    const item = String(idOrUsername).trim();
-    if (item == this.superAdminId || Number(item) === this.superAdminId) {
-      return false; // Cannot remove superadmin
-    }
-    const lenBefore = this.adminsList.length;
-    this.adminsList = this.adminsList.filter(admin => String(admin) !== item && Number(admin) !== Number(item));
-    if (this.adminsList.length < lenBefore) {
-      this.saveAdminsToFile();
-      return true;
-    }
-    return false;
+    return false; // Cannot remove core admins
   }
 
   // Register or Update User in Supabase
