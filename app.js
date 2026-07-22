@@ -203,9 +203,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (isUserAdmin) {
-      navItemAdmin.classList.remove('hidden');
+      navItemAdmin?.classList.remove('hidden');
     } else {
-      navItemAdmin.classList.add('hidden');
+      navItemAdmin?.classList.add('hidden');
     }
   }
 
@@ -493,29 +493,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Interleave elements across categories to create a balanced mix for Home View
+  // Interleave elements across categories safely for Home View (Non-blocking)
   function getMixedHomeElements(elementsList) {
-    if (!elementsList || elementsList.length === 0) return [];
+    if (!Array.isArray(elementsList) || elementsList.length === 0) return [];
 
     const catBuckets = {};
     elementsList.forEach(item => {
-      if (!catBuckets[item.category]) catBuckets[item.category] = [];
-      catBuckets[item.category].push(item);
+      const cat = item.category || 'Turli xil';
+      if (!catBuckets[cat]) catBuckets[cat] = [];
+      catBuckets[cat].push(item);
     });
 
     const categoryKeys = Object.keys(catBuckets);
     const mixed = [];
-    let addedCount = 0;
-    let round = 0;
+    const maxBucketSize = Math.max(...Object.values(catBuckets).map(b => b.length));
 
-    while (addedCount < elementsList.length) {
-      for (const catKey of categoryKeys) {
-        if (catBuckets[catKey][round]) {
-          mixed.push(catBuckets[catKey][round]);
-          addedCount++;
+    for (let r = 0; r < maxBucketSize; r++) {
+      for (let k = 0; k < categoryKeys.length; k++) {
+        const item = catBuckets[categoryKeys[k]][r];
+        if (item) {
+          mixed.push(item);
         }
       }
-      round++;
     }
 
     return mixed;
