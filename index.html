@@ -29,12 +29,12 @@
   <!-- Header Section -->
   <header class="app-header" id="app-header">
     <div class="header-container">
-      <div class="author-badge">
+      <div class="author-badge" id="author-badge" title="3 marta bossangiz Admin Kirish modali ochiladi">
         <div class="avatar-ring">
           <span class="avatar-text">ZO</span>
         </div>
         <div class="author-info">
-          <div class="author-name">Zuhra Olimova <i class="fa-solid fa-circle-check verified-icon"></i></div>
+          <div class="author-name">Zuhra Olimova <i class="fa-solid fa-circle-check verified-icon"></i> <i class="fa-solid fa-shield-halved admin-lock-icon" id="admin-lock-btn" title="Admin Kirish"></i></div>
           <div class="author-title">Canva Elementlar Katalogi</div>
         </div>
       </div>
@@ -117,9 +117,6 @@
     <div class="tab-view active" id="view-home">
       <div class="active-section-bar" id="active-section-bar">
         <h2 class="current-category-title" id="current-category-title">Barcha elementlar</h2>
-        <button class="copy-all-btn" id="copy-all-btn" title="Ushbu bo'limdagi barcha kodlarni nusxalash">
-          <i class="fa-solid fa-copy"></i> Nusxalash
-        </button>
       </div>
 
       <!-- Compact Elements Grid -->
@@ -162,7 +159,7 @@
         <div class="news-banner-content">
           <div class="banner-badge">YANGILIK ✨</div>
           <h3>Eng Trend 3D va Estetik Elementlar Qo'shildi!</h3>
-          <p>Admin panel bot orqali kiritilgan yangi elementlar Supabase bazasidan avtomatik ravishda bu yerda aks etadi.</p>
+          <p>Admin panel orqali kiritilgan yangi elementlar Supabase bazasidan avtomatik ravishda bu yerda aks etadi.</p>
         </div>
         <img src="assets/cat_3d_cover.jpg" alt="3D Cover" class="news-banner-img" />
       </div>
@@ -182,6 +179,87 @@
 
       <div class="elements-grid" id="favorites-elements-grid">
         <!-- Injected via JS -->
+      </div>
+    </div>
+
+    <!-- VIEW 5: ADMIN PANEL TAB (Visible only to authorized admins) -->
+    <div class="tab-view hidden" id="view-admin">
+      <div class="admin-dashboard-header">
+        <div class="admin-badge-tag">
+          <i class="fa-solid fa-crown"></i> SUPER ADMIN PANEL
+        </div>
+        <h2>Boshqaruv va Sozlamalar</h2>
+        <p>Element kodlarini qo'shing, tahrirlang, ikonka biriktiring hamda zaxira nusxalarini (Backup) oling.</p>
+      </div>
+
+      <!-- Admin Realtime Statistics -->
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon p-pink"><i class="fa-solid fa-cubes-stacked"></i></div>
+          <div class="admin-stat-info">
+            <span class="admin-stat-val" id="admin-stat-total">407</span>
+            <span class="admin-stat-lbl">Elementlar</span>
+          </div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon p-purple"><i class="fa-solid fa-layer-group"></i></div>
+          <div class="admin-stat-info">
+            <span class="admin-stat-val" id="admin-stat-categories">20</span>
+            <span class="admin-stat-lbl">Bo'limlar</span>
+          </div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon p-blue"><i class="fa-solid fa-users"></i></div>
+          <div class="admin-stat-info">
+            <span class="admin-stat-val" id="admin-stat-users">1</span>
+            <span class="admin-stat-lbl">Foydalanuvchilar</span>
+          </div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon p-gold"><i class="fa-solid fa-user-shield"></i></div>
+          <div class="admin-stat-info">
+            <span class="admin-stat-val" id="admin-stat-admins">1</span>
+            <span class="admin-stat-lbl">Adminlar</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Quick Action Toolbar Buttons -->
+      <div class="admin-actions-bar">
+        <button class="admin-action-btn primary" id="admin-btn-add-element">
+          <i class="fa-solid fa-plus-circle"></i> Yangi Element Qo'shish
+        </button>
+        <button class="admin-action-btn secondary" id="admin-btn-manage-admins">
+          <i class="fa-solid fa-user-plus"></i> Adminlarni Boshqarish
+        </button>
+        <button class="admin-action-btn accent" id="admin-btn-download-backup">
+          <i class="fa-solid fa-download"></i> JSON Backup Yuklash
+        </button>
+        <button class="admin-action-btn outline" id="admin-btn-refresh">
+          <i class="fa-solid fa-rotate"></i> Yangilash
+        </button>
+      </div>
+
+      <!-- Admin Search and Category Filter -->
+      <div class="admin-filter-bar">
+        <div class="admin-search-wrapper">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="admin-search-input" placeholder="Element kodi yoki nomini izlash..." />
+        </div>
+        <select id="admin-category-filter" class="admin-cat-select">
+          <option value="all">Barcha Bo'limlar</option>
+        </select>
+      </div>
+
+      <!-- Admin Elements Table / Grid Container -->
+      <div class="admin-elements-container">
+        <div class="admin-table-header">
+          <span>Element Kodi / Tavsifi</span>
+          <span>Bo'lim / Amallar</span>
+        </div>
+        <div class="admin-elements-list" id="admin-elements-list">
+          <!-- Injected via JS -->
+        </div>
       </div>
     </div>
 
@@ -230,7 +308,148 @@
       <i class="fa-solid fa-heart"></i>
       <span>Saqlanganlar</span>
     </button>
+    <!-- Admin Panel Tab Button -->
+    <button class="nav-item admin-only-tab" data-tab="admin" id="nav-item-admin">
+      <i class="fa-solid fa-crown"></i>
+      <span class="nav-badge admin-badge">ADMIN</span>
+      <span>Admin Panel</span>
+    </button>
   </nav>
+
+  <!-- MODAL 1: Add / Edit Element Modal -->
+  <div class="modal-overlay hidden" id="modal-element-form">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-element-title"><i class="fa-solid fa-pen-to-square"></i> Elementni Tahrirlash</h3>
+        <button class="modal-close-btn" id="modal-element-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="form-element-id" />
+        
+        <div class="form-group">
+          <label for="form-element-code">Element kodi (Set Code) *</label>
+          <input type="text" id="form-element-code" placeholder="masalan: set:nAG35oM8lfI" required />
+        </div>
+
+        <div class="form-group">
+          <label for="form-element-desc">Element tavsifi *</label>
+          <input type="text" id="form-element-desc" placeholder="masalan: Shisha estetik 3D figurasi" required />
+        </div>
+
+        <div class="form-group">
+          <label for="form-element-cat">Kategoriya / Bo'lim *</label>
+          <div class="input-with-select">
+            <input type="text" id="form-element-cat" placeholder="masalan: Trenddagi 3D Elementlar" list="categories-datalist" required />
+            <datalist id="categories-datalist">
+              <!-- Dynamically populated -->
+            </datalist>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Ikonka tanlash (FontAwesome Class)</label>
+          <div class="icon-selector-input-group">
+            <div class="icon-preview-box">
+              <i id="form-icon-preview" class="fa-solid fa-box-open"></i>
+            </div>
+            <input type="text" id="form-element-icon" placeholder="fa-box-open" value="fa-box-open" />
+            <button type="button" class="btn-picker-open" id="btn-open-icon-picker">
+              <i class="fa-solid fa-icons"></i> Tanlash
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="form-element-keywords">Kalit so'zlar (Keywords - vergul bilan)</label>
+          <input type="text" id="form-element-keywords" placeholder="masalan: 3d, shisha, estetik, pushti" />
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label class="custom-checkbox">
+            <input type="checkbox" id="form-element-isnew" checked />
+            <span class="checkmark"></span>
+            Yangi element deb belgilash (NEW belgisi ko'rinadi)
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" id="btn-cancel-element">Bekor qilish</button>
+        <button class="btn-modal-save" id="btn-save-element"><i class="fa-solid fa-check"></i> Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Admin Management Modal -->
+  <div class="modal-overlay hidden" id="modal-manage-admins">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-user-shield"></i> Adminlarni Boshqarish</h3>
+        <button class="modal-close-btn" id="modal-admins-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-subtitle">Mini App va Botni boshqarish huquqiga ega bo'lgan foydalanuvchilar (Telegram ID / Username):</p>
+        
+        <div class="add-admin-box">
+          <input type="text" id="new-admin-input" placeholder="Telegram User ID (masalan: 8544023815 yoki @username)" />
+          <button class="btn-add-admin-submit" id="btn-save-new-admin">
+            <i class="fa-solid fa-user-plus"></i> Qo'shish
+          </button>
+        </div>
+
+        <h4 class="admin-list-heading"><i class="fa-solid fa-users-gear"></i> Amaldagi Adminlar Ro'yxati:</h4>
+        <div class="admins-list-container" id="admins-list-container">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" id="btn-close-admins-modal">Yopish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Icon Picker Modal -->
+  <div class="modal-overlay hidden" id="modal-icon-picker">
+    <div class="modal-card modal-large">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-icons"></i> FontAwesome Ikonka Tanlash</h3>
+        <button class="modal-close-btn" id="modal-icon-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="icon-search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="icon-search-input" placeholder="Ikonka nomi bo'yicha qidiruv (3d, star, heart, box, rocket...)..." />
+        </div>
+
+        <div class="icon-picker-grid" id="icon-picker-grid">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" id="btn-close-icon-picker">Bekor qilish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: Admin Passcode Login Modal -->
+  <div class="modal-overlay hidden" id="modal-admin-login">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-lock"></i> Admin Panelga Kirish</h3>
+        <button class="modal-close-btn" id="modal-login-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-subtitle">Admin paneldan foydalanish uchun parol yoki Telegram ID-ingizni kiriting:</p>
+        <div class="form-group">
+          <label for="admin-passcode-input">Admin Parol / Telegram ID</label>
+          <input type="password" id="admin-passcode-input" placeholder="Parol (masalan: 8544023815 yoki admin2026)..." autocomplete="current-password" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" id="btn-cancel-login">Bekor qilish</button>
+        <button class="btn-modal-save" id="btn-submit-login"><i class="fa-solid fa-key"></i> Kirish</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Toast Notification -->
   <div id="toast" class="toast hidden">

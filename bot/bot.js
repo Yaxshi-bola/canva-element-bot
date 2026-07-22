@@ -21,7 +21,7 @@ const pendingElement = {};
 
 // Helper: Check Admin
 function isAdmin(userId) {
-  return Number(userId) === ADMIN_ID;
+  return db.isAdmin(userId);
 }
 
 // Helper: Check Channel Subscription
@@ -45,18 +45,29 @@ async function checkUserSubscription(userId) {
 function getUserKeyboard(userId) {
   const settings = db.getSettings();
   const webAppUrl = settings.webAppUrl || 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+  const isAdm = db.isAdmin(userId);
+  const targetUrl = isAdm ? `${webAppUrl}?admin=1&user_id=${userId}` : `${webAppUrl}?user_id=${userId}`;
 
   const inlineKeyboard = [
     [
       {
         text: '🌸 Canva Element Kodlari (Mini App)',
-        web_app: { url: webAppUrl }
+        web_app: { url: targetUrl }
       }
     ]
   ];
 
+  if (isAdm) {
+    inlineKeyboard.push([
+      {
+        text: '👑 Admin Panel (Mini App)',
+        web_app: { url: `${webAppUrl}?admin=1&user_id=${userId}` }
+      }
+    ]);
+  }
+
   const replyKeyboard = [];
-  if (isAdmin(userId)) {
+  if (isAdm) {
     replyKeyboard.push([{ text: '👑 Admin Panel' }]);
   }
 

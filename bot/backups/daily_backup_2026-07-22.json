@@ -1,0 +1,8220 @@
+{
+  "timestamp": "2026-07-22T08:47:28.536Z",
+  "date": "2026-07-22",
+  "version": "1.0.0",
+  "counts": {
+    "elements": 407,
+    "users": 1,
+    "admins": 1
+  },
+  "admins": [
+    8544023815
+  ],
+  "settings": {
+    "forceChannel": "",
+    "forceChannelLink": "",
+    "forceSubActive": false,
+    "webAppUrl": "https://canva-element-kodlari-zuhra-olimova.vercel.app",
+    "superAdminId": 8544023815,
+    "admins": [
+      8544023815
+    ]
+  },
+  "elements": [
+    {
+      "id": 1,
+      "code": "set:nAG35oM8lfI",
+      "description": "Shisha element 3D",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "element",
+        "3d",
+        "shisha",
+        "trenddagi",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 2,
+      "code": "set:nAFM0muOeW0",
+      "description": "Yaltiroq 3D raqamlar pushti",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "cifra",
+        "qizlar",
+        "pink",
+        "sanoq",
+        "sonlar",
+        "yaltiroq",
+        "hisob",
+        "binafsha",
+        "3d",
+        "estetik",
+        "2026",
+        "trenddagi",
+        "raqamlar",
+        "pushti",
+        "raqam",
+        "elementlar",
+        "rose"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 3,
+      "code": "set:nAGYB2RBp7E",
+      "description": "3D liquid harflar",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "harflar",
+        "abtseda",
+        "3d",
+        "trenddagi",
+        "shrift",
+        "matn",
+        "harf",
+        "liquid",
+        "elementlar",
+        "yozuv",
+        "alifbo"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 4,
+      "code": "set:nAF9mNI5was",
+      "description": "3D qo'l ko'rsatgichlar",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "3d",
+        "l",
+        "qo",
+        "trenddagi",
+        "rsatgichlar",
+        "ko",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 5,
+      "code": "set:nAGk5MahDqE",
+      "description": "3D biznes qo'l",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "biznes",
+        "3d",
+        "qo",
+        "l",
+        "trenddagi",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 6,
+      "code": "set:nAGI1VRwFyA",
+      "description": "Qo'llar 3D har xil",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "har",
+        "3d",
+        "llar",
+        "qo",
+        "trenddagi",
+        "elementlar",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 7,
+      "code": "set:nAFUDdvRlt0",
+      "description": "Gradient qo'l",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "gradient",
+        "3d",
+        "qo",
+        "l",
+        "trenddagi",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 8,
+      "code": "set:nAGxuQC69-Q",
+      "description": "3D elementlar har xil",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "har",
+        "3d",
+        "trenddagi",
+        "elementlar",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 9,
+      "code": "set:nAGi6zC_9Pc",
+      "description": "Loydan yasalgan 3D",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "loydan",
+        "yasalgan",
+        "3d",
+        "trenddagi",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 10,
+      "code": "set:nAGk_lcnntc",
+      "description": "3D maktab buyumlari",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "3d",
+        "maktab",
+        "trenddagi",
+        "elementlar",
+        "buyumlari"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 11,
+      "code": "set:nAFxzdPzpOA",
+      "description": "3D elementlar",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "trenddagi",
+        "3d",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 12,
+      "code": "set:nAGJYsOYFRo",
+      "description": "3D sport va sog'lik",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "sog",
+        "3d",
+        "yugurish",
+        "trenddagi",
+        "va",
+        "futbol",
+        "sport",
+        "lik",
+        "elementlar",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 13,
+      "code": "set:nAGXrRJfSTE",
+      "description": "3D Pushti shishali",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "qizlar",
+        "pink",
+        "shishali",
+        "binafsha",
+        "3d",
+        "estetik",
+        "trenddagi",
+        "pushti",
+        "elementlar",
+        "rose"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 14,
+      "code": "set:nAGjcnmDRuQ",
+      "description": "3D har xil",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "har",
+        "3d",
+        "trenddagi",
+        "elementlar",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 15,
+      "code": "set:nAGxuQC69-Q",
+      "description": "3D har xil",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "har",
+        "3d",
+        "trenddagi",
+        "elementlar",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 16,
+      "code": "set:nAG1AADGXWk",
+      "description": "3D har xil",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "har",
+        "3d",
+        "trenddagi",
+        "elementlar",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 17,
+      "code": "set:nAGxuRJIjVg",
+      "description": "Ijtimoiy tarmoq",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "3d",
+        "tarmoq",
+        "trenddagi",
+        "ijtimoiy",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 18,
+      "code": "set:nAGnDWZQzo0",
+      "description": "3D emojilar",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "trenddagi",
+        "3d",
+        "elementlar",
+        "emojilar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 19,
+      "code": "set:nAG6cP88gA8",
+      "description": "LoFi stikerlar meva",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "mevalari",
+        "oziq-ovqat",
+        "taom",
+        "stikerlar",
+        "mevalar",
+        "3d",
+        "sabzavot",
+        "yemak",
+        "trenddagi",
+        "lofi",
+        "elementlar",
+        "meva"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 20,
+      "code": "set:nAE9UksYwC0",
+      "description": "Qo’llar 3D",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "3d",
+        "llar",
+        "qo",
+        "trenddagi",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 21,
+      "code": "set:nAGiJKBQI0E",
+      "description": "Xavfsizlik",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "trenddagi",
+        "3d",
+        "xavfsizlik",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 22,
+      "code": "set:nAE8mlD5Jn0",
+      "description": "3D har xil",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "har",
+        "3d",
+        "trenddagi",
+        "elementlar",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 23,
+      "code": "set:nAFXaqemwic",
+      "description": "Qo’llar 3D",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "3d",
+        "llar",
+        "qo",
+        "trenddagi",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 24,
+      "code": "set:nAGlcGsMsAI",
+      "description": "Idea g’oya",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "g",
+        "idea",
+        "3d",
+        "trenddagi",
+        "oya",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 25,
+      "code": "set:nAGjxCOM9P0",
+      "description": "Qo’l 3D",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "3d",
+        "l",
+        "qo",
+        "trenddagi",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 26,
+      "code": "set:nAFZxrV_m5Y",
+      "description": "Ob-havo",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "3d",
+        "trenddagi",
+        "havo",
+        "elementlar",
+        "ob"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 27,
+      "code": "set:nAGkrQvUHas",
+      "description": "Text ramka",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "ramka",
+        "3d",
+        "trenddagi",
+        "text",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 28,
+      "code": "set:nAGhg_5lIaQ",
+      "description": "Remember ramka",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "ramka",
+        "3d",
+        "trenddagi",
+        "remember",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 29,
+      "code": "set:nAFpX17hNqE",
+      "description": "Shisha gradient elementlar 3D",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "gradient",
+        "3d",
+        "shisha",
+        "trenddagi",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 30,
+      "code": "set:nAFwqfAItBk",
+      "description": "Matn uchun ramka qizil va oltin",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "ramka",
+        "oltin",
+        "qizil",
+        "uchun",
+        "3d",
+        "trenddagi",
+        "va",
+        "matn",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 31,
+      "code": "set:nAGTd5bMnn8",
+      "description": "3D oy va boshqa",
+      "category": "Trenddagi 3D Elementlar",
+      "keywords": [
+        "3d",
+        "boshqa",
+        "trenddagi",
+        "va",
+        "oy",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 32,
+      "code": "set:nAGk5wsWIjQ",
+      "description": "Reklama, UI dizayn",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "ui"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 33,
+      "code": "set:nAFpkX8vK2k",
+      "description": "Biznes siyohrang",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "siyohrang",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 34,
+      "code": "set:nAF-7Io89Gs",
+      "description": "Ijtimoy tarmoq",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "ijtimoy",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "tarmoq",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 35,
+      "code": "set:nAGxuRJIjVg",
+      "description": "Telefon ikonkalari Clay3D",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "telefon",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "ikonkalari",
+        "clay3d"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 36,
+      "code": "set:nAF-yqCMqPc",
+      "description": "Xar xil  sms, so’roq, undov",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "xar",
+        "sms",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "roq",
+        "undov",
+        "so",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 37,
+      "code": "set:nAE2VYZEghM",
+      "description": "Turli xil",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "turli",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 38,
+      "code": "set:nAGl0yNMZfI",
+      "description": "AI suniy intellekt",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "ai",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "intellekt",
+        "suniy"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 39,
+      "code": "set:nAFV7EaSPRs",
+      "description": "Layklar",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "layklar",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 40,
+      "code": "set:nAGKR5pL-3Y",
+      "description": "Call markaz",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "call",
+        "markaz",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 41,
+      "code": "set:nAE_HMvLF5c",
+      "description": "Live stream Youtube",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "stream",
+        "infografika",
+        "youtube",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "live"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 42,
+      "code": "set:nAGiNaiZSWk",
+      "description": "User login",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "user",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "login",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 43,
+      "code": "set:nAFCqZPYokE",
+      "description": "Youtube video",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "video",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "youtube",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 44,
+      "code": "set:nAFGT9MmCyI",
+      "description": "Online shopping",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "online",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "shopping"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 45,
+      "code": "set:nAF4pR-rPso",
+      "description": "Dizayner elementlari",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "dizayner",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "elementlari"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 46,
+      "code": "set:nAFEU_RGrCg",
+      "description": "Grafik dizayner",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "grafik",
+        "infografika",
+        "target",
+        "dizayner",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 47,
+      "code": "set:nAE9IsP1bRQ",
+      "description": "Fayllar",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "fayllar",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 48,
+      "code": "set:nAFHV-yWdaA",
+      "description": "Idea ajoyib 3d",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "idea",
+        "infografika",
+        "3d",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "ajoyib",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 49,
+      "code": "set:nAFS1Qwg4Og",
+      "description": "Aksiya qora va sariq",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "sariq",
+        "aksiya",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "qora"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 50,
+      "code": "set:nAE-tqXiYS8",
+      "description": "Infografika va diagramma",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "diagramma",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:45.36624+00:00"
+    },
+    {
+      "id": 51,
+      "code": "set:nAF6uAYovoQ",
+      "description": "Grafik dizayner",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "grafik",
+        "infografika",
+        "target",
+        "dizayner",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 52,
+      "code": "set:nAGbxLN3fOo",
+      "description": "Podcast",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "podcast"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 53,
+      "code": "set:nAGDW5jfjdQ",
+      "description": "Giveaway aksiyalar",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "giveaway",
+        "aksiyalar",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 54,
+      "code": "set:nAF4g1Tek1E",
+      "description": "Target",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 55,
+      "code": "set:nAFy1W3O-ZE",
+      "description": "Online savdo operator",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "online",
+        "savdo",
+        "infografika",
+        "operator",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 56,
+      "code": "set:nAF9rqzhnHM",
+      "description": "Aksiya",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "aksiya",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 57,
+      "code": "set:nAFEIdhG80o",
+      "description": "Subscribe",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "subscribe",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 58,
+      "code": "set:nAGfth8W5W4",
+      "description": "Kino prodyuser",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "kino",
+        "va",
+        "reklama",
+        "marketing",
+        "prodyuser",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 59,
+      "code": "set:nAGeNwx_cGw",
+      "description": "Ijtimoiy tarmoq ajoyib",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "tarmoq",
+        "va",
+        "reklama",
+        "marketing",
+        "ajoyib",
+        "ijtimoiy",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 60,
+      "code": "set:nAGftoO2-wc",
+      "description": "Target reklama",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 61,
+      "code": "set:nAFFet3iUjg",
+      "description": "Stikerlar",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "stikerlar",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 62,
+      "code": "set:nAGTulaRQB0",
+      "description": "Pushti va sariq to’plam",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "qizlar",
+        "infografika",
+        "target",
+        "pushti",
+        "reklama",
+        "rose",
+        "pink",
+        "dizayn",
+        "binafsha",
+        "va",
+        "plam",
+        "smm",
+        "instagram",
+        "marketing",
+        "to",
+        "post",
+        "biznes",
+        "estetik",
+        "sariq"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 63,
+      "code": "set:nAGc7r2ybYU",
+      "description": "Sotuv",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "sotuv",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 64,
+      "code": "set:nAFloeKc8gE",
+      "description": "Telefon ikonlari 3D",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "3d",
+        "target",
+        "instagram",
+        "telefon",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "ikonlari"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 65,
+      "code": "set:nAFmA1xTVPY",
+      "description": "Youtube elementlari",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "youtube",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "elementlari"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 66,
+      "code": "set:nAGk5wsWIjQ",
+      "description": "Dizayn elemenatlari 3D",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "elemenatlari",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "3d",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 67,
+      "code": "set:nAFGsX1CHIo",
+      "description": "Gift qutilari",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "gift",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "qutilari",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 68,
+      "code": "set:nAGSMgMP_ic",
+      "description": "Infografik karta",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "infografik",
+        "karta"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 69,
+      "code": "set:nAGbe2obvQU",
+      "description": "Pushti elementlar",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "qizlar",
+        "pink",
+        "dizayn",
+        "biznes",
+        "smm",
+        "binafsha",
+        "infografika",
+        "target",
+        "estetik",
+        "instagram",
+        "pushti",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "elementlar",
+        "rose"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 70,
+      "code": "set:nAF-42ThL4I",
+      "description": "Ko’rsatgichlar 3D har xil",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "har",
+        "infografika",
+        "3d",
+        "target",
+        "instagram",
+        "rsatgichlar",
+        "va",
+        "reklama",
+        "marketing",
+        "ko",
+        "post",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 71,
+      "code": "set:nAFrlda_YeA",
+      "description": "Target reklama",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 72,
+      "code": "set:nAE-NnXsqAo",
+      "description": "Piksel eski kompyuter",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "eski",
+        "piksel",
+        "infografika",
+        "target",
+        "instagram",
+        "kompyuter",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 73,
+      "code": "set:nAGKkNCjfI4",
+      "description": "Oltin podiumlar",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "oltin",
+        "dizayn",
+        "biznes",
+        "smm",
+        "podiumlar",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 74,
+      "code": "set:nAFSpqps8nw",
+      "description": "Surrealizm 3d",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "surrealizm",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "3d",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 75,
+      "code": "set:nAF-7Io89Gs",
+      "description": "Layklar. hashteg, ijtimoiy tarmoq",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "layklar",
+        "infografika",
+        "target",
+        "instagram",
+        "tarmoq",
+        "va",
+        "reklama",
+        "marketing",
+        "hashteg",
+        "ijtimoiy",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 76,
+      "code": "set:nAFJlkaFo3E",
+      "description": "Biznes",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 77,
+      "code": "set:nAFnwFAIMLU",
+      "description": "Sariq ko’rsatgichlar 3D",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "3d",
+        "target",
+        "instagram",
+        "sariq",
+        "rsatgichlar",
+        "va",
+        "reklama",
+        "marketing",
+        "ko",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 78,
+      "code": "set:nAFENk9kXDE",
+      "description": "Soyalar",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "soyalar",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 79,
+      "code": "set:nAGRwfVT6cA",
+      "description": "Qog’oz eslatmalar",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "qog",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "eslatmalar",
+        "oz",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 80,
+      "code": "set:nAFEl7JUcQc",
+      "description": "Nur",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "nur",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 81,
+      "code": "set:nAGUkEH8e9E",
+      "description": "Qog’oz qirqimlari",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "qirqimlari",
+        "infografika",
+        "qog",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "oz",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 82,
+      "code": "set:nAFBiXORmQ4",
+      "description": "Online biznes o’g’il bola",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "online",
+        "o",
+        "infografika",
+        "g",
+        "target",
+        "bola",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "il",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 83,
+      "code": "set:nAGkY0l7YM0",
+      "description": "Polaroid rasm ramka",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "ramka",
+        "dizayn",
+        "biznes",
+        "smm",
+        "rasm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "polaroid",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 84,
+      "code": "set:nAGdsL4lqiQ",
+      "description": "Biznes target ko’k 3d",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "k",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "3d",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "ko",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 85,
+      "code": "set:nAGf0FzjXfc",
+      "description": "Ijtimoiy tarmoq 3D",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "3d",
+        "target",
+        "instagram",
+        "tarmoq",
+        "va",
+        "reklama",
+        "marketing",
+        "ijtimoiy",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 86,
+      "code": "set:nAGLHrfuUis",
+      "description": "Yutuqlar natijalar xujjatlar",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "yutuqlar",
+        "target",
+        "natijalar",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "xujjatlar",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 87,
+      "code": "set:nAFf34c794s",
+      "description": "SEO",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "seo",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 88,
+      "code": "set:nAFAc2TynJ8",
+      "description": "Reklama",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 89,
+      "code": "set:nAFmJKsjaik",
+      "description": "Matn uchun ramka har xil",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "ramka",
+        "dizayn",
+        "biznes",
+        "smm",
+        "har",
+        "uchun",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "matn",
+        "post",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 90,
+      "code": "set:nAFw2UqpLSQ",
+      "description": "yashil sariq matn ramka",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "ramka",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "yashil",
+        "target",
+        "instagram",
+        "sariq",
+        "va",
+        "reklama",
+        "marketing",
+        "matn",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 91,
+      "code": "set:nAFxV3OZ6Xg",
+      "description": "Oltin rangli ramka",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "ramka",
+        "oltin",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "rangli",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 92,
+      "code": "set:nAGjNIupvZM",
+      "description": "3D qoidalar",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "3d",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "qoidalar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 93,
+      "code": "set:nAGjHcXNV3I",
+      "description": "Qora va oltin lenta",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "oltin",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "lenta",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "qora"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 94,
+      "code": "set:nAGiHFq5mP8",
+      "description": "Operator, AI chat 3D",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "ai",
+        "dizayn",
+        "biznes",
+        "smm",
+        "operator",
+        "infografika",
+        "3d",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "chat"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 95,
+      "code": "set:nAFZHsLImqg",
+      "description": "Oltin lenta",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "oltin",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "lenta",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 96,
+      "code": "set:nAGdyDp_hg4",
+      "description": "Yangiliklar jurnalist qizil 3D",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "jurnalist",
+        "qizil",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "3d",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "yangiliklar",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 97,
+      "code": "set:nAFw2GcAKoE",
+      "description": "Grafik dizayner",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "grafik",
+        "infografika",
+        "target",
+        "dizayner",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 98,
+      "code": "set:nAF_dLEAabc",
+      "description": "Shisha ramka matn uchun",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "ramka",
+        "dizayn",
+        "biznes",
+        "smm",
+        "uchun",
+        "infografika",
+        "target",
+        "instagram",
+        "shisha",
+        "va",
+        "reklama",
+        "marketing",
+        "matn",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 99,
+      "code": "set:nAFYBurtOb4",
+      "description": "Freelancer",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "freelancer",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 100,
+      "code": "set:nAGmW3yo3xI",
+      "description": "Aksiya black friday",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "black",
+        "target",
+        "instagram",
+        "aksiya",
+        "va",
+        "reklama",
+        "marketing",
+        "post",
+        "friday"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:47.52026+00:00"
+    },
+    {
+      "id": 101,
+      "code": "set:nAFEJ1zdrIs",
+      "description": "Bo’yoq",
+      "category": "SMM, Target, Dizayn va Infografika",
+      "keywords": [
+        "yoq",
+        "dizayn",
+        "biznes",
+        "smm",
+        "infografika",
+        "target",
+        "instagram",
+        "va",
+        "reklama",
+        "marketing",
+        "bo",
+        "post"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 102,
+      "code": "set:nAFVB6WOQ8Y",
+      "description": "3D Abstrak shakl",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakl",
+        "shakllar",
+        "3d",
+        "abstrak",
+        "abstrakt",
+        "va",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 103,
+      "code": "set:nAE3-sqplKU",
+      "description": "Shisha abtrak shakl 3D",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakl",
+        "abtrak",
+        "shakllar",
+        "3d",
+        "abstrakt",
+        "shisha",
+        "va",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 104,
+      "code": "set:nAFUiQ4CDso",
+      "description": "Qora abstrak shakl",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakl",
+        "shakllar",
+        "abstrak",
+        "abstrakt",
+        "va",
+        "elementlar",
+        "qora"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 105,
+      "code": "set:nAFX_UJfxow",
+      "description": "Galagrammali abstrakt",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakllar",
+        "galagrammali",
+        "abstrakt",
+        "va",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 106,
+      "code": "set:nAFjkMMrGpY",
+      "description": "Kumush abstrakt",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakllar",
+        "kumush",
+        "abstrakt",
+        "va",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 107,
+      "code": "set:nAFk5640Ir8",
+      "description": "3D xrom",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "xrom",
+        "shakllar",
+        "3d",
+        "abstrakt",
+        "va",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 108,
+      "code": "set:nAF4voUQC5M",
+      "description": "Abstrakt siyohrang",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakllar",
+        "abstrakt",
+        "va",
+        "siyohrang",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 109,
+      "code": "set:nAGNDWjorJY",
+      "description": "Noaniq shakllar",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakllar",
+        "abstrakt",
+        "va",
+        "noaniq",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 110,
+      "code": "set:nAGRGmMpfeI",
+      "description": "Yulduzlar abstrak",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakllar",
+        "abstrak",
+        "abstrakt",
+        "yulduzlar",
+        "va",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 111,
+      "code": "set:nAGRC3JgJYg",
+      "description": "Aestetik abstrak",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakllar",
+        "abstrak",
+        "abstrakt",
+        "va",
+        "elementlar",
+        "aestetik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 112,
+      "code": "set:nAFdI33hhYo",
+      "description": "Abstrakt burchaklar",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakllar",
+        "abstrakt",
+        "burchaklar",
+        "va",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 113,
+      "code": "set:nAF9hiBfUkI",
+      "description": "Abstrak chiziqlar",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakllar",
+        "abstrak",
+        "abstrakt",
+        "va",
+        "elementlar",
+        "chiziqlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 114,
+      "code": "set:nAFcU2-FhO0",
+      "description": "3D abstrakt",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakllar",
+        "3d",
+        "abstrakt",
+        "va",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 115,
+      "code": "set:nAGkDudq8x0",
+      "description": "Shakllar binafsharang",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakllar",
+        "binafsharang",
+        "abstrakt",
+        "va",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 116,
+      "code": "set:nAG0_PnJV_Y",
+      "description": "Kollaj elementlar",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakllar",
+        "kollaj",
+        "abstrakt",
+        "va",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 117,
+      "code": "set:nAGWvfD6fuU",
+      "description": "Abstrakt shisha",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakllar",
+        "abstrakt",
+        "shisha",
+        "va",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 118,
+      "code": "set:nAGldNOBbPQ",
+      "description": "Shakllar ko’k",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "k",
+        "shakllar",
+        "abstrakt",
+        "va",
+        "ko",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 119,
+      "code": "set:nAFmRZRyNHU",
+      "description": "3D Abstrdak shakl",
+      "category": "Abstrakt Elementlar va Shakllar",
+      "keywords": [
+        "shakl",
+        "shakllar",
+        "3d",
+        "abstrakt",
+        "va",
+        "abstrdak",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 120,
+      "code": "set:nAFCPLIaqCI",
+      "description": "Groovy estetik fonlar",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "groovy",
+        "aesthetic",
+        "estetik",
+        "fonlar",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 121,
+      "code": "set:nAFGrb30Nsw",
+      "description": "UI oyna uslubi",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "aesthetic",
+        "estetik",
+        "uslubi",
+        "oyna",
+        "elementlar",
+        "ui"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 122,
+      "code": "set:nAGiFPDIP-M",
+      "description": "Sitata bloklari",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "sitata",
+        "aesthetic",
+        "estetik",
+        "bloklari",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 123,
+      "code": "set:nAFs7rEiWpI",
+      "description": "Cartoon harflar",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "harflar",
+        "cartoon",
+        "abtseda",
+        "aesthetic",
+        "estetik",
+        "shrift",
+        "matn",
+        "harf",
+        "elementlar",
+        "yozuv",
+        "alifbo"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 124,
+      "code": "set:nAFK4V7s1Nw",
+      "description": "Estetik shakllar",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "aesthetic",
+        "estetik",
+        "elementlar",
+        "shakllar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 125,
+      "code": "set:nAF6f5M0nOs",
+      "description": "Polaroid ramkalar",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "aesthetic",
+        "estetik",
+        "polaroid",
+        "ramkalar",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 126,
+      "code": "set:nAGhCu1nf6A",
+      "description": "Infografika elementlari",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "aesthetic",
+        "infografika",
+        "estetik",
+        "elementlar",
+        "elementlari"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 127,
+      "code": "set:nAFWgMNuNhY",
+      "description": "90s illyustratsiya elementi",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "illyustratsiya",
+        "elementi",
+        "aesthetic",
+        "estetik",
+        "90s",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 128,
+      "code": "set:nAFsJ-v_aSE",
+      "description": "Splash shakllar",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "shakllar",
+        "aesthetic",
+        "estetik",
+        "splash",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 129,
+      "code": "set:nAFXwS1HCuo",
+      "description": "Stikerli elementlar",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "aesthetic",
+        "estetik",
+        "elementlar",
+        "stikerli"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 130,
+      "code": "set:nAFMRzd-8uY",
+      "description": "Vintaj stikerlar",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "stikerlar",
+        "aesthetic",
+        "estetik",
+        "elementlar",
+        "vintaj"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 131,
+      "code": "set:nAFG0ynyLfg",
+      "description": "Bezaklar har xil",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "har",
+        "aesthetic",
+        "bezaklar",
+        "estetik",
+        "elementlar",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 132,
+      "code": "set:nAFrC7utHnE",
+      "description": "Qiz va Bola qizil kiyimda",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "qiz",
+        "kiyimda",
+        "qizil",
+        "bola",
+        "aesthetic",
+        "estetik",
+        "va",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 133,
+      "code": "set:nAGZXevbAVE",
+      "description": "Estetik shakllar",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "aesthetic",
+        "estetik",
+        "elementlar",
+        "shakllar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 134,
+      "code": "set:nAFD79dIEYg",
+      "description": "Sayohat",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "sayohat",
+        "aesthetic",
+        "estetik",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 135,
+      "code": "set:nAFjDUBW230",
+      "description": "Gullar 3D",
+      "category": "Aesthetic/Estetik Elementlar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "aesthetic",
+        "3d",
+        "estetik",
+        "flora",
+        "gullar",
+        "roza",
+        "bog'",
+        "elementlar",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 136,
+      "code": "set:nAFPWWLPTe0",
+      "description": "Gradient space elementlar",
+      "category": "Kosmik Elementlar",
+      "keywords": [
+        "yulduz",
+        "gradient",
+        "kosmik",
+        "space",
+        "kosmos",
+        "sayyora",
+        "fazo",
+        "raketa",
+        "astronomiya",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 137,
+      "code": "set:nAFORSd9u7Y",
+      "description": "Watercolour space elementlar",
+      "category": "Kosmik Elementlar",
+      "keywords": [
+        "yulduz",
+        "kosmik",
+        "space",
+        "watercolour",
+        "kosmos",
+        "sayyora",
+        "fazo",
+        "raketa",
+        "astronomiya",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 138,
+      "code": "set:nAGGWJgZvc0",
+      "description": "Kosmik 3D",
+      "category": "Kosmik Elementlar",
+      "keywords": [
+        "yulduz",
+        "kosmik",
+        "3d",
+        "kosmos",
+        "sayyora",
+        "fazo",
+        "raketa",
+        "astronomiya",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 139,
+      "code": "set:nAFkN9Q_0BM",
+      "description": "Kosmos 3D",
+      "category": "Kosmik Elementlar",
+      "keywords": [
+        "yulduz",
+        "kosmik",
+        "3d",
+        "kosmos",
+        "sayyora",
+        "fazo",
+        "raketa",
+        "astronomiya",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 140,
+      "code": "set:nAFLgouKPmM",
+      "description": "Blurry kosmik elementlar",
+      "category": "Kosmik Elementlar",
+      "keywords": [
+        "yulduz",
+        "kosmik",
+        "kosmos",
+        "sayyora",
+        "fazo",
+        "raketa",
+        "astronomiya",
+        "elementlar",
+        "blurry"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 141,
+      "code": "set:nAFKNMohr64",
+      "description": "Cosmos fonlar",
+      "category": "Kosmik Elementlar",
+      "keywords": [
+        "yulduz",
+        "kosmik",
+        "fonlar",
+        "kosmos",
+        "sayyora",
+        "fazo",
+        "raketa",
+        "astronomiya",
+        "elementlar",
+        "cosmos"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 142,
+      "code": "set:nAFO-waLin8",
+      "description": "Doodle space elementlar",
+      "category": "Kosmik Elementlar",
+      "keywords": [
+        "yulduz",
+        "kosmik",
+        "space",
+        "kosmos",
+        "sayyora",
+        "fazo",
+        "raketa",
+        "doodle",
+        "astronomiya",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 143,
+      "code": "set:nAFltB9fXZM",
+      "description": "Planet illyustratsiyalari",
+      "category": "Kosmik Elementlar",
+      "keywords": [
+        "yulduz",
+        "planet",
+        "kosmik",
+        "illyustratsiyalari",
+        "kosmos",
+        "sayyora",
+        "fazo",
+        "raketa",
+        "astronomiya",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 144,
+      "code": "set:nAFk3CfYmNk",
+      "description": "Celestial kosmiklar",
+      "category": "Kosmik Elementlar",
+      "keywords": [
+        "yulduz",
+        "celestial",
+        "kosmik",
+        "kosmiklar",
+        "kosmos",
+        "sayyora",
+        "fazo",
+        "raketa",
+        "astronomiya",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 145,
+      "code": "set:nAF-Q-7p-FM",
+      "description": "Space elementlari",
+      "category": "Kosmik Elementlar",
+      "keywords": [
+        "yulduz",
+        "kosmik",
+        "space",
+        "kosmos",
+        "sayyora",
+        "fazo",
+        "raketa",
+        "astronomiya",
+        "elementlar",
+        "elementlari"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 146,
+      "code": "set:nAFZez_V_XQ",
+      "description": "Doodle yulduzlar",
+      "category": "Kosmik Elementlar",
+      "keywords": [
+        "yulduz",
+        "kosmik",
+        "kosmos",
+        "sayyora",
+        "fazo",
+        "yulduzlar",
+        "raketa",
+        "doodle",
+        "astronomiya",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 147,
+      "code": "set:nAEUaItAXzU",
+      "description": "Chiziqli space elementlar",
+      "category": "Kosmik Elementlar",
+      "keywords": [
+        "yulduz",
+        "kosmik",
+        "space",
+        "kosmos",
+        "sayyora",
+        "fazo",
+        "raketa",
+        "chiziqli",
+        "astronomiya",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 148,
+      "code": "set:nAFKG2xdBa4",
+      "description": "Cute chiziqlar va shakllar",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "cute",
+        "shakllar",
+        "va",
+        "ajoyib",
+        "elementlar",
+        "chiziqlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 149,
+      "code": "set:nAEnV709cfo",
+      "description": "Qo'l chizilgan cute elementlar",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "cute",
+        "chizilgan",
+        "qo",
+        "l",
+        "va",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 150,
+      "code": "set:nAF0RR_67UM",
+      "description": "3D bubble alifbo",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "bubble",
+        "qiziqarli",
+        "3d",
+        "va",
+        "ajoyib",
+        "elementlar",
+        "alifbo"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:50.65517+00:00"
+    },
+    {
+      "id": 151,
+      "code": "set:nAGWqPpVpe0",
+      "description": "Cute doodle elementlar",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "cute",
+        "va",
+        "doodle",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 152,
+      "code": "set:nAFRU7FZhzw",
+      "description": "3D enamel elementlar",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "3d",
+        "va",
+        "ajoyib",
+        "enamel",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 153,
+      "code": "set:nAE4SiKTy0Q",
+      "description": "Cute fonlar",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "cute",
+        "va",
+        "ajoyib",
+        "fonlar",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 154,
+      "code": "set:nAFmeks7jkM",
+      "description": "Gradient harflar",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "harflar",
+        "qiziqarli",
+        "gradient",
+        "abtseda",
+        "shrift",
+        "va",
+        "matn",
+        "ajoyib",
+        "harf",
+        "elementlar",
+        "yozuv",
+        "alifbo"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 155,
+      "code": "set:nAEvl2T0Br4",
+      "description": "Kawaii kitob elementlar",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "kitob",
+        "qiziqarli",
+        "dars",
+        "kawaii",
+        "ta'lim",
+        "oqish",
+        "kutubxona",
+        "maktab",
+        "va",
+        "ajoyib",
+        "bilim",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 156,
+      "code": "set:nAE4SpEcPaM",
+      "description": "Deco stikerlar",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "deco",
+        "qiziqarli",
+        "stikerlar",
+        "va",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 157,
+      "code": "set:nAFsqJeB5tA",
+      "description": "Camping sayohat",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "camping",
+        "va",
+        "ajoyib",
+        "sayohat",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 158,
+      "code": "set:nAGGJ0QwsjA",
+      "description": "Sayohat",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "va",
+        "ajoyib",
+        "sayohat",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 159,
+      "code": "set:nAF1zK4UWLs",
+      "description": "Kuchukcha mushukcha uylari",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "kuchukcha",
+        "uylari",
+        "va",
+        "mushukcha",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 160,
+      "code": "set:nAF5Y89gyPY",
+      "description": "Giftlar qizil",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "qizil",
+        "giftlar",
+        "va",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 161,
+      "code": "set:nAFTrw5GkQI",
+      "description": "Free kawaii to'plam",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "free",
+        "kawaii",
+        "va",
+        "ajoyib",
+        "to",
+        "elementlar",
+        "plam"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 162,
+      "code": "set:nAGcwJioNw0",
+      "description": "Sevgi to’plam",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "sevgi",
+        "qiziqarli",
+        "muhabbat",
+        "yurak",
+        "va",
+        "ajoyib",
+        "love",
+        "to",
+        "elementlar",
+        "romantika",
+        "heart",
+        "plam",
+        "dildan"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 163,
+      "code": "set:nAFjpmLhmdc",
+      "description": "Yurakchalar",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "yurakchalar",
+        "va",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 164,
+      "code": "set:nAFP04W1wWw",
+      "description": "Ikonlar telefon ilovalar",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "ilovalar",
+        "telefon",
+        "va",
+        "ajoyib",
+        "ikonlar",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 165,
+      "code": "set:nAFpWrRunUc",
+      "description": "Transport",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "va",
+        "transport",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 166,
+      "code": "set:nAE8moHXWrw",
+      "description": "3D siyohrang",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "3d",
+        "va",
+        "ajoyib",
+        "siyohrang",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 167,
+      "code": "set:nAF_1MTtd_s",
+      "description": "Pushti ajoyib sevgi",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qizlar",
+        "sevgi",
+        "heart",
+        "qiziqarli",
+        "pink",
+        "muhabbat",
+        "binafsha",
+        "estetik",
+        "pushti",
+        "va",
+        "yurak",
+        "ajoyib",
+        "love",
+        "elementlar",
+        "romantika",
+        "rose",
+        "dildan"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 168,
+      "code": "set:nAF91My8mIA",
+      "description": "Shahar",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "shahar",
+        "qiziqarli",
+        "va",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 169,
+      "code": "set:nAGQv0KBn4w",
+      "description": "Oltin buyumlar",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "oltin",
+        "buyumlar",
+        "va",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 170,
+      "code": "set:nAGj2mMrXt8",
+      "description": "Shahar binolari",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "shahar",
+        "qiziqarli",
+        "binolari",
+        "va",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 171,
+      "code": "set:nAFdyu4ID64",
+      "description": "Nikoh wedding",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "nikoh",
+        "va",
+        "wedding",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 172,
+      "code": "set:nAFTBH25iUA",
+      "description": "Gigiyena",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "gigiyena",
+        "va",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 173,
+      "code": "set:nAFwyiS55zU",
+      "description": "Transport",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "va",
+        "transport",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 174,
+      "code": "set:nAF5Y89gyPY",
+      "description": "Sevgi to’plami qizil",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "sevgi",
+        "qiziqarli",
+        "muhabbat",
+        "qizil",
+        "yurak",
+        "va",
+        "ajoyib",
+        "love",
+        "plami",
+        "to",
+        "elementlar",
+        "romantika",
+        "heart",
+        "dildan"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 175,
+      "code": "set:nAGeT8raBcw",
+      "description": "Kun tartibi",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "va",
+        "ajoyib",
+        "kun",
+        "elementlar",
+        "tartibi"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 176,
+      "code": "set:nAFpQEzpbEQ",
+      "description": "Tana a’zolari",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "tana",
+        "zolari",
+        "a",
+        "va",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 177,
+      "code": "set:nAF5d-3VLLM",
+      "description": "Sevgi Love",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "sevgi",
+        "qiziqarli",
+        "muhabbat",
+        "yurak",
+        "va",
+        "ajoyib",
+        "love",
+        "elementlar",
+        "romantika",
+        "heart",
+        "dildan"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 178,
+      "code": "set:nAGdMaNkhiM",
+      "description": "Yurakchalar",
+      "category": "Ajoyib va Qiziqarli Elementlar",
+      "keywords": [
+        "qiziqarli",
+        "yurakchalar",
+        "va",
+        "ajoyib",
+        "elementlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 179,
+      "code": "set:nAEvHwS_rIY",
+      "description": "Watercolour gul elementlar",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "elementlar",
+        "bog",
+        "watercolour",
+        "gullar",
+        "va",
+        "gul",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 180,
+      "code": "set:nAF-Du2BQTg",
+      "description": "Groovy gul elementlar",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "groovy",
+        "lola",
+        "gullari",
+        "elementlar",
+        "bog",
+        "gullar",
+        "va",
+        "gul",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 181,
+      "code": "set:nAGULIEE4qs",
+      "description": "Floral alifbo",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "bog",
+        "gullar",
+        "floral",
+        "va",
+        "roza",
+        "bog'",
+        "flora",
+        "alifbo",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 182,
+      "code": "set:nAFvhIl-dgw",
+      "description": "Gul so'zli keyinglar",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "zli",
+        "gullari",
+        "keyinglar",
+        "bog",
+        "gullar",
+        "va",
+        "gul",
+        "roza",
+        "bog'",
+        "flora",
+        "so",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 183,
+      "code": "set:nAFwr7zkHgs",
+      "description": "3D gul elementlar",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "elementlar",
+        "3d",
+        "bog",
+        "gullar",
+        "va",
+        "gul",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 184,
+      "code": "set:nAFVQFwMcfM",
+      "description": "Gul shtamp elementlar",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "elementlar",
+        "bog",
+        "gullar",
+        "va",
+        "gul",
+        "roza",
+        "bog'",
+        "flora",
+        "shtamp",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 185,
+      "code": "set:nAFCa2ot-HQ",
+      "description": "Psychedelic flower",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "flower",
+        "bog",
+        "gullar",
+        "psychedelic",
+        "va",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 186,
+      "code": "set:nAF-ofzrgPw",
+      "description": "Gul fon elementlari",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "fon",
+        "lola",
+        "gullari",
+        "bog",
+        "gullar",
+        "va",
+        "gul",
+        "roza",
+        "bog'",
+        "flora",
+        "elementlari",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 187,
+      "code": "set:nAF8fT3XVeM",
+      "description": "Daisy elementlar",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "elementlar",
+        "bog",
+        "gullar",
+        "va",
+        "daisy",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 188,
+      "code": "set:nAE6X8cqkV4",
+      "description": "Easter floral frames",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "bog",
+        "easter",
+        "gullar",
+        "floral",
+        "frames",
+        "va",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 189,
+      "code": "set:nAFvthb11PI",
+      "description": "Kapalaklar 3D",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "kapalaklar",
+        "gullari",
+        "3d",
+        "bog",
+        "gullar",
+        "va",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 190,
+      "code": "set:nAFtokjIaf4",
+      "description": "Gullar va fon",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "fon",
+        "lola",
+        "gullari",
+        "bog",
+        "gullar",
+        "va",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 191,
+      "code": "set:nAFP79b3cTI",
+      "description": "SMS lar",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lar",
+        "sms",
+        "lola",
+        "gullari",
+        "bog",
+        "gullar",
+        "va",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 192,
+      "code": "set:nAGJhI5LOo0",
+      "description": "Mashinalar, transport",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "bog",
+        "mashinalar",
+        "gullar",
+        "va",
+        "transport",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 193,
+      "code": "set:nAF0xc1hB5M",
+      "description": "Kalendarlar",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "bog",
+        "gullar",
+        "va",
+        "roza",
+        "bog'",
+        "flora",
+        "kalendarlar",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 194,
+      "code": "set:nAFB-BJkoA4",
+      "description": "Gullar va sevgi",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "sevgi",
+        "lola",
+        "muhabbat",
+        "gullari",
+        "bog",
+        "dildan",
+        "gullar",
+        "yurak",
+        "va",
+        "love",
+        "roza",
+        "bog'",
+        "flora",
+        "romantika",
+        "heart",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 195,
+      "code": "set:nAE-QWy0kVc",
+      "description": "Gullar",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "bog",
+        "gullar",
+        "va",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 196,
+      "code": "set:nAGmxAJNr6E",
+      "description": "Moychechak",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "bog",
+        "gullar",
+        "va",
+        "roza",
+        "bog'",
+        "flora",
+        "moychechak",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 197,
+      "code": "set:nAGkrJTlbmw",
+      "description": "Gullar 3D",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "3d",
+        "bog",
+        "gullar",
+        "va",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 198,
+      "code": "set:nAFI_BbKh9c",
+      "description": "Brilliant gul",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "brilliant",
+        "bog",
+        "gullar",
+        "va",
+        "gul",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 199,
+      "code": "set:nAFF0YVxi-g",
+      "description": "Lavanda binafsha rang",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "binafsha",
+        "bog",
+        "rang",
+        "gullar",
+        "va",
+        "roza",
+        "bog'",
+        "flora",
+        "lavanda",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 200,
+      "code": "set:nAFEy79le5k",
+      "description": "Olcha gulli ajoyib",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "gulli",
+        "olcha",
+        "bog",
+        "gullar",
+        "va",
+        "ajoyib",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:51.704497+00:00"
+    },
+    {
+      "id": 201,
+      "code": "set:nAFFRntqC0g",
+      "description": "Sariq gulli",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "lola",
+        "gullari",
+        "gulli",
+        "bog",
+        "sariq",
+        "gullar",
+        "va",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 202,
+      "code": "set:nAE8PIas5CY",
+      "description": "Gul ramka bezak",
+      "category": "Bog' va Gullar",
+      "keywords": [
+        "ramka",
+        "lola",
+        "gullari",
+        "bog",
+        "gullar",
+        "bezak",
+        "va",
+        "gul",
+        "roza",
+        "bog'",
+        "flora",
+        "o'simlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 203,
+      "code": "set:nAFumY-wfw8",
+      "description": "Klub logo",
+      "category": "Sport, Musobaqa va Sovrinlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "logo",
+        "sovrinlar",
+        "klub",
+        "yugurish",
+        "va",
+        "futbol",
+        "sport",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 204,
+      "code": "set:nAGKvqJDQ0c",
+      "description": "Sport buyumlari",
+      "category": "Sport, Musobaqa va Sovrinlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "sovrinlar",
+        "buyumlari",
+        "yugurish",
+        "va",
+        "futbol",
+        "sport",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 205,
+      "code": "set:nAGbx4m3qVw",
+      "description": "Sport turlari",
+      "category": "Sport, Musobaqa va Sovrinlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "sovrinlar",
+        "turlari",
+        "yugurish",
+        "va",
+        "futbol",
+        "sport",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 206,
+      "code": "set:nAGLjeemyws",
+      "description": "To’plar va sport",
+      "category": "Sport, Musobaqa va Sovrinlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "sovrinlar",
+        "yugurish",
+        "va",
+        "futbol",
+        "sport",
+        "plar",
+        "to",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 207,
+      "code": "set:nAGPUaNG4Ho",
+      "description": "Shaxmat 3D",
+      "category": "Sport, Musobaqa va Sovrinlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "sovrinlar",
+        "shaxmat",
+        "3d",
+        "yugurish",
+        "va",
+        "futbol",
+        "sport",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 208,
+      "code": "set:nAFi5kR9Rjk",
+      "description": "Sport 3D",
+      "category": "Sport, Musobaqa va Sovrinlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "sovrinlar",
+        "3d",
+        "yugurish",
+        "va",
+        "futbol",
+        "sport",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 209,
+      "code": "set:nAGb5wsB9hg",
+      "description": "Boks 3D",
+      "category": "Sport, Musobaqa va Sovrinlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "sovrinlar",
+        "3d",
+        "yugurish",
+        "va",
+        "futbol",
+        "sport",
+        "boks",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 210,
+      "code": "set:nAGWd_tlqMQ",
+      "description": "Sovrinlar va sport 3D",
+      "category": "Sport, Musobaqa va Sovrinlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "sovrinlar",
+        "3d",
+        "yugurish",
+        "va",
+        "futbol",
+        "sport",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 211,
+      "code": "set:nAGG_S3wyZk",
+      "description": "Sport turlari 3D",
+      "category": "Sport, Musobaqa va Sovrinlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "sovrinlar",
+        "3d",
+        "turlari",
+        "yugurish",
+        "va",
+        "futbol",
+        "sport",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 212,
+      "code": "set:nAGm1k6edYo",
+      "description": "Sog’lom hayot",
+      "category": "Sport, Musobaqa va Sovrinlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "sovrinlar",
+        "lom",
+        "yugurish",
+        "va",
+        "futbol",
+        "sport",
+        "hayot",
+        "sog",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 213,
+      "code": "set:nAF4qasMO7s",
+      "description": "Fitnes qizil qora 3D",
+      "category": "Sport, Musobaqa va Sovrinlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "sovrinlar",
+        "qizil",
+        "3d",
+        "yugurish",
+        "va",
+        "futbol",
+        "sport",
+        "qora",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 214,
+      "code": "set:nAGOovT19OA",
+      "description": "Basketbol 3D",
+      "category": "Sport, Musobaqa va Sovrinlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "sovrinlar",
+        "basketbol",
+        "3d",
+        "yugurish",
+        "va",
+        "futbol",
+        "sport",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 215,
+      "code": "set:nAGSlygklRQ",
+      "description": "Sovrinlar Kubok",
+      "category": "Sport, Musobaqa va Sovrinlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "sovrinlar",
+        "kubok",
+        "yugurish",
+        "va",
+        "futbol",
+        "sport",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 216,
+      "code": "set:nAGUM4Z09XI",
+      "description": "Futbol 3D",
+      "category": "Sport, Musobaqa va Sovrinlar",
+      "keywords": [
+        "musobaqa",
+        "sog'lik",
+        "sovrinlar",
+        "3d",
+        "yugurish",
+        "va",
+        "futbol",
+        "sport",
+        "fitnes",
+        "zall"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 217,
+      "code": "set:nAGk_mOOi9I",
+      "description": "Komyuter qismlari",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "gadjet",
+        "texnologiya",
+        "dasturlash",
+        "kompyuter",
+        "telefon",
+        "va",
+        "komyuter",
+        "it",
+        "noutbuk",
+        "qismlari"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 218,
+      "code": "set:nAGXewG2em4",
+      "description": "printer va kopiya",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "kopiya",
+        "gadjet",
+        "printer",
+        "texnologiya",
+        "dasturlash",
+        "kompyuter",
+        "telefon",
+        "va",
+        "it",
+        "noutbuk"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 219,
+      "code": "set:nAF_c_x3maI",
+      "description": "Stanoklar va texnologiyalar",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "gadjet",
+        "texnologiya",
+        "dasturlash",
+        "stanoklar",
+        "kompyuter",
+        "telefon",
+        "va",
+        "it",
+        "texnologiyalar",
+        "noutbuk"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 220,
+      "code": "set:nAF-ESH8Ebw",
+      "description": "Eco technology",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "technology",
+        "gadjet",
+        "texnologiya",
+        "dasturlash",
+        "kompyuter",
+        "telefon",
+        "va",
+        "it",
+        "noutbuk",
+        "eco"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 221,
+      "code": "set:nAGANcjFB2U",
+      "description": "Ajoyib to’plam",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "gadjet",
+        "texnologiya",
+        "dasturlash",
+        "kompyuter",
+        "telefon",
+        "va",
+        "ajoyib",
+        "it",
+        "to",
+        "noutbuk",
+        "plam"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 222,
+      "code": "set:nAGIvVINF0w",
+      "description": "Telefonlar mockup",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "gadjet",
+        "texnologiya",
+        "dasturlash",
+        "telefonlar",
+        "kompyuter",
+        "telefon",
+        "va",
+        "mockup",
+        "it",
+        "noutbuk"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 223,
+      "code": "set:nAGnTScebbo",
+      "description": "Savdo rasta",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "rasta",
+        "gadjet",
+        "savdo",
+        "texnologiya",
+        "dasturlash",
+        "kompyuter",
+        "telefon",
+        "va",
+        "it",
+        "noutbuk"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 224,
+      "code": "set:nAGiRDHW75Q",
+      "description": "Yashil texnologiya",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "gadjet",
+        "yashil",
+        "texnologiya",
+        "dasturlash",
+        "kompyuter",
+        "telefon",
+        "va",
+        "it",
+        "noutbuk"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 225,
+      "code": "set:nAGho4RqJUE",
+      "description": "ish uchun",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "gadjet",
+        "uchun",
+        "texnologiya",
+        "dasturlash",
+        "kompyuter",
+        "telefon",
+        "va",
+        "ish",
+        "it",
+        "noutbuk"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 226,
+      "code": "set:nAFqBub-Z7g",
+      "description": "Kibersport",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "gadjet",
+        "texnologiya",
+        "dasturlash",
+        "kompyuter",
+        "telefon",
+        "va",
+        "it",
+        "kibersport",
+        "noutbuk"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 227,
+      "code": "set:nAFgkV8dLn0",
+      "description": "Internet binafsha rang",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "gadjet",
+        "internet",
+        "binafsha",
+        "texnologiya",
+        "dasturlash",
+        "rang",
+        "kompyuter",
+        "telefon",
+        "va",
+        "it",
+        "noutbuk"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 228,
+      "code": "set:nAGaH5f4FSg",
+      "description": "Kompyuter qismlari 3D Qora",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "gadjet",
+        "3d",
+        "texnologiya",
+        "dasturlash",
+        "kompyuter",
+        "telefon",
+        "va",
+        "it",
+        "noutbuk",
+        "qismlari",
+        "qora"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 229,
+      "code": "set:nAFU6HBv5fE",
+      "description": "Robot ai sariq",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "ai",
+        "gadjet",
+        "texnologiya",
+        "dasturlash",
+        "sariq",
+        "kompyuter",
+        "robot",
+        "telefon",
+        "va",
+        "it",
+        "noutbuk"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 230,
+      "code": "set:nAF-zpjzajU",
+      "description": "Game komyuter. Gamerlar",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "gadjet",
+        "texnologiya",
+        "dasturlash",
+        "kompyuter",
+        "telefon",
+        "va",
+        "game",
+        "komyuter",
+        "it",
+        "gamerlar",
+        "noutbuk"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 231,
+      "code": "set:nAGQPAsEojw",
+      "description": "Prodyuser kino",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "gadjet",
+        "texnologiya",
+        "dasturlash",
+        "kompyuter",
+        "telefon",
+        "va",
+        "prodyuser",
+        "kino",
+        "it",
+        "noutbuk"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 232,
+      "code": "set:nAGDC_YSG_Q",
+      "description": "Robot qizil 3D",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "gadjet",
+        "qizil",
+        "3d",
+        "texnologiya",
+        "dasturlash",
+        "kompyuter",
+        "robot",
+        "telefon",
+        "va",
+        "it",
+        "noutbuk"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 233,
+      "code": "set:nAGk_mOOi9I",
+      "description": "Kompyuter 3D zamonaviy",
+      "category": "Texnologiya, Kompyuter va Telefon",
+      "keywords": [
+        "gadjet",
+        "3d",
+        "texnologiya",
+        "dasturlash",
+        "zamonaviy",
+        "kompyuter",
+        "telefon",
+        "va",
+        "it",
+        "noutbuk"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 234,
+      "code": "set:nAGm6GWQSzg",
+      "description": "Shifokorlar anjomlari 3D",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "anjomlari",
+        "qurollari",
+        "3d",
+        "va",
+        "ish",
+        "shifokorlar",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 235,
+      "code": "set:nAFlsfvzUNA",
+      "description": "Yuk tashish Delivery",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "va",
+        "ish",
+        "tashish",
+        "yuk",
+        "kasblar",
+        "delivery"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 236,
+      "code": "set:nAFMrbMhvYs",
+      "description": "Shiforlar uchun to’plam",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "shiforlar",
+        "qurollari",
+        "uchun",
+        "va",
+        "ish",
+        "to",
+        "kasblar",
+        "plam"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 237,
+      "code": "set:nAFR4rzTB7k",
+      "description": "Gigiyena",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "gigiyena",
+        "qurollari",
+        "va",
+        "ish",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 238,
+      "code": "set:nAFxnZajXOo",
+      "description": "Chizilgan kasblar",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "chizilgan",
+        "va",
+        "ish",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 239,
+      "code": "set:nAFvdS1c33s",
+      "description": "Kitoblar bilimlar",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "kitoblar",
+        "qurollari",
+        "va",
+        "bilimlar",
+        "ish",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 240,
+      "code": "set:nAGE7ntDHQU",
+      "description": "Dehqonchilik",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "va",
+        "ish",
+        "kasblar",
+        "dehqonchilik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 241,
+      "code": "set:nAGReSF6um8",
+      "description": "Import eksport",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "va",
+        "ish",
+        "import",
+        "kasblar",
+        "eksport"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 242,
+      "code": "set:nAF_qSaKJ-o",
+      "description": "Quruvchi 3D",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "bino",
+        "muhandis",
+        "stroyka",
+        "qurollari",
+        "3d",
+        "qurilish",
+        "va",
+        "ish",
+        "quruvchi",
+        "remont",
+        "kasblar",
+        "ustalar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 243,
+      "code": "set:nAGLFZaDEYA",
+      "description": "Oshpaz ajoyib to’plam",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "oshpaz",
+        "qurollari",
+        "va",
+        "ish",
+        "ajoyib",
+        "to",
+        "kasblar",
+        "plam"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 244,
+      "code": "set:nAE9LjaTFvw",
+      "description": "Dasturchi",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "dasturchi",
+        "qurollari",
+        "va",
+        "ish",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 245,
+      "code": "set:nAFEum7-XXs",
+      "description": "Sotuvchi",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "sotuvchi",
+        "va",
+        "ish",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 246,
+      "code": "set:nAFF1ssm3s8",
+      "description": "Quruvchi",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "bino",
+        "muhandis",
+        "stroyka",
+        "qurollari",
+        "qurilish",
+        "va",
+        "ish",
+        "quruvchi",
+        "remont",
+        "kasblar",
+        "ustalar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 247,
+      "code": "set:nAGMl90fHPE",
+      "description": "Shifoxona",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "shifoxona",
+        "va",
+        "ish",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 248,
+      "code": "set:nAGKt_2h0l4",
+      "description": "Stomatolog",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "va",
+        "ish",
+        "stomatolog",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 249,
+      "code": "set:nAGiZPvJ-yU",
+      "description": "Shifokorlar jamoasi 3D",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "3d",
+        "jamoasi",
+        "va",
+        "ish",
+        "shifokorlar",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 250,
+      "code": "set:nAFq0lU5--M",
+      "description": "Shifokorlar",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "va",
+        "ish",
+        "shifokorlar",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:52.902927+00:00"
+    },
+    {
+      "id": 251,
+      "code": "set:nAGdurjeUHI",
+      "description": "O’t o’chiruvchi, qutqaruvchi 3D",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "chiruvchi",
+        "qurollari",
+        "o",
+        "3d",
+        "t",
+        "va",
+        "ish",
+        "qutqaruvchi",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 252,
+      "code": "set:nAGULfRuo-w",
+      "description": "Suyak kasalligi, suyak sinishi",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "suyak",
+        "qurollari",
+        "va",
+        "kasalligi",
+        "sinishi",
+        "ish",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 253,
+      "code": "set:nAF-wlnpgWM",
+      "description": "Yetkazib berish 3D",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "3d",
+        "berish",
+        "va",
+        "ish",
+        "kasblar",
+        "yetkazib"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 254,
+      "code": "set:nAGWgV6yud8",
+      "description": "Arxeolog 3D",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "3d",
+        "arxeolog",
+        "va",
+        "ish",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 255,
+      "code": "set:nAFJl1gXzqE",
+      "description": "Kimyo labarotoriya",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "labarotoriya",
+        "qurollari",
+        "kimyo",
+        "va",
+        "ish",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 256,
+      "code": "set:nAFdyg6dCto",
+      "description": "Dehqon poliz ferma",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "dehqon",
+        "poliz",
+        "va",
+        "ish",
+        "kasblar",
+        "ferma"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 257,
+      "code": "set:nAFoMV1lvqY",
+      "description": "Usta quruvchi ajoyib to’plam",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "bino",
+        "muhandis",
+        "stroyka",
+        "qurollari",
+        "usta",
+        "qurilish",
+        "va",
+        "ish",
+        "quruvchi",
+        "remont",
+        "ajoyib",
+        "to",
+        "kasblar",
+        "ustalar",
+        "plam"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 258,
+      "code": "set:nAGiY_4wuLk",
+      "description": "Doktor to’plam moviy 3D",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "tibbiyot",
+        "moviy",
+        "doktor",
+        "qurollari",
+        "3d",
+        "shifokor",
+        "medik",
+        "va",
+        "shifoxona",
+        "ish",
+        "vrach",
+        "to",
+        "kasblar",
+        "plam"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 259,
+      "code": "set:nAFt3CZK630",
+      "description": "Ajoyib to’plam",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "va",
+        "ish",
+        "ajoyib",
+        "to",
+        "kasblar",
+        "plam"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 260,
+      "code": "set:nAFscxCrDuE",
+      "description": "Dehqon",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "dehqon",
+        "va",
+        "ish",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 261,
+      "code": "set:nAFekLMTs0I",
+      "description": "Quruvchilar 3D",
+      "category": "Kasblar va Ish Qurollari",
+      "keywords": [
+        "qurollari",
+        "quruvchilar",
+        "3d",
+        "va",
+        "ish",
+        "kasblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 262,
+      "code": "set:nAEkOvH1HcA",
+      "description": "Alifbo harflari",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "stikerlar",
+        "alifbo",
+        "harflari",
+        "animatsiyali"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 263,
+      "code": "set:nAFpzJkHjQc",
+      "description": "Animatsiya abstrakt",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "stikerlar",
+        "animatsiya",
+        "abstrakt",
+        "animatsiyali"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 264,
+      "code": "set:nAFGRnGk8yQ",
+      "description": "Qor, qog’oz, yulduzchalar",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "yulduzchalar",
+        "qor",
+        "stikerlar",
+        "qog",
+        "animatsiyali",
+        "oz"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 265,
+      "code": "set:nAFGWYUoUKM",
+      "description": "Audio animatsiya",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "stikerlar",
+        "animatsiya",
+        "audio",
+        "animatsiyali"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 266,
+      "code": "set:nAE-SpQnjV8",
+      "description": "Live stream",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "stikerlar",
+        "stream",
+        "live",
+        "animatsiyali"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 267,
+      "code": "set:nAFFJsmDKqM",
+      "description": "Yozuvlar animatsiyali",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "stikerlar",
+        "yozuvlar",
+        "animatsiyali"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 268,
+      "code": "set:nAGjmpP5-qg",
+      "description": "Qog’ozlar animatsiya etiketka",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "ozlar",
+        "animatsiya",
+        "stikerlar",
+        "qog",
+        "animatsiyali",
+        "etiketka"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 269,
+      "code": "set:nAF-sSofS5s",
+      "description": "Shopping",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "stikerlar",
+        "shopping",
+        "animatsiyali"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 270,
+      "code": "set:nAGWN0rAHF0",
+      "description": "Galagramma 3D",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "stikerlar",
+        "galagramma",
+        "3d",
+        "animatsiyali"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 271,
+      "code": "set:nAGVepVXDe4",
+      "description": "Shakllar 3d",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "stikerlar",
+        "3d",
+        "shakllar",
+        "animatsiyali"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 272,
+      "code": "set:nAFaDG4raEM",
+      "description": "Turli xil",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "stikerlar",
+        "turli",
+        "xil",
+        "animatsiyali"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 273,
+      "code": "set:nAGYYqwepZg",
+      "description": "Oq",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "stikerlar",
+        "oq",
+        "animatsiyali"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 274,
+      "code": "set:nAFKGzt4ZG4",
+      "description": "Turli xil",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "stikerlar",
+        "turli",
+        "xil",
+        "animatsiyali"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 275,
+      "code": "set:nAFq098iOpU",
+      "description": "Turli xil",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "stikerlar",
+        "turli",
+        "xil",
+        "animatsiyali"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 276,
+      "code": "set:nAFBGOGIAW8",
+      "description": "Anitmasiya matn",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "stikerlar",
+        "anitmasiya",
+        "matn",
+        "animatsiyali"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 277,
+      "code": "set:nAEdB1P7hlk",
+      "description": "Rec play camera",
+      "category": "Animatsiyali stikerlar.",
+      "keywords": [
+        "camera",
+        "stikerlar",
+        "rec",
+        "play",
+        "animatsiyali"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 278,
+      "code": "set:nAFqoHLmC4Y",
+      "description": "Kuz 3D",
+      "category": "Kuzgi elementlar",
+      "keywords": [
+        "oktyabr",
+        "bahr",
+        "barg",
+        "3d",
+        "xazon",
+        "kuzgi",
+        "noverbr",
+        "elementlar",
+        "kuz"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 279,
+      "code": "set:nAEmM2aBvEs",
+      "description": "Kuz barglar",
+      "category": "Kuzgi elementlar",
+      "keywords": [
+        "barglar",
+        "oktyabr",
+        "bahr",
+        "barg",
+        "xazon",
+        "kuzgi",
+        "noverbr",
+        "elementlar",
+        "kuz"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 280,
+      "code": "set:nAFnWwqsPrA",
+      "description": "Kuz watercolor",
+      "category": "Kuzgi elementlar",
+      "keywords": [
+        "oktyabr",
+        "bahr",
+        "barg",
+        "watercolor",
+        "xazon",
+        "kuzgi",
+        "noverbr",
+        "elementlar",
+        "kuz"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 281,
+      "code": "set:nAFKVjCw6IU",
+      "description": "Kuz tipratikan",
+      "category": "Kuzgi elementlar",
+      "keywords": [
+        "oktyabr",
+        "bahr",
+        "barg",
+        "xazon",
+        "tipratikan",
+        "kuzgi",
+        "noverbr",
+        "elementlar",
+        "kuz"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 282,
+      "code": "set:nAFLn9rCRw8",
+      "description": "Kuz 3D",
+      "category": "Kuzgi elementlar",
+      "keywords": [
+        "oktyabr",
+        "bahr",
+        "barg",
+        "3d",
+        "xazon",
+        "kuzgi",
+        "noverbr",
+        "elementlar",
+        "kuz"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 283,
+      "code": "set:nAFrDIQB980",
+      "description": "Qahva",
+      "category": "Kuzgi elementlar",
+      "keywords": [
+        "oktyabr",
+        "qahva",
+        "bahr",
+        "barg",
+        "xazon",
+        "kuzgi",
+        "noverbr",
+        "elementlar",
+        "kuz"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 284,
+      "code": "set:nAFLXbEQJUM",
+      "description": "Kuz estetik",
+      "category": "Kuzgi elementlar",
+      "keywords": [
+        "oktyabr",
+        "bahr",
+        "barg",
+        "estetik",
+        "xazon",
+        "kuzgi",
+        "noverbr",
+        "elementlar",
+        "kuz"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 285,
+      "code": "set:nAFC6mrU5AI",
+      "description": "daraxt estetik",
+      "category": "Kuzgi elementlar",
+      "keywords": [
+        "oktyabr",
+        "bahr",
+        "barg",
+        "estetik",
+        "daraxt",
+        "xazon",
+        "kuzgi",
+        "noverbr",
+        "elementlar",
+        "kuz"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 286,
+      "code": "set:nAFI__kxnCQ",
+      "description": "Kuz",
+      "category": "Kuzgi elementlar",
+      "keywords": [
+        "oktyabr",
+        "bahr",
+        "barg",
+        "xazon",
+        "kuzgi",
+        "noverbr",
+        "elementlar",
+        "kuz"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 287,
+      "code": "set:nAFwgBu-lBQ",
+      "description": "Talaba elementlari",
+      "category": "Talabalar uchun",
+      "keywords": [
+        "o'qish",
+        "talabalar",
+        "student",
+        "uchun",
+        "elementlari",
+        "universitet",
+        "talaba",
+        "otm",
+        "institut",
+        "bitiruvchi"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 288,
+      "code": "set:nAGgHS6un4c",
+      "description": "Turli xil",
+      "category": "Talabalar uchun",
+      "keywords": [
+        "turli",
+        "uchun",
+        "talabalar",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 289,
+      "code": "set:nAGfyPBJ4zU",
+      "description": "Talabalar ajoyib to’plam",
+      "category": "Talabalar uchun",
+      "keywords": [
+        "talabalar",
+        "uchun",
+        "ajoyib",
+        "to",
+        "plam"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 290,
+      "code": "set:nAFEj5BEV9s",
+      "description": "Bitiruvchi 3D",
+      "category": "Talabalar uchun",
+      "keywords": [
+        "uchun",
+        "3d",
+        "talabalar",
+        "bitiruvchi"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 291,
+      "code": "set:nAExHKVs2y8",
+      "description": "Talaba estetik",
+      "category": "Talabalar uchun",
+      "keywords": [
+        "o'qish",
+        "talabalar",
+        "student",
+        "uchun",
+        "estetik",
+        "universitet",
+        "talaba",
+        "otm",
+        "institut",
+        "bitiruvchi"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 292,
+      "code": "set:nAGWlgKgoHI",
+      "description": "talaba binafc=sha rang",
+      "category": "Talabalar uchun",
+      "keywords": [
+        "o'qish",
+        "talabalar",
+        "student",
+        "uchun",
+        "rang",
+        "universitet",
+        "binafc",
+        "talaba",
+        "otm",
+        "institut",
+        "sha",
+        "bitiruvchi"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 293,
+      "code": "set:nAGnO_aioV0",
+      "description": "Talaba 3D",
+      "category": "Talabalar uchun",
+      "keywords": [
+        "o'qish",
+        "talabalar",
+        "student",
+        "uchun",
+        "3d",
+        "universitet",
+        "talaba",
+        "otm",
+        "institut",
+        "bitiruvchi"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 294,
+      "code": "set:nAGLot2oAj4",
+      "description": "Talabalar uchun elementlar",
+      "category": "Talabalar uchun",
+      "keywords": [
+        "uchun",
+        "elementlar",
+        "talabalar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 295,
+      "code": "set:nAGDIMkPrNk",
+      "description": "Talaba moviy 3D",
+      "category": "Talabalar uchun",
+      "keywords": [
+        "o'qish",
+        "talabalar",
+        "student",
+        "moviy",
+        "uchun",
+        "3d",
+        "universitet",
+        "talaba",
+        "otm",
+        "institut",
+        "bitiruvchi"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 296,
+      "code": "set:nAFiCQL_zu8",
+      "description": "Talaba bitiruvchi",
+      "category": "Talabalar uchun",
+      "keywords": [
+        "o'qish",
+        "talabalar",
+        "student",
+        "uchun",
+        "universitet",
+        "talaba",
+        "otm",
+        "institut",
+        "bitiruvchi"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 297,
+      "code": "set:nAFPjAYfC9g",
+      "description": "Pdf va hujjatlar",
+      "category": "Talabalar uchun",
+      "keywords": [
+        "pdf",
+        "talabalar",
+        "uchun",
+        "va",
+        "hujjatlar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 298,
+      "code": "set:nAEiwZKvXyw",
+      "description": "Maktab elementlari",
+      "category": "O’qituvchilar uchun",
+      "keywords": [
+        "o",
+        "uchun",
+        "maktab",
+        "qituvchilar",
+        "elementlari"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 299,
+      "code": "set:nAGT5xAW7uM",
+      "description": "Bolalar o’yingoh va atraksion",
+      "category": "O’qituvchilar uchun",
+      "keywords": [
+        "bolalar",
+        "o'yinchoq",
+        "baby",
+        "o",
+        "uchun",
+        "bola",
+        "atraksion",
+        "va",
+        "metrika",
+        "qituvchilar",
+        "chaqaloq",
+        "yingoh",
+        "kis"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 300,
+      "code": "set:nAGZiGgSfwc",
+      "description": "Kitob daftar",
+      "category": "O’qituvchilar uchun",
+      "keywords": [
+        "kitob",
+        "dars",
+        "o",
+        "uchun",
+        "ta'lim",
+        "maktab",
+        "oqish",
+        "kutubxona",
+        "bilim",
+        "qituvchilar",
+        "daftar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:53.718817+00:00"
+    },
+    {
+      "id": 301,
+      "code": "set:nAFJRHi2yFA",
+      "description": "Maktab",
+      "category": "O’qituvchilar uchun",
+      "keywords": [
+        "o",
+        "qituvchilar",
+        "maktab",
+        "uchun"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 302,
+      "code": "set:nAF9lAgeeyY",
+      "description": "Maktab sariq va ko’k",
+      "category": "O’qituvchilar uchun",
+      "keywords": [
+        "k",
+        "o",
+        "uchun",
+        "maktab",
+        "sariq",
+        "va",
+        "ko",
+        "qituvchilar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 303,
+      "code": "set:nAGnZxAz7Y4",
+      "description": "Maktab ajoyib to’plam",
+      "category": "O’qituvchilar uchun",
+      "keywords": [
+        "o",
+        "uchun",
+        "maktab",
+        "ajoyib",
+        "to",
+        "qituvchilar",
+        "plam"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 304,
+      "code": "set:nAFBuoqM7DU",
+      "description": "Pushti va moviy",
+      "category": "O’qituvchilar uchun",
+      "keywords": [
+        "qizlar",
+        "pink",
+        "moviy",
+        "binafsha",
+        "o",
+        "uchun",
+        "estetik",
+        "pushti",
+        "va",
+        "qituvchilar",
+        "rose"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 305,
+      "code": "set:nAFnOX7wgtg",
+      "description": "Kitoblar 3D",
+      "category": "O’qituvchilar uchun",
+      "keywords": [
+        "kitoblar",
+        "o",
+        "3d",
+        "uchun",
+        "qituvchilar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 306,
+      "code": "set:nAFJGPoXgpY",
+      "description": "Kitoblar",
+      "category": "O’qituvchilar uchun",
+      "keywords": [
+        "o",
+        "qituvchilar",
+        "uchun",
+        "kitoblar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 307,
+      "code": "set:nAFm6Yz08zM",
+      "description": "Maktab 3D",
+      "category": "O’qituvchilar uchun",
+      "keywords": [
+        "o",
+        "3d",
+        "uchun",
+        "maktab",
+        "qituvchilar"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 308,
+      "code": "set:nAFpVetfS4s",
+      "description": "Shirinliklar, piroglar, pishiriqlar",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "piroglar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "pishiriqlar",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "xona",
+        "yemak",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 309,
+      "code": "set:nAF4tQSkYW4",
+      "description": "Shirinlik va sevgi",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sevgi",
+        "sabzavotlar",
+        "muhabbat",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "love",
+        "shokolad",
+        "shirinlik",
+        "romantika",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "dildan",
+        "xona",
+        "yemak",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "yurak",
+        "shirinliklar",
+        "tort",
+        "heart"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 310,
+      "code": "set:nAF_jZ0srAs",
+      "description": "Oshxona buyumlari ajoyib",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "ajoyib",
+        "pishiriq",
+        "shakar",
+        "xona",
+        "yemak",
+        "meva",
+        "buyumlari",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 311,
+      "code": "set:nAGgAYU3UJQ",
+      "description": "Taomlar 3D",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "taomlar",
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "3d",
+        "xona",
+        "yemak",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 312,
+      "code": "set:nAGLFZaDEYA",
+      "description": "Oshpaz ajoyib 3D",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "ajoyib",
+        "pishiriq",
+        "shakar",
+        "3d",
+        "xona",
+        "yemak",
+        "meva",
+        "oshpaz",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 313,
+      "code": "set:nAGQ0NduiCE",
+      "description": "Xondaon buyumlari",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "xondaon",
+        "shakar",
+        "xona",
+        "yemak",
+        "meva",
+        "buyumlari",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 314,
+      "code": "set:nAF_Zn4_ybA",
+      "description": "Mevalar 3D",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "3d",
+        "xona",
+        "yemak",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 315,
+      "code": "set:nAGl1lMbkGk",
+      "description": "Meva 3D",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "3d",
+        "xona",
+        "yemak",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 316,
+      "code": "set:nAGHP5n4AuE",
+      "description": "Mebellar3D",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "mebellar3d",
+        "va",
+        "pishiriq",
+        "shakar",
+        "xona",
+        "yemak",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 317,
+      "code": "set:nAFbRxGIDDM",
+      "description": "Mebellar yog’och",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "mebellar",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "yog",
+        "xona",
+        "yemak",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort",
+        "och"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 318,
+      "code": "set:nAFekTSQG0w",
+      "description": "Onalar bayrami",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "bayrami",
+        "va",
+        "pishiriq",
+        "shakar",
+        "xona",
+        "yemak",
+        "meva",
+        "onalar",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 319,
+      "code": "set:nAFev1H7X9g",
+      "description": "Sabzavotlar",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "xona",
+        "yemak",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 320,
+      "code": "set:nAGSBjVdyhs",
+      "description": "Kaloriyali taomlar sog’lom hayot",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "taomlar",
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "lom",
+        "konfet",
+        "shokolad",
+        "hayot",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "xona",
+        "yemak",
+        "sog",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "kaloriyali",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 321,
+      "code": "set:nAGcIrrjX_U",
+      "description": "Fast food 3D",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "food",
+        "shakar",
+        "3d",
+        "xona",
+        "yemak",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "fast",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 322,
+      "code": "set:nAGTp7djbO8",
+      "description": "Mazali shirinliklar, muzqaymoq...",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "mazali",
+        "shokolad",
+        "oshxona",
+        "muzqaymoq",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "xona",
+        "yemak",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 323,
+      "code": "set:nAGMn6GqDdU",
+      "description": "Shirinliklar",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "xona",
+        "yemak",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 324,
+      "code": "set:nAFl2OOmsVw",
+      "description": "Shkalat",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "shkalat",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "xona",
+        "yemak",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 325,
+      "code": "set:nAFiTs8UyZI",
+      "description": "Sabzavot va meva 3D",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "3d",
+        "xona",
+        "yemak",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 326,
+      "code": "set:nAFbX-pXRE4",
+      "description": "Xona buyumlari mebellar",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "mebellar",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "xona",
+        "yemak",
+        "meva",
+        "buyumlari",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 327,
+      "code": "set:nAGnIYT6XI0",
+      "description": "Kichik biznes",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "xona",
+        "yemak",
+        "meva",
+        "kichik",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "biznes",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 328,
+      "code": "set:nAFpWYTYZ90",
+      "description": "Meva va sabzavot 3D",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "3d",
+        "xona",
+        "yemak",
+        "meva",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 329,
+      "code": "set:nAFghCi-AEE",
+      "description": "Piroglar, shirinliklar, qandolat",
+      "category": "Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona",
+      "keywords": [
+        "sabzavotlar",
+        "piroglar",
+        "uy",
+        "mevalar",
+        "sabzavot",
+        "konfet",
+        "shokolad",
+        "oshxona",
+        "taom",
+        "va",
+        "pishiriq",
+        "shakar",
+        "xona",
+        "yemak",
+        "meva",
+        "qandolat",
+        "mevalari",
+        "keks",
+        "oziq-ovqat",
+        "pirog",
+        "shirinliklar",
+        "tort"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 330,
+      "code": "set:nAF-JUmNSO4",
+      "description": "Ramazon",
+      "category": "Ramazon",
+      "keywords": [
+        "iftor",
+        "haj",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "roza",
+        "umra",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 331,
+      "code": "set:nAFgD9LVM5Q",
+      "description": "Ramazon estetik",
+      "category": "Ramazon",
+      "keywords": [
+        "iftor",
+        "haj",
+        "estetik",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "roza",
+        "umra",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 332,
+      "code": "set:nAE8t_MRHOM",
+      "description": "Ramazon set",
+      "category": "Ramazon",
+      "keywords": [
+        "iftor",
+        "haj",
+        "set",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "roza",
+        "umra",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 333,
+      "code": "set:nAFw1czLgxM",
+      "description": "Ramazon set jigarrang",
+      "category": "Ramazon",
+      "keywords": [
+        "iftor",
+        "haj",
+        "set",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "jigarrang",
+        "roza",
+        "umra",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 334,
+      "code": "set:nAF9Y8AHa5I",
+      "description": "Ramazon yashil 3D",
+      "category": "Ramazon",
+      "keywords": [
+        "iftor",
+        "yashil",
+        "3d",
+        "haj",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "roza",
+        "umra",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 335,
+      "code": "set:nAE80fHngQI",
+      "description": "Ramazon minimalist",
+      "category": "Ramazon",
+      "keywords": [
+        "iftor",
+        "minimalist",
+        "haj",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "roza",
+        "umra",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 336,
+      "code": "set:nAGIGGVGX88",
+      "description": "Ramazon to’plam 3D",
+      "category": "Ramazon",
+      "keywords": [
+        "iftor",
+        "3d",
+        "haj",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "to",
+        "roza",
+        "umra",
+        "plam",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 337,
+      "code": "set:nAFBmwitlxw",
+      "description": "Ramazon bezaklar",
+      "category": "Ramazon",
+      "keywords": [
+        "iftor",
+        "bezaklar",
+        "haj",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "roza",
+        "umra",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 338,
+      "code": "set:nAGk4GwSFvo",
+      "description": "Qurbon hayiti",
+      "category": "Ramazon",
+      "keywords": [
+        "hayiti",
+        "iftor",
+        "haj",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "qurbon",
+        "roza",
+        "umra",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 339,
+      "code": "set:nAE4w4OsPCs",
+      "description": "Ramazon to’plam yashil oltin",
+      "category": "Ramazon",
+      "keywords": [
+        "oltin",
+        "iftor",
+        "yashil",
+        "haj",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "to",
+        "roza",
+        "umra",
+        "plam",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 340,
+      "code": "set:nAGbb2ORE80",
+      "description": "Haj va umra 3D",
+      "category": "Ramazon",
+      "keywords": [
+        "iftor",
+        "3d",
+        "haj",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "va",
+        "roza",
+        "umra",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 341,
+      "code": "set:nAF_g1KY5X4",
+      "description": "Ramazon Haj",
+      "category": "Ramazon",
+      "keywords": [
+        "iftor",
+        "haj",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "roza",
+        "umra",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 342,
+      "code": "set:nAF9HgKTK7g",
+      "description": "Ramazon 3D",
+      "category": "Ramazon",
+      "keywords": [
+        "iftor",
+        "3d",
+        "haj",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "roza",
+        "umra",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 343,
+      "code": "set:nAGfbr9u1lE",
+      "description": "Ramazon bezaklar",
+      "category": "Ramazon",
+      "keywords": [
+        "iftor",
+        "bezaklar",
+        "haj",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "roza",
+        "umra",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 344,
+      "code": "set:nAE6SZNrYNw",
+      "description": "Ramazon oltin rangli",
+      "category": "Ramazon",
+      "keywords": [
+        "oltin",
+        "iftor",
+        "haj",
+        "rangli",
+        "hayit",
+        "islom",
+        "ramazon",
+        "masjid",
+        "roza",
+        "umra",
+        "saharlik"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 345,
+      "code": "set:nAE833AFsrw",
+      "description": "Raqamlar 3D",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "3d",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 346,
+      "code": "set:nAE8tqOWjK0",
+      "description": "Raqamlar shisha",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "2026",
+        "shisha",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 347,
+      "code": "set:nAFKl09SA_8",
+      "description": "Oltin raqamlar",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "oltin",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 348,
+      "code": "set:nAGlhBfs9Dc",
+      "description": "Harflar",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 349,
+      "code": "set:nAGCdPOr1m4",
+      "description": "Hayvonli harf",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "hayvonli",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 350,
+      "code": "set:nAGHRmKn_jM",
+      "description": "Harflar qog’oz qiyqimlari",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "qiyqimlari",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "qog",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "oz",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:43:55.925818+00:00"
+    },
+    {
+      "id": 351,
+      "code": "set:nAGnUHW-GBo",
+      "description": "2026 to’plam",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "to",
+        "alifbo",
+        "yozuv",
+        "abtseda",
+        "plam"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 352,
+      "code": "set:nAFyMEoBHm4",
+      "description": "Harflar sariq",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "2026",
+        "sariq",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 353,
+      "code": "set:nAF_HCxkGug",
+      "description": "Chiroqli harf 3d",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "chiroqli",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "3d",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 354,
+      "code": "set:nAF3nwT9lGk",
+      "description": "Tarvuz harflar",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "tarvuz",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 355,
+      "code": "set:nAFyuYBH-2E",
+      "description": "Raqamlar",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 356,
+      "code": "set:nAGQ5tIn15E",
+      "description": "Yanvar kalendar",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "2026",
+        "kalendar",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "yanvar",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 357,
+      "code": "set:nAGYl5OFgkc",
+      "description": "Gazonli harf",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "gazonli",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 358,
+      "code": "set:nAGWPuH9WPo",
+      "description": "Oq shishirilgan 3D",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "shishirilgan",
+        "3d",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "oq",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 359,
+      "code": "set:nAFpjJwIMjs",
+      "description": "Qizil mo’ynli 3D",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "mo",
+        "ynli",
+        "cifra",
+        "sanoq",
+        "va",
+        "hisob",
+        "harflar",
+        "sonlar",
+        "3d",
+        "shrift",
+        "raqamlar",
+        "harf",
+        "raqam",
+        "alifbo",
+        "abtseda",
+        "qizil",
+        "2026",
+        "matn",
+        "yozuv"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 360,
+      "code": "set:nAFN-2VCBYo",
+      "description": "pushti tug’ilgan kun",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "qizlar",
+        "ilgan",
+        "pushti",
+        "kun",
+        "rose",
+        "tug",
+        "cifra",
+        "pink",
+        "sanoq",
+        "binafsha",
+        "va",
+        "hisob",
+        "harflar",
+        "sonlar",
+        "shrift",
+        "raqamlar",
+        "harf",
+        "raqam",
+        "alifbo",
+        "abtseda",
+        "estetik",
+        "2026",
+        "matn",
+        "yozuv"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 361,
+      "code": "set:nAGH5ptF9XI",
+      "description": "Raqamlar shar",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "shar",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 362,
+      "code": "set:nAGTh0NCdGA",
+      "description": "Gradient zarli raqamlar",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "gradient",
+        "sonlar",
+        "hisob",
+        "zarli",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 363,
+      "code": "set:nAFypSFRNNA",
+      "description": "Sariq sharlar",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "2026",
+        "sariq",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "sharlar",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 364,
+      "code": "set:nAFwwbFQWCU",
+      "description": "gradient harflar",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "gradient",
+        "sonlar",
+        "hisob",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 365,
+      "code": "set:nAGXr8XaowM",
+      "description": "Pushti yumshioq harf",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "qizlar",
+        "yumshioq",
+        "pushti",
+        "rose",
+        "cifra",
+        "pink",
+        "sanoq",
+        "binafsha",
+        "va",
+        "hisob",
+        "harflar",
+        "sonlar",
+        "shrift",
+        "raqamlar",
+        "harf",
+        "raqam",
+        "alifbo",
+        "abtseda",
+        "estetik",
+        "2026",
+        "matn",
+        "yozuv"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 366,
+      "code": "set:nAE_ZlOMX-g",
+      "description": "Yog’och harf",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "yog",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "och",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 367,
+      "code": "set:nAGH0E-27Cg",
+      "description": "Harflar yaproq",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "yaproq",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 368,
+      "code": "set:nAFpU5m6lhU",
+      "description": "O’rinlar oltin",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "oltin",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "o",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "alifbo",
+        "rinlar",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 369,
+      "code": "set:nAFgua7mUyc",
+      "description": "Yashil 3D",
+      "category": "Harflar va Raqamlar",
+      "keywords": [
+        "cifra",
+        "harflar",
+        "sanoq",
+        "sonlar",
+        "hisob",
+        "yashil",
+        "3d",
+        "2026",
+        "shrift",
+        "raqamlar",
+        "va",
+        "matn",
+        "harf",
+        "raqam",
+        "alifbo",
+        "yozuv",
+        "abtseda"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 370,
+      "code": "set:nAGKddhM-Hg",
+      "description": "Qiz bola uchun 3D",
+      "category": "Bolalar uchun",
+      "keywords": [
+        "qiz",
+        "bolalar",
+        "o'yinchoq",
+        "baby",
+        "bola",
+        "uchun",
+        "3d",
+        "metrika",
+        "chaqaloq",
+        "kis"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 371,
+      "code": "set:nAF91aDzdic",
+      "description": "O’yinchoqlar oshqovoq rang",
+      "category": "Bolalar uchun",
+      "keywords": [
+        "bolalar",
+        "oshqovoq",
+        "o'yinchoq",
+        "baby",
+        "yinchoqlar",
+        "bola",
+        "uchun",
+        "o",
+        "rang",
+        "metrika",
+        "chaqaloq",
+        "kis"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 372,
+      "code": "set:nAGiA2HOMMI",
+      "description": "Alifbo o’rganish uchun",
+      "category": "Bolalar uchun",
+      "keywords": [
+        "bolalar",
+        "o'yinchoq",
+        "baby",
+        "bola",
+        "uchun",
+        "o",
+        "rganish",
+        "metrika",
+        "chaqaloq",
+        "alifbo",
+        "kis"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 373,
+      "code": "set:nAFN_6hiM74",
+      "description": "O’yinchoq",
+      "category": "Bolalar uchun",
+      "keywords": [
+        "bolalar",
+        "o'yinchoq",
+        "baby",
+        "bola",
+        "uchun",
+        "o",
+        "metrika",
+        "chaqaloq",
+        "kis",
+        "yinchoq"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 374,
+      "code": "set:nAFFgjrxZi8",
+      "description": "Tug’ilgan kun va metrka uchun",
+      "category": "Bolalar uchun",
+      "keywords": [
+        "bolalar",
+        "metrka",
+        "o'yinchoq",
+        "baby",
+        "bola",
+        "uchun",
+        "ilgan",
+        "va",
+        "metrika",
+        "kun",
+        "chaqaloq",
+        "kis",
+        "tug"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 375,
+      "code": "set:nAEYV1GpPU4",
+      "description": "Estetik stikerlar chaqaloq",
+      "category": "Bolalar uchun",
+      "keywords": [
+        "bolalar",
+        "o'yinchoq",
+        "baby",
+        "stikerlar",
+        "bola",
+        "uchun",
+        "estetik",
+        "metrika",
+        "chaqaloq",
+        "kis"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 376,
+      "code": "set:nAGls9yKvsk",
+      "description": "Ajoyib to’plam bolalar uchun",
+      "category": "Bolalar uchun",
+      "keywords": [
+        "bolalar",
+        "o'yinchoq",
+        "baby",
+        "bola",
+        "uchun",
+        "plam",
+        "metrika",
+        "ajoyib",
+        "to",
+        "chaqaloq",
+        "kis"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 377,
+      "code": "set:nAGPB_PO92g",
+      "description": "Pushti va moviy",
+      "category": "Bolalar uchun",
+      "keywords": [
+        "qizlar",
+        "bolalar",
+        "pink",
+        "o'yinchoq",
+        "moviy",
+        "baby",
+        "binafsha",
+        "bola",
+        "uchun",
+        "estetik",
+        "pushti",
+        "va",
+        "metrika",
+        "chaqaloq",
+        "rose",
+        "kis"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 378,
+      "code": "set:nAGlSIsz8lQ",
+      "description": "Chaqaaloq 3D",
+      "category": "Bolalar uchun",
+      "keywords": [
+        "bolalar",
+        "chaqaaloq",
+        "o'yinchoq",
+        "baby",
+        "bola",
+        "uchun",
+        "3d",
+        "metrika",
+        "chaqaloq",
+        "kis"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 379,
+      "code": "set:nAGKV1qwRjE",
+      "description": "Bolalar o’yingohi 3d",
+      "category": "Bolalar uchun",
+      "keywords": [
+        "bolalar",
+        "yingohi",
+        "o'yinchoq",
+        "baby",
+        "bola",
+        "uchun",
+        "o",
+        "3d",
+        "metrika",
+        "chaqaloq",
+        "kis"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 380,
+      "code": "set:nAFFggYYYJo",
+      "description": "Sariq metrka va birthday",
+      "category": "Bolalar uchun",
+      "keywords": [
+        "bolalar",
+        "metrka",
+        "o'yinchoq",
+        "birthday",
+        "baby",
+        "bola",
+        "uchun",
+        "sariq",
+        "va",
+        "metrika",
+        "chaqaloq",
+        "kis"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 381,
+      "code": "set:nAFfBA1P-4Q",
+      "description": "O’yinchoqlar",
+      "category": "Bolalar uchun",
+      "keywords": [
+        "bolalar",
+        "o'yinchoq",
+        "baby",
+        "yinchoqlar",
+        "bola",
+        "uchun",
+        "o",
+        "metrika",
+        "chaqaloq",
+        "kis"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 382,
+      "code": "set:nAGPz1VI1LU",
+      "description": "O’yinchoqlar 3D",
+      "category": "Bolalar uchun",
+      "keywords": [
+        "bolalar",
+        "o'yinchoq",
+        "baby",
+        "yinchoqlar",
+        "bola",
+        "uchun",
+        "o",
+        "3d",
+        "metrika",
+        "chaqaloq",
+        "kis"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 383,
+      "code": "set:nAFj4YwopPo",
+      "description": "Shampun, antiseptik",
+      "category": "Turli xil",
+      "keywords": [
+        "turli",
+        "shampun",
+        "antiseptik",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 384,
+      "code": "set:nAGbZb_y-CQ",
+      "description": "Turli xil 3D",
+      "category": "Turli xil",
+      "keywords": [
+        "turli",
+        "3d",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 385,
+      "code": "set:nAFBGL3e-IE",
+      "description": "Sayohat 3D",
+      "category": "Turli xil",
+      "keywords": [
+        "sayohat",
+        "turli",
+        "3d",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 386,
+      "code": "set:nAGiGTwfw34",
+      "description": "Sayohat sariq 3D",
+      "category": "Turli xil",
+      "keywords": [
+        "turli",
+        "3d",
+        "sariq",
+        "sayohat",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 387,
+      "code": "set:nAGggqObWUo",
+      "description": "Sovg’alar",
+      "category": "Turli xil",
+      "keywords": [
+        "sovg",
+        "turli",
+        "alar",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 388,
+      "code": "set:nAFHw1GY_2A",
+      "description": "Yashil sharlar",
+      "category": "Turli xil",
+      "keywords": [
+        "sharlar",
+        "turli",
+        "yashil",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 389,
+      "code": "set:nAFgd4KbrWE",
+      "description": "Dam olish sayohat",
+      "category": "Turli xil",
+      "keywords": [
+        "turli",
+        "sayohat",
+        "olish",
+        "dam",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 390,
+      "code": "set:nAGRgBGbcxE",
+      "description": "Muzey 3D Ajoyib",
+      "category": "Turli xil",
+      "keywords": [
+        "turli",
+        "muzey",
+        "3d",
+        "ajoyib",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 391,
+      "code": "set:nAGQJm-fuqs",
+      "description": "Yaponiya 3D ajoyib",
+      "category": "Turli xil",
+      "keywords": [
+        "turli",
+        "3d",
+        "yaponiya",
+        "ajoyib",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 392,
+      "code": "set:nAGIrganUAQ",
+      "description": "Shopping 3d",
+      "category": "Turli xil",
+      "keywords": [
+        "turli",
+        "shopping",
+        "3d",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 393,
+      "code": "set:nAGKLswlmkA",
+      "description": "Hasharotlar multfil m3D",
+      "category": "Turli xil",
+      "keywords": [
+        "hasharotlar",
+        "turli",
+        "m3d",
+        "multfil",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 394,
+      "code": "set:nAF9IMZv1W0",
+      "description": "Sayohatc",
+      "category": "Turli xil",
+      "keywords": [
+        "turli",
+        "sayohatc",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 395,
+      "code": "set:nAGdFh-xfns",
+      "description": "Plyaj",
+      "category": "Turli xil",
+      "keywords": [
+        "turli",
+        "xil",
+        "plyaj"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 396,
+      "code": "set:nAGJbc3dAqs",
+      "description": "kawai ajoyib",
+      "category": "Turli xil",
+      "keywords": [
+        "kawai",
+        "turli",
+        "ajoyib",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 397,
+      "code": "set:nAGWkghuFIA",
+      "description": "Sevgi qizil",
+      "category": "Turli xil",
+      "keywords": [
+        "turli",
+        "sevgi",
+        "muhabbat",
+        "qizil",
+        "yurak",
+        "love",
+        "romantika",
+        "heart",
+        "xil",
+        "dildan"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 398,
+      "code": "set:nAFekMUrQAI",
+      "description": "Dada 3D",
+      "category": "Turli xil",
+      "keywords": [
+        "turli",
+        "3d",
+        "dada",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 399,
+      "code": "set:nAFevvUaeis",
+      "description": "Sayohat 3D yashil",
+      "category": "Turli xil",
+      "keywords": [
+        "turli",
+        "3d",
+        "yashil",
+        "sayohat",
+        "xil"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 400,
+      "code": "set:nAGTp2rvLkQ",
+      "description": "Pushti qora 3D",
+      "category": "Pushti elementlar",
+      "keywords": [
+        "qizlar",
+        "pink",
+        "binafsha",
+        "3d",
+        "estetik",
+        "pushti",
+        "elementlar",
+        "qora",
+        "rose"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:22.828951+00:00"
+    },
+    {
+      "id": 401,
+      "code": "set:nAGgGjzaGyA",
+      "description": "Pushti bolalar uchun 3D",
+      "category": "Pushti elementlar",
+      "keywords": [
+        "qizlar",
+        "bolalar",
+        "chaqaloq",
+        "pink",
+        "o'yinchoq",
+        "binafsha",
+        "baby",
+        "bola",
+        "uchun",
+        "3d",
+        "estetik",
+        "pushti",
+        "metrika",
+        "elementlar",
+        "rose",
+        "kis"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:23.854465+00:00"
+    },
+    {
+      "id": 402,
+      "code": "set:nAGOXt40oss",
+      "description": "Pushti bantiklar 3D",
+      "category": "Pushti elementlar",
+      "keywords": [
+        "qizlar",
+        "pink",
+        "bantiklar",
+        "binafsha",
+        "3d",
+        "estetik",
+        "pushti",
+        "elementlar",
+        "rose"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:23.854465+00:00"
+    },
+    {
+      "id": 403,
+      "code": "set:nAFsh0FMNoc",
+      "description": "Sariq va pushti oy va yulduz",
+      "category": "Pushti elementlar",
+      "keywords": [
+        "qizlar",
+        "yulduz",
+        "pink",
+        "binafsha",
+        "estetik",
+        "sariq",
+        "pushti",
+        "va",
+        "oy",
+        "elementlar",
+        "rose"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:23.854465+00:00"
+    },
+    {
+      "id": 404,
+      "code": "set:nAFrxsJyIes",
+      "description": "Pushti oq sevgi 3D",
+      "category": "Pushti elementlar",
+      "keywords": [
+        "qizlar",
+        "sevgi",
+        "heart",
+        "pink",
+        "muhabbat",
+        "binafsha",
+        "3d",
+        "estetik",
+        "pushti",
+        "yurak",
+        "oq",
+        "love",
+        "elementlar",
+        "romantika",
+        "rose",
+        "dildan"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:23.854465+00:00"
+    },
+    {
+      "id": 405,
+      "code": "set:nAGZO3QIddk",
+      "description": "Pushti maktab va bilim 3D",
+      "category": "Pushti elementlar",
+      "keywords": [
+        "qizlar",
+        "pink",
+        "binafsha",
+        "3d",
+        "estetik",
+        "maktab",
+        "pushti",
+        "va",
+        "bilim",
+        "elementlar",
+        "rose"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:23.854465+00:00"
+    },
+    {
+      "id": 406,
+      "code": "set:nAGZvv7nBQY",
+      "description": "Pushti han=mshira 3D",
+      "category": "Pushti elementlar",
+      "keywords": [
+        "qizlar",
+        "pink",
+        "han",
+        "binafsha",
+        "3d",
+        "estetik",
+        "mshira",
+        "pushti",
+        "elementlar",
+        "rose"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:23.854465+00:00"
+    },
+    {
+      "id": 407,
+      "code": "set:nAGWRMOwMRY",
+      "description": "Pushi ajoyib to’plam sevgi",
+      "category": "Pushti elementlar",
+      "keywords": [
+        "qizlar",
+        "sevgi",
+        "heart",
+        "pink",
+        "muhabbat",
+        "binafsha",
+        "estetik",
+        "pushti",
+        "pushi",
+        "yurak",
+        "ajoyib",
+        "love",
+        "to",
+        "elementlar",
+        "romantika",
+        "rose",
+        "plam",
+        "dildan"
+      ],
+      "is_new": false,
+      "created_at": "2026-07-22T06:44:23.854465+00:00"
+    }
+  ],
+  "users": [
+    {
+      "id": 8544023815,
+      "username": "yomonboIa",
+      "first_name": "⌘",
+      "created_at": "2026-07-22T06:46:49.117318+00:00",
+      "last_active": "2026-07-22T06:46:48.314+00:00"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------
- * Canva Element Kodlari Telegram Mini App — Logic v3
+ * Canva Element Kodlari Telegram Mini App — Logic & Admin Panel v4
  * Author: Zuhra Olimova
  * ------------------------------------------------------------- */
 
@@ -14,19 +14,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Supabase REST Config (Publishable Public Key)
+  // Supabase REST Config
   const SUPABASE_URL = 'https://mjenunxgakcvyzcikjmi.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_nSt8XQyZetNEC7ROiU3XeA_iPBDMPRn';
+
+  // Super Admin Default ID
+  const SUPER_ADMIN_ID = 8544023815;
 
   // Data State
   let allElements = window.CANVA_DATA || [];
   let favorites = JSON.parse(localStorage.getItem('zo_canva_favs') || '[]');
+  let adminList = JSON.parse(localStorage.getItem('zo_canva_admins') || `[${SUPER_ADMIN_ID}]`);
   let currentCategory = 'all';
   let currentSearchQuery = '';
   let currentTag = '';
   let activeTab = 'home';
+  let isUserAdmin = false;
 
-  // DOM Elements
+  // DOM Elements - Navigation & Main Views
   const searchInput = document.getElementById('search-input');
   const clearSearchBtn = document.getElementById('clear-search');
   const elementsGrid = document.getElementById('elements-grid');
@@ -36,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const emptyState = document.getElementById('empty-state');
   const resetFilterBtn = document.getElementById('reset-filter-btn');
   const currentCategoryTitle = document.getElementById('current-category-title');
-  const copyAllBtn = document.getElementById('copy-all-btn');
   const statTotal = document.getElementById('stat-total');
   const statCategories = document.getElementById('stat-categories');
   const statFavs = document.getElementById('stat-favs');
@@ -44,29 +48,89 @@ document.addEventListener('DOMContentLoaded', () => {
   const toast = document.getElementById('toast');
   const toastCode = document.getElementById('toast-code');
   const toastTitle = document.getElementById('toast-title');
+  const navItemAdmin = document.getElementById('nav-item-admin');
 
-  // Uzbek Synonyms Map
-  const SYNONYMS = {
-    'shifokor': ['doktor', 'tibbiyot', 'medik', 'shifoxona', 'vrach', 'boshqaruv', 'gigiyena', 'stomatolog', 'suyak'],
-    'doktor': ['shifokor', 'tibbiyot', 'medik', 'shifoxona', 'vrach', 'stomatolog'],
-    'kitob': ['maktab', 'ta\'lim', 'bilim', 'oqish', 'kutubxona', 'dars', 'daftar'],
-    'maktab': ['kitob', 'dars', 'o\'qituvchi', 'talaba', 'bilim', 'alifbo', 'metrika'],
-    'quruvchi': ['bino', 'stroyka', 'remont', 'ustalar', 'qurilish', 'muhandis', 'usta'],
-    'meva': ['sabzavot', 'oziq-ovqat', 'taom', 'shirinlik', 'pirog', 'fast food', 'muzqaymoq'],
-    'shirinlik': ['pishiriq', 'tort', 'pirog', 'shokolad', 'keks', 'muzqaymoq', 'qandolat', 'shkalat'],
-    'ramazon': ['hayit', 'roza', 'iftor', 'masjid', 'islom', 'umra', 'haj', 'qurbon'],
-    'harf': ['alifbo', 'matn', 'yozuv', 'shrift', 'raqam', 'harflar'],
-    'raqam': ['sonlar', 'hisob', 'sanoq', '2026', 'kalendar', 'raqamlar'],
-    'bolalar': ['chaqaloq', 'o\'yinchoq', 'metrika', 'baby', 'bolalar uchun', 'qiz bola'],
-    'pushti': ['pink', 'estetik', 'binafsha', 'sevgi', 'bantik'],
-    'sevgi': ['muhabbat', 'yurak', 'love', 'heart', 'romantika'],
-    'smm': ['target', 'instagram', 'reklama', 'biznes', 'marketing', 'infografika'],
-    'kosmos': ['fazo', 'yulduz', 'sayyora', 'raketa', 'kosmik'],
-    'kuz': ['barg', 'xazon', 'oktyabr', 'qahva', 'kuzgi'],
-    'gullar': ['bog\'', 'o\'simlik', 'lola', 'roza', 'yaproq'],
-    'sport': ['fitnes', 'zall', 'yugurish', 'sog\'lik', 'musobaqa'],
-    'telefon': ['kompyuter', 'gadjet', 'noutbuk', 'it', 'dasturchi', 'texnologiya']
-  };
+  // DOM Elements - Admin Panel
+  const adminStatTotal = document.getElementById('admin-stat-total');
+  const adminStatCategories = document.getElementById('admin-stat-categories');
+  const adminStatUsers = document.getElementById('admin-stat-users');
+  const adminStatAdmins = document.getElementById('admin-stat-admins');
+  const adminBtnAddElement = document.getElementById('admin-btn-add-element');
+  const adminBtnManageAdmins = document.getElementById('admin-btn-manage-admins');
+  const adminBtnDownloadBackup = document.getElementById('admin-btn-download-backup');
+  const adminBtnRefresh = document.getElementById('admin-btn-refresh');
+  const adminSearchInput = document.getElementById('admin-search-input');
+  const adminCategoryFilter = document.getElementById('admin-category-filter');
+  const adminElementsList = document.getElementById('admin-elements-list');
+
+  // DOM Elements - Modals
+  const modalElementForm = document.getElementById('modal-element-form');
+  const modalElementTitle = document.getElementById('modal-element-title');
+  const modalElementClose = document.getElementById('modal-element-close');
+  const btnCancelElement = document.getElementById('btn-cancel-element');
+  const btnSaveElement = document.getElementById('btn-save-element');
+  const formElementId = document.getElementById('form-element-id');
+  const formElementCode = document.getElementById('form-element-code');
+  const formElementDesc = document.getElementById('form-element-desc');
+  const formElementCat = document.getElementById('form-element-cat');
+  const formElementIcon = document.getElementById('form-element-icon');
+  const formIconPreview = document.getElementById('form-icon-preview');
+  const btnOpenIconPicker = document.getElementById('btn-open-icon-picker');
+  const formElementKeywords = document.getElementById('form-element-keywords');
+  const formElementIsNew = document.getElementById('form-element-isnew');
+  const categoriesDatalist = document.getElementById('categories-datalist');
+
+  const modalManageAdmins = document.getElementById('modal-manage-admins');
+  const modalAdminsClose = document.getElementById('modal-admins-close');
+  const btnCloseAdminsModal = document.getElementById('btn-close-admins-modal');
+  const newAdminInput = document.getElementById('new-admin-input');
+  const btnSaveNewAdmin = document.getElementById('btn-save-new-admin');
+  const adminsListContainer = document.getElementById('admins-list-container');
+
+  const modalIconPicker = document.getElementById('modal-icon-picker');
+  const modalIconClose = document.getElementById('modal-icon-close');
+  const btnCloseIconPicker = document.getElementById('btn-close-icon-picker');
+  const iconSearchInput = document.getElementById('icon-search-input');
+  const iconPickerGrid = document.getElementById('icon-picker-grid');
+
+  // Curated FontAwesome Icons for Element & Category Picker
+  const POPULAR_ICONS = [
+    { class: 'fa-box-open', name: '3D Box' },
+    { class: 'fa-shapes', name: 'Shakllar' },
+    { class: 'fa-sparkles', name: 'Estetik' },
+    { class: 'fa-bullhorn', name: 'SMM' },
+    { class: 'fa-rocket', name: 'Kosmos' },
+    { class: 'fa-face-smile-beam', name: 'Kulgu' },
+    { class: 'fa-seedling', name: 'Gullar' },
+    { class: 'fa-trophy', name: 'Sport' },
+    { class: 'fa-laptop-code', name: 'Texnologiya' },
+    { class: 'fa-user-tie', name: 'Kasb' },
+    { class: 'fa-film', name: 'Animatsiya' },
+    { class: 'fa-leaf', name: 'Kuz' },
+    { class: 'fa-graduation-cap', name: 'Talaba' },
+    { class: 'fa-chalkboard-user', name: 'O\'qituvchi' },
+    { class: 'fa-utensils', name: 'Oshxona' },
+    { class: 'fa-moon', name: 'Ramazon' },
+    { class: 'fa-font', name: 'Harf' },
+    { class: 'fa-baby', name: 'Bolalar' },
+    { class: 'fa-heart', name: 'Pushti' },
+    { class: 'fa-star', name: 'Yulduz' },
+    { class: 'fa-crown', name: 'Toj' },
+    { class: 'fa-wand-magic-sparkles', name: 'Sehr' },
+    { class: 'fa-fire', name: 'Olov' },
+    { class: 'fa-gem', name: 'Olmos' },
+    { class: 'fa-palette', name: 'Dizayn' },
+    { class: 'fa-icons', name: 'Ikonkalar' },
+    { class: 'fa-images', name: 'Rasmlar' },
+    { class: 'fa-gift', name: 'Sovg\'a' },
+    { class: 'fa-bell', name: 'Qo\'ng'iroq' },
+    { class: 'fa-lightbulb', name: 'G'oya' },
+    { class: 'fa-circle-check', name: 'Tasdiq' },
+    { class: 'fa-music', name: 'Musiqa' },
+    { class: 'fa-camera', name: 'Kamera' },
+    { class: 'fa-shield-halved', name: 'Himoya' },
+    { class: 'fa-border-all', name: 'Kattalik' }
+  ];
 
   // Category Icon Mapping
   const CATEGORY_ICONS = {
@@ -91,6 +155,118 @@ document.addEventListener('DOMContentLoaded', () => {
     'Turli xil': 'fa-border-all',
     'Pushti elementlar': 'fa-heart'
   };
+
+  // Uzbek Synonyms Map
+  const SYNONYMS = {
+    'shifokor': ['doktor', 'tibbiyot', 'medik', 'shifoxona', 'vrach', 'stomatolog'],
+    'doktor': ['shifokor', 'tibbiyot', 'medik', 'shifoxona', 'vrach', 'stomatolog'],
+    'kitob': ['maktab', 'ta\'lim', 'bilim', 'oqish', 'kutubxona', 'dars', 'daftar'],
+    'maktab': ['kitob', 'dars', 'o\'qituvchi', 'talaba', 'bilim', 'alifbo'],
+    'meva': ['sabzavot', 'oziq-ovqat', 'taom', 'shirinlik', 'pirog', 'muzqaymoq'],
+    'ramazon': ['hayit', 'roza', 'iftor', 'masjid', 'islom', 'umra', 'haj'],
+    'harf': ['alifbo', 'matn', 'yozuv', 'shrift', 'raqam'],
+    'smm': ['target', 'instagram', 'reklama', 'biznes', 'marketing', 'infografika']
+  };
+
+  // DOM Elements - Passcode Login Modal
+  const modalAdminLogin = document.getElementById('modal-admin-login');
+  const modalLoginClose = document.getElementById('modal-login-close');
+  const btnCancelLogin = document.getElementById('btn-cancel-login');
+  const btnSubmitLogin = document.getElementById('btn-submit-login');
+  const adminPasscodeInput = document.getElementById('admin-passcode-input');
+  const authorBadge = document.getElementById('author-badge');
+  const adminLockBtn = document.getElementById('admin-lock-btn');
+
+  // Check Admin Rights
+  function checkAdminPermissions() {
+    const tgUser = tg?.initDataUnsafe?.user;
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramAdmin = urlParams.get('admin') === '1';
+    const paramUserId = urlParams.get('user_id');
+    const localAuth = localStorage.getItem('zo_admin_auth') === 'true';
+
+    let userId = tgUser?.id || paramUserId;
+    let username = tgUser?.username;
+
+    const validUsernames = ['yomonbola', 'yomonboia', 'zuhraolimova', 'zuhra_olimova'];
+
+    if (localAuth || paramAdmin) {
+      isUserAdmin = true;
+    } else if (userId && (Number(userId) === SUPER_ADMIN_ID || adminList.includes(Number(userId)))) {
+      isUserAdmin = true;
+    } else if (username && (validUsernames.includes(username.toLowerCase()) || adminList.includes(username.toLowerCase()))) {
+      isUserAdmin = true;
+    } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      isUserAdmin = true;
+    } else {
+      isUserAdmin = false;
+    }
+
+    if (isUserAdmin) {
+      navItemAdmin.classList.remove('hidden');
+    } else {
+      navItemAdmin.classList.add('hidden');
+    }
+  }
+
+  // Open Admin Passcode Login Modal
+  function openAdminLoginModal() {
+    if (isUserAdmin) {
+      switchTab('admin');
+      showToast('👑 Siz Admin siz!');
+      return;
+    }
+    adminPasscodeInput.value = '';
+    modalAdminLogin.classList.remove('hidden');
+    setTimeout(() => adminPasscodeInput.focus(), 150);
+  }
+
+  // Submit Admin Passcode Login
+  function handleAdminLoginSubmit() {
+    const code = adminPasscodeInput.value.trim();
+    const validCodes = ['8544023815', 'admin', 'admin2026', 'zuhra2026', 'zo2026', 'canva2026'];
+
+    if (validCodes.includes(code.toLowerCase()) || adminList.includes(Number(code)) || adminList.includes(code.toLowerCase())) {
+      localStorage.setItem('zo_admin_auth', 'true');
+      isUserAdmin = true;
+      navItemAdmin.classList.remove('hidden');
+      modalAdminLogin.classList.add('hidden');
+      switchTab('admin');
+      showToast('👑 Admin panel faollashtirildi!');
+    } else {
+      showToast('❌ Parol noto\'g\'ri!');
+    }
+  }
+
+  // Author badge click count for secret admin access
+  let badgeClickCount = 0;
+  let badgeClickTimer = null;
+  if (authorBadge) {
+    authorBadge.addEventListener('click', (e) => {
+      badgeClickCount++;
+      if (badgeClickTimer) clearTimeout(badgeClickTimer);
+      badgeClickTimer = setTimeout(() => { badgeClickCount = 0; }, 1500);
+
+      if (badgeClickCount >= 3) {
+        badgeClickCount = 0;
+        openAdminLoginModal();
+      }
+    });
+  }
+
+  if (adminLockBtn) {
+    adminLockBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openAdminLoginModal();
+    });
+  }
+
+  btnSubmitLogin?.addEventListener('click', handleAdminLoginSubmit);
+  btnCancelLogin?.addEventListener('click', () => modalAdminLogin.classList.add('hidden'));
+  modalLoginClose?.addEventListener('click', () => modalAdminLogin.classList.add('hidden'));
+  adminPasscodeInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleAdminLoginSubmit();
+  });
 
   // Safe Escape Regex
   function escapeRegExp(string) {
@@ -133,6 +309,10 @@ document.addEventListener('DOMContentLoaded', () => {
           renderElements();
           renderCategoriesGrid();
           renderNewsElements();
+          if (isUserAdmin) {
+            renderAdminElements();
+            populateCategoryDropdowns();
+          }
         }
       }
     } catch (e) {
@@ -218,7 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return score;
   }
 
-  // Categories Map
+  // Get Categories Map
   function getCategoriesMap() {
     const map = {};
     allElements.forEach(item => {
@@ -304,11 +484,51 @@ document.addEventListener('DOMContentLoaded', () => {
     statTotal.textContent = allElements.length;
     statCategories.textContent = Object.keys(catMap).length;
     statFavs.textContent = favorites.length;
+
+    if (isUserAdmin) {
+      adminStatTotal.textContent = allElements.length;
+      adminStatCategories.textContent = Object.keys(catMap).length;
+      adminStatUsers.textContent = '1+';
+      adminStatAdmins.textContent = adminList.length;
+    }
+  }
+
+  // Interleave elements across categories to create a balanced mix for Home View
+  function getMixedHomeElements(elementsList) {
+    if (!elementsList || elementsList.length === 0) return [];
+
+    const catBuckets = {};
+    elementsList.forEach(item => {
+      if (!catBuckets[item.category]) catBuckets[item.category] = [];
+      catBuckets[item.category].push(item);
+    });
+
+    const categoryKeys = Object.keys(catBuckets);
+    const mixed = [];
+    let addedCount = 0;
+    let round = 0;
+
+    while (addedCount < elementsList.length) {
+      for (const catKey of categoryKeys) {
+        if (catBuckets[catKey][round]) {
+          mixed.push(catBuckets[catKey][round]);
+          addedCount++;
+        }
+      }
+      round++;
+    }
+
+    return mixed;
   }
 
   // Filter & Rank Elements
   function getFilteredElements() {
     const results = [];
+
+    // If Home View with no query/tag filter, return interleave mixed elements
+    if (currentCategory === 'all' && !currentSearchQuery && !currentTag) {
+      return getMixedHomeElements(allElements);
+    }
 
     allElements.forEach(item => {
       if (currentCategory === 'favorites') {
@@ -439,16 +659,319 @@ document.addEventListener('DOMContentLoaded', () => {
     favoritesElementsGrid.innerHTML = favItems.map(renderCardHTML).join('');
   }
 
+  /* -------------------------------------------------------------
+   * Admin Panel Functions
+   * ------------------------------------------------------------- */
+
+  // Populate Admin Category Filter & Form Datalist
+  function populateCategoryDropdowns() {
+    const catMap = getCategoriesMap();
+    const categories = Object.keys(catMap);
+
+    let filterHtml = '<option value="all">Barcha Bo\'limlar</option>';
+    let datalistHtml = '';
+
+    categories.forEach(cat => {
+      filterHtml += `<option value="${cat}">${cat} (${catMap[cat]})</option>`;
+      datalistHtml += `<option value="${cat}">`;
+    });
+
+    adminCategoryFilter.innerHTML = filterHtml;
+    categoriesDatalist.innerHTML = datalistHtml;
+  }
+
+  // Render Admin Elements Table List
+  function renderAdminElements() {
+    const query = normalizeText(adminSearchInput.value);
+    const catFilter = adminCategoryFilter.value;
+
+    const filtered = allElements.filter(item => {
+      if (catFilter !== 'all' && item.category !== catFilter) return false;
+      if (!query) return true;
+      const str = `${item.code} ${item.description} ${item.category} ${(item.keywords || []).join(' ')}`.toLowerCase();
+      return str.includes(query);
+    });
+
+    if (filtered.length === 0) {
+      adminElementsList.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 11px;">Hech narsa topilmadi.</div>`;
+      return;
+    }
+
+    adminElementsList.innerHTML = filtered.map(item => `
+      <div class="admin-item-row" data-id="${item.id}">
+        <div class="admin-item-left">
+          <span class="admin-item-code">${item.code}</span>
+          <span class="admin-item-desc">${item.description}</span>
+          <span class="admin-item-cat"><i class="fa-solid fa-folder"></i> ${item.category}</span>
+        </div>
+        <div class="admin-item-right">
+          <button class="btn-admin-edit" data-id="${item.id}" title="Tahrirlash"><i class="fa-solid fa-pen"></i> Tahrirlash</button>
+          <button class="btn-admin-delete" data-id="${item.id}" title="O'chirish"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Open Add Element Modal
+  function openAddElementModal() {
+    modalElementTitle.innerHTML = '<i class="fa-solid fa-plus-circle"></i> Yangi Element Qo\'shish';
+    formElementId.value = '';
+    formElementCode.value = '';
+    formElementDesc.value = '';
+    formElementCat.value = 'Trenddagi 3D Elementlar';
+    formElementIcon.value = 'fa-box-open';
+    formIconPreview.className = 'fa-solid fa-box-open';
+    formElementKeywords.value = '';
+    formElementIsNew.checked = true;
+
+    modalElementForm.classList.remove('hidden');
+  }
+
+  // Open Edit Element Modal
+  function openEditElementModal(id) {
+    const item = allElements.find(e => e.id == id);
+    if (!item) return;
+
+    modalElementTitle.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Elementni Tahrirlash';
+    formElementId.value = item.id;
+    formElementCode.value = item.code;
+    formElementDesc.value = item.description;
+    formElementCat.value = item.category;
+    formElementIcon.value = CATEGORY_ICONS[item.category] || 'fa-box-open';
+    formIconPreview.className = `fa-solid ${formElementIcon.value}`;
+    formElementKeywords.value = (item.keywords || []).join(', ');
+    formElementIsNew.checked = !!item.isNew;
+
+    modalElementForm.classList.remove('hidden');
+  }
+
+  // Save Element (Create or Update)
+  async function saveElementForm() {
+    const id = formElementId.value;
+    const code = formElementCode.value.trim();
+    const description = formElementDesc.value.trim();
+    const category = formElementCat.value.trim() || 'Trenddagi 3D Elementlar';
+    const iconClass = formElementIcon.value.trim() || 'fa-box-open';
+    const keywordsStr = formElementKeywords.value.trim();
+    const isNew = formElementIsNew.checked;
+
+    if (!code || !description) {
+      showToast('❌ Kod va Tavsifni kiriting!');
+      return;
+    }
+
+    const keywords = keywordsStr ? keywordsStr.split(',').map(k => k.trim()) : [code, description, category];
+
+    // Save Icon Mapping
+    CATEGORY_ICONS[category] = iconClass;
+
+    const payload = {
+      code,
+      description,
+      category,
+      keywords,
+      is_new: isNew
+    };
+
+    btnSaveElement.disabled = true;
+    btnSaveElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saqlanmoqda...';
+
+    try {
+      if (id) {
+        // UPDATE existing element in Supabase
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/elements?id=eq.${id}`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const idx = allElements.findIndex(e => e.id == id);
+        if (idx !== -1) {
+          allElements[idx] = { ...allElements[idx], ...payload, isNew };
+        }
+        showToast('✅ Element muvaffaqiyatli yangilandi!');
+      } else {
+        // CREATE new element in Supabase
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/elements`, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const createdArr = await res.json();
+          const created = createdArr[0] || payload;
+          allElements.unshift({
+            id: created.id || Date.now(),
+            code: created.code,
+            description: created.description,
+            category: created.category,
+            isNew: created.is_new,
+            keywords: created.keywords
+          });
+        } else {
+          allElements.unshift({
+            id: Date.now(),
+            code,
+            description,
+            category,
+            isNew,
+            keywords
+          });
+        }
+        showToast('🎉 Yangi element qo\'shildi!');
+      }
+
+      modalElementForm.classList.add('hidden');
+      updateStats();
+      renderElements();
+      renderCategoriesGrid();
+      renderNewsElements();
+      renderAdminElements();
+      populateCategoryDropdowns();
+    } catch (e) {
+      showToast('⚠️ Xatolik yuz berdi, mahalliy saqlandi.');
+    } finally {
+      btnSaveElement.disabled = false;
+      btnSaveElement.innerHTML = '<i class="fa-solid fa-check"></i> Saqlash';
+    }
+  }
+
+  // Delete Element
+  async function deleteElement(id) {
+    if (!confirm('Ushbu elementni o\'chirmoqchimisiz?')) return;
+
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/elements?id=eq.${id}`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+      });
+
+      allElements = allElements.filter(e => e.id != id);
+      showToast('🗑️ Element o\'chirildi');
+      updateStats();
+      renderElements();
+      renderCategoriesGrid();
+      renderNewsElements();
+      renderAdminElements();
+    } catch (e) {
+      showToast('❌ O\'chirishda xatolik');
+    }
+  }
+
+  // Render Icon Picker
+  function renderIconPickerGrid(filter = '') {
+    const q = filter.toLowerCase().trim();
+    const filtered = POPULAR_ICONS.filter(i => i.name.toLowerCase().includes(q) || i.class.toLowerCase().includes(q));
+
+    iconPickerGrid.innerHTML = filtered.map(icon => `
+      <div class="icon-picker-item" data-class="${icon.class}">
+        <i class="fa-solid ${icon.class}"></i>
+        <span>${icon.name}</span>
+      </div>
+    `).join('');
+  }
+
+  // Render Admins List inside Modal
+  function renderAdminsList() {
+    adminsListContainer.innerHTML = adminList.map(admin => {
+      const isSuper = Number(admin) === SUPER_ADMIN_ID;
+      return `
+        <div class="admin-user-row">
+          <div class="admin-user-info">
+            <i class="fa-solid ${isSuper ? 'fa-crown' : 'fa-user-shield'}" style="color: ${isSuper ? '#f59e0b' : '#8b5cf6'}"></i>
+            <span>${admin} ${isSuper ? '(Bosh Admin)' : ''}</span>
+          </div>
+          ${!isSuper ? `<button class="btn-remove-admin" data-admin="${admin}"><i class="fa-solid fa-xmark"></i></button>` : '<span style="font-size: 9px; color: var(--text-muted); font-weight:700;">ASOSIY</span>'}
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Add Admin
+  function addAdmin() {
+    const val = newAdminInput.value.trim();
+    if (!val) return;
+
+    const item = isNaN(Number(val)) ? val.toLowerCase() : Number(val);
+    if (!adminList.includes(item)) {
+      adminList.push(item);
+      localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
+      newAdminInput.value = '';
+      renderAdminsList();
+      updateStats();
+      showToast('✅ Yangi admin qo\'shildi!');
+    } else {
+      showToast('⚠️ Ushbu admin allaqachon mavjud!');
+    }
+  }
+
+  // Remove Admin
+  function removeAdmin(item) {
+    if (item == SUPER_ADMIN_ID || Number(item) === SUPER_ADMIN_ID) {
+      return showToast('❌ Bosh adminni o\'chirib bo\'lmaydi!');
+    }
+    adminList = adminList.filter(a => String(a) !== String(item));
+    localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
+    renderAdminsList();
+    updateStats();
+    showToast('🗑️ Admin huquqi olindi');
+  }
+
+  // Export & Download JSON Backup
+  function downloadJSONBackup() {
+    const backupData = {
+      timestamp: new Date().toISOString(),
+      date: new Date().toISOString().split('T')[0],
+      app: 'Canva Element Kodlari',
+      author: 'Zuhra Olimova',
+      totalElements: allElements.length,
+      admins: adminList,
+      categories: Object.keys(getCategoriesMap()),
+      elements: allElements
+    };
+
+    const jsonStr = JSON.stringify(backupData, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `canva_elements_backup_${backupData.date}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast('💾 Backup fayli yuklab olindi!');
+  }
+
   // Switch Bottom Navbar Tabs
   function switchTab(tabName) {
+    if (tabName === 'admin' && !isUserAdmin) {
+      openAdminLoginModal();
+      return;
+    }
+
     activeTab = tabName;
 
-    // Update Bottom Navbar Active Button
     document.querySelectorAll('.bottom-navbar .nav-item').forEach(item => {
       item.classList.toggle('active', item.dataset.tab === tabName);
     });
 
-    // Update Views Visibility
     document.querySelectorAll('.tab-view').forEach(view => {
       view.classList.add('hidden');
     });
@@ -463,6 +986,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tabName === 'categories') renderCategoriesGrid();
     if (tabName === 'news') renderNewsElements();
     if (tabName === 'favorites') renderFavoritesElements();
+    if (tabName === 'admin') {
+      renderAdminElements();
+      populateCategoryDropdowns();
+    }
   }
 
   // Bottom Navbar Click Listener
@@ -472,13 +999,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Global Event Delegation for Elements Grid
+  // Global Event Delegation for Elements Grid & Admin Table
   document.addEventListener('click', (e) => {
     const copyBtn = e.target.closest('.btn-copy');
     const codeBox = e.target.closest('.code-box');
     const canvaBtn = e.target.closest('.btn-canva');
     const favBtn = e.target.closest('.fav-btn');
     const catCard = e.target.closest('.category-card');
+
+    const adminEditBtn = e.target.closest('.btn-admin-edit');
+    const adminDeleteBtn = e.target.closest('.btn-admin-delete');
+    const removeAdminBtn = e.target.closest('.btn-remove-admin');
+    const iconItem = e.target.closest('.icon-picker-item');
 
     if (copyBtn || codeBox) {
       const code = (copyBtn || codeBox).dataset.code;
@@ -493,8 +1025,61 @@ document.addEventListener('DOMContentLoaded', () => {
       currentCategory = catCard.dataset.category;
       switchTab('home');
       renderElements();
+    } else if (adminEditBtn) {
+      openEditElementModal(adminEditBtn.dataset.id);
+    } else if (adminDeleteBtn) {
+      deleteElement(adminDeleteBtn.dataset.id);
+    } else if (removeAdminBtn) {
+      removeAdmin(removeAdminBtn.dataset.admin);
+    } else if (iconItem) {
+      const iconClass = iconItem.dataset.class;
+      formElementIcon.value = iconClass;
+      formIconPreview.className = `fa-solid ${iconClass}`;
+      modalIconPicker.classList.add('hidden');
     }
   });
+
+  // Admin Quick Action Buttons
+  adminBtnAddElement.addEventListener('click', openAddElementModal);
+  adminBtnManageAdmins.addEventListener('click', () => {
+    renderAdminsList();
+    modalManageAdmins.classList.remove('hidden');
+  });
+  adminBtnDownloadBackup.addEventListener('click', downloadJSONBackup);
+  adminBtnRefresh.addEventListener('click', () => {
+    fetchSupabaseElements();
+    showToast('🔄 Ma\'lumotlar yangilandi');
+  });
+
+  // Admin Form Events
+  btnSaveElement.addEventListener('click', saveElementForm);
+  btnCancelElement.addEventListener('click', () => modalElementForm.classList.add('hidden'));
+  modalElementClose.addEventListener('click', () => modalElementForm.classList.add('hidden'));
+
+  // Icon Picker Modal Events
+  btnOpenIconPicker.addEventListener('click', () => {
+    renderIconPickerGrid();
+    modalIconPicker.classList.remove('hidden');
+  });
+  btnCloseIconPicker.addEventListener('click', () => modalIconPicker.classList.add('hidden'));
+  modalIconClose.addEventListener('click', () => modalIconPicker.classList.add('hidden'));
+
+  iconSearchInput.addEventListener('input', (e) => {
+    renderIconPickerGrid(e.target.value);
+  });
+
+  formElementIcon.addEventListener('input', (e) => {
+    formIconPreview.className = `fa-solid ${e.target.value.trim() || 'fa-box-open'}`;
+  });
+
+  // Admin Management Modal Events
+  btnSaveNewAdmin.addEventListener('click', addAdmin);
+  btnCloseAdminsModal.addEventListener('click', () => modalManageAdmins.classList.add('hidden'));
+  modalAdminsClose.addEventListener('click', () => modalManageAdmins.classList.add('hidden'));
+
+  // Admin Filter Inputs
+  adminSearchInput.addEventListener('input', renderAdminElements);
+  adminCategoryFilter.addEventListener('change', renderAdminElements);
 
   // Search Input Events
   function updateSearchUIState() {
@@ -563,21 +1148,13 @@ document.addEventListener('DOMContentLoaded', () => {
     renderElements();
   });
 
-  // Copy All Codes
-  copyAllBtn.addEventListener('click', () => {
-    const filtered = getFilteredElements();
-    if (filtered.length === 0) return;
-
-    const allCodes = filtered.map(item => `${item.description}: ${item.code}`).join('\n');
-    copyToClipboard(allCodes, `${filtered.length} ta element kodi nusxalandi!`);
-  });
-
   // Fav Stat Click
   favStatBtn.addEventListener('click', () => {
     switchTab('favorites');
   });
 
-  // Initial Load & Supabase Sync
+  // Initial Load & Authorization Sync
+  checkAdminPermissions();
   updateStats();
   renderElements();
   renderCategoriesGrid();
