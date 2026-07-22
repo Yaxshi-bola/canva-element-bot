@@ -495,6 +495,33 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.removeChild(textArea);
       showToast(customToastMsg, text);
     });
+  // Share Element to Friends / Telegram Chats
+  function shareElement(code, desc) {
+    if (!code) return;
+    const cleanDesc = desc ? String(desc) : 'Canva premium element kodi';
+    const shareMessage = `✨ Canva Element Kodi: ${code}\n📝 Tavsif: ${cleanDesc}\n\n🌸 400+ saralangan Canva elementlarini bepul topish uchun botimizga kiring:\n👉 https://t.me/canva_element_bot`;
+
+    try {
+      if (window.Telegram?.WebApp?.openTelegramLink) {
+        const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/canva_element_bot')}&text=${encodeURIComponent(`✨ Canva Element Kodi: ${code}\n📝 Tavsif: ${cleanDesc}`)}`;
+        window.Telegram.WebApp.openTelegramLink(tgShareUrl);
+        showToast('🔗 Ulashish oynasi ochildi!');
+        return;
+      }
+    } catch (e) {}
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'Canva Element Kodi',
+        text: shareMessage
+      }).catch((err) => {
+        if (err && err.name !== 'AbortError') {
+          copyToClipboard(shareMessage, '🔗 Ulashish matni nusxalandi!');
+        }
+      });
+    } else {
+      copyToClipboard(shareMessage, '🔗 Ulashish matni nusxalandi!');
+    }
   }
 
   // Toggle Favorite
@@ -640,6 +667,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="card-actions">
             <button class="btn-copy" data-code="${safeCode}">
               <i class="fa-solid fa-copy"></i> Nusxalash
+            </button>
+            <button class="btn-share" data-code="${safeCode}" data-desc="${safeDesc}" title="Do'stlarga ulashish">
+              <i class="fa-solid fa-share-nodes"></i> Ulashish
             </button>
           </div>
         </div>
@@ -1218,6 +1248,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Global Event Delegation for Elements Grid & Admin Table
   document.addEventListener('click', (e) => {
     const copyBtn = e.target.closest('.btn-copy');
+    const shareBtn = e.target.closest('.btn-share');
     const codeBox = e.target.closest('.code-box');
     const favBtn = e.target.closest('.fav-btn');
     const catCard = e.target.closest('.category-card');
@@ -1230,6 +1261,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (copyBtn || codeBox) {
       const code = (copyBtn || codeBox).dataset.code;
       copyToClipboard(code);
+    } else if (shareBtn) {
+      const code = shareBtn.dataset.code;
+      const desc = shareBtn.dataset.desc;
+      shareElement(code, desc);
     } else if (favBtn) {
       const id = parseInt(favBtn.dataset.id, 10) || favBtn.dataset.id;
       toggleFavorite(id);
