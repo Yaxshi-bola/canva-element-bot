@@ -106,9 +106,9 @@ bot.onText(/\/start/, async (msg) => {
 
     return bot.sendMessage(
       chatId,
-      `⚠️ **Botdan foydalanish uchun rasmiy kanalimizga obuna bo'ling!**\n\nQuyidagi tugma orqali kanalga a'zo bo'ling va **"✅ Obunani tekshirish"** tugmasini bosing:`,
+      `⚠️ <b>Botdan foydalanish uchun rasmiy kanalimizga obuna bo'ling!</b>\n\nQuyidagi tugma orqali kanalga a'zo bo'ling va <b>"✅ Obunani tekshirish"</b> tugmasini bosing:`,
       {
-        parse_mode: 'Markdown',
+        parse_mode: 'HTML',
         reply_markup: {
           inline_keyboard: [
             [{ text: "📢 Kanalga a'zo bo'lish", url: channelLink }],
@@ -125,13 +125,18 @@ bot.onText(/\/start/, async (msg) => {
 function sendWelcomeMessage(chatId, userId) {
   const { inlineKeyboard, replyKeyboard } = getUserKeyboard(userId);
 
-  const welcomeText = `🌸 **Canva Element Kodlari Katalogi — Zuhra Olimova**\n\n` +
-    `Assalomu alaykum!\n\n` +
-    `Ushbu bot orqali siz Canva dizaynlaringiz uchun 400+ saralangan 3D, Estetik, SMM va Animatsiyali element kodlarini bir bosishda topishingiz mumkin.\n\n` +
-    `👇 **Mini App-ni ochish uchun pastdagi tugmani bosing:**`;
+  const welcomeText = `<tg-emoji emoji-id="5440354006335495210">🌸</tg-emoji> <b>Canva Element Kodlari — Zuhra Olimova</b>\n\n` +
+    `Assalomu alaykum! <tg-emoji emoji-id="5465540480538254161">👋</tg-emoji>\n\n` +
+    `Ushbu bot orqali siz Canva dizaynlaringiz uchun 400+ saralangan element kodlarini bir bosishda topishingiz mumkin:\n\n` +
+    `• <tg-emoji emoji-id="5472164874886846699">📦</tg-emoji> <b>3D elementlar</b>\n` +
+    `• <tg-emoji emoji-id="5404835520150773707">✨</tg-emoji> <b>Estetik bezaklar</b>\n` +
+    `• <tg-emoji emoji-id="5458795341774083865">📢</tg-emoji> <b>SMM elementlari</b>\n` +
+    `• <tg-emoji emoji-id="5375464961822695044">🎬</tg-emoji> <b>Animatsiyali elementlar</b>\n\n` +
+    `<tg-emoji emoji-id="5431449001532594346">⚡</tg-emoji> <b>Tezkor qidiruv</b> • <tg-emoji emoji-id="5987635334945444280">📋</tg-emoji> <b>Oson nusxalash</b>\n\n` +
+    `<tg-emoji emoji-id="5406745015365943482">👇</tg-emoji> <b>Mini App’ni ochish uchun pastdagi tugmani bosing!</b>`;
 
   bot.sendMessage(chatId, welcomeText, {
-    parse_mode: 'Markdown',
+    parse_mode: 'HTML',
     reply_markup: {
       inline_keyboard: inlineKeyboard
     }
@@ -139,7 +144,8 @@ function sendWelcomeMessage(chatId, userId) {
 
   if (isAdmin(userId) && replyKeyboard.length > 0) {
     const adminName = Number(userId) === 8544023815 ? "Yaxshi Bola 🩵" : "Zuhra 🩷";
-    bot.sendMessage(chatId, `👑 Assalomu alaykum, **${adminName}**! Siz **Admin** hisoblanasiz. Boshqaruv paneli menyuda faollashtirildi.`, {
+    bot.sendMessage(chatId, `👑 Assalomu alaykum, <b>${adminName}</b>! Siz <b>Admin</b> hisoblanasiz. Boshqaruv paneli menyuda faollashtirildi.`, {
+      parse_mode: 'HTML',
       reply_markup: {
         keyboard: replyKeyboard,
         resize_keyboard: true
