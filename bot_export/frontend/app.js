@@ -1,163 +1,282 @@
 /* -------------------------------------------------------------
- * Canva Element Kodlari Telegram Mini App — Logic & Admin Panel v5
- * Author: Zuhra Olimova
+ * Canva Element Kodlari — Apple VisionOS / iOS 18 Main JS (v4.0)
+ * Zuhra Olimova & Yaxshi Bola
  * ------------------------------------------------------------- */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Telegram WebApp SDK Initialization
+
+  // Telegram WebApp Initialization
   const tg = window.Telegram?.WebApp;
   if (tg) {
+    tg.ready();
+    tg.expand();
     try {
-      tg.ready();
-      tg.expand();
-      if (tg.setHeaderColor) {
-        tg.setHeaderColor('#fff5f9');
-      }
+      tg.setHeaderColor('#FFF9FC');
+      tg.setBackgroundColor('#FFF9FC');
     } catch (e) {}
   }
 
-  // Supabase REST Config
-  const SUPABASE_URL = 'https://mjenunxgakcvyzcikjmi.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_nSt8XQyZetNEC7ROiU3XeA_iPBDMPRn';
-
-  // Core Admin Default IDs
-  const SUPER_ADMIN_ID = 8544023815;
-  const ZUHRA_ADMIN_ID = 8112688757;
-  const CORE_ADMINS = [8544023815, 8112688757];
-
-  // Data State with Safe LocalStorage Parsers
+  // Core App State
   let allElements = Array.isArray(window.CANVA_DATA) ? window.CANVA_DATA : [];
-  
-  let favorites = [];
-  try {
-    const rawFavs = localStorage.getItem('zo_canva_favs');
-    if (rawFavs) {
-      const parsed = JSON.parse(rawFavs);
-      if (Array.isArray(parsed)) favorites = parsed;
-    }
-  } catch (e) {
-    favorites = [];
-  }
-
-  let adminList = [SUPER_ADMIN_ID, ZUHRA_ADMIN_ID];
-  try {
-    localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
-  } catch (e) {}
-
+  let favorites = JSON.parse(localStorage.getItem('zo_canva_favs') || '[]');
   let currentCategory = 'all';
   let currentSearchQuery = '';
   let currentTag = '';
   let activeTab = 'home';
   let isUserAdmin = false;
 
-  // DOM Elements - Navigation & Main Views
-  const searchInput = document.getElementById('search-input');
-  const clearSearchBtn = document.getElementById('clear-search');
+  const SUPER_ADMIN_ID = 8544023815;
+  const ZUHRA_ADMIN_ID = 8112688757;
+  let adminList = JSON.parse(localStorage.getItem('zo_canva_admins') || `[${SUPER_ADMIN_ID}, ${ZUHRA_ADMIN_ID}]`);
+
+  // DOM Element References
   const elementsGrid = document.getElementById('elements-grid');
   const newsElementsGrid = document.getElementById('news-elements-grid');
   const favoritesElementsGrid = document.getElementById('favorites-elements-grid');
+  const favEmptyState = document.getElementById('fav-empty-state');
   const categoriesGrid = document.getElementById('categories-grid');
-  const emptyState = document.getElementById('empty-state');
-  const resetFilterBtn = document.getElementById('reset-filter-btn');
-  const currentCategoryTitle = document.getElementById('current-category-title');
-  const statTotal = document.getElementById('stat-total');
-  const statCategories = document.getElementById('stat-categories');
-  const statFavs = document.getElementById('stat-favs');
-  const favStatBtn = document.getElementById('fav-stat-btn');
-  const toast = document.getElementById('toast');
-  const toastCode = document.getElementById('toast-code');
-  const toastTitle = document.getElementById('toast-title');
-  const navItemAdmin = document.getElementById('nav-item-admin');
-
-  // DOM Elements - Admin Panel
-  const adminStatTotal = document.getElementById('admin-stat-total');
-  const adminStatCategories = document.getElementById('admin-stat-categories');
-  const adminStatUsers = document.getElementById('admin-stat-users');
-  const adminStatAdmins = document.getElementById('admin-stat-admins');
-  const adminBtnAddElement = document.getElementById('admin-btn-add-element');
-  const adminBtnManageAdmins = document.getElementById('admin-btn-manage-admins');
-  const adminBtnDownloadBackup = document.getElementById('admin-btn-download-backup');
-  const adminBtnRefresh = document.getElementById('admin-btn-refresh');
-  const adminSearchInput = document.getElementById('admin-search-input');
-  const adminCategoryFilter = document.getElementById('admin-category-filter');
   const adminElementsList = document.getElementById('admin-elements-list');
 
-  // DOM Elements - Modals
+  const searchInput = document.getElementById('search-input');
+  const clearSearchBtn = document.getElementById('clear-search');
+  const resetFilterBtn = document.getElementById('reset-filter-btn');
+  const emptyState = document.getElementById('empty-state');
+  const currentCategoryTitle = document.getElementById('current-category-title');
+
+  const statTotal = document.getElementById('stat-total');
+  const authorBadge = document.getElementById('author-badge');
+  const toast = document.getElementById('toast');
+
+  // Modals & Triggers
   const modalElementForm = document.getElementById('modal-element-form');
   const modalElementTitle = document.getElementById('modal-element-title');
   const modalElementClose = document.getElementById('modal-element-close');
   const btnCancelElement = document.getElementById('btn-cancel-element');
   const btnSaveElement = document.getElementById('btn-save-element');
+
   const formElementId = document.getElementById('form-element-id');
   const formElementCode = document.getElementById('form-element-code');
   const formElementDesc = document.getElementById('form-element-desc');
-  const formElementCat = document.getElementById('form-element-cat');
-  const formElementIcon = document.getElementById('form-element-icon');
-  const formIconPreview = document.getElementById('form-icon-preview');
-  const btnOpenIconPicker = document.getElementById('btn-open-icon-picker');
+  const formElementCatVal = document.getElementById('form-element-cat-val');
+  const formElementCatLabel = document.getElementById('form-element-cat-label');
+  const formElementCatTrigger = document.getElementById('form-element-cat-trigger');
+  const formElementCatCustom = document.getElementById('form-element-cat-custom');
   const formElementKeywords = document.getElementById('form-element-keywords');
   const formElementIsNew = document.getElementById('form-element-isnew');
-  const categoriesDatalist = document.getElementById('categories-datalist');
 
   const modalManageAdmins = document.getElementById('modal-manage-admins');
   const modalAdminsClose = document.getElementById('modal-admins-close');
   const btnCloseAdminsModal = document.getElementById('btn-close-admins-modal');
-  const newAdminInput = document.getElementById('new-admin-input');
-  const btnSaveNewAdmin = document.getElementById('btn-save-new-admin');
   const adminsListContainer = document.getElementById('admins-list-container');
-
-  const modalIconPicker = document.getElementById('modal-icon-picker');
-  const modalIconClose = document.getElementById('modal-icon-close');
-  const btnCloseIconPicker = document.getElementById('btn-close-icon-picker');
-  const iconSearchInput = document.getElementById('icon-search-input');
-  const iconPickerGrid = document.getElementById('icon-picker-grid');
 
   const modalAdminLogin = document.getElementById('modal-admin-login');
   const modalLoginClose = document.getElementById('modal-login-close');
   const btnCancelLogin = document.getElementById('btn-cancel-login');
   const btnSubmitLogin = document.getElementById('btn-submit-login');
   const adminPasscodeInput = document.getElementById('admin-passcode-input');
-  const authorBadge = document.getElementById('author-badge');
+
+  const adminBtnAddElement = document.getElementById('admin-btn-add-element');
+  const adminBtnManageAdmins = document.getElementById('admin-btn-manage-admins');
+  const adminBtnDownloadBackup = document.getElementById('admin-btn-download-backup');
+  const adminBtnRefresh = document.getElementById('admin-btn-refresh');
+  const adminBtnSettings = document.getElementById('admin-btn-settings');
   const adminLockBtn = document.getElementById('admin-lock-btn');
 
-  // Curated FontAwesome Icons for Element & Category Picker
-  const POPULAR_ICONS = [
-    { class: 'fa-box-open', name: '3D Box' },
-    { class: 'fa-shapes', name: 'Shakllar' },
-    { class: 'fa-sparkles', name: 'Estetik' },
-    { class: 'fa-bullhorn', name: 'SMM' },
-    { class: 'fa-rocket', name: 'Kosmos' },
-    { class: 'fa-face-smile-beam', name: 'Kulgu' },
-    { class: 'fa-seedling', name: 'Gullar' },
-    { class: 'fa-trophy', name: 'Sport' },
-    { class: 'fa-laptop-code', name: 'Texnologiya' },
-    { class: 'fa-user-tie', name: 'Kasb' },
-    { class: 'fa-film', name: 'Animatsiya' },
-    { class: 'fa-leaf', name: 'Kuz' },
-    { class: 'fa-graduation-cap', name: 'Talaba' },
-    { class: 'fa-chalkboard-user', name: 'O\'qituvchi' },
-    { class: 'fa-utensils', name: 'Oshxona' },
-    { class: 'fa-moon', name: 'Ramazon' },
-    { class: 'fa-font', name: 'Harf' },
-    { class: 'fa-baby', name: 'Bolalar' },
-    { class: 'fa-heart', name: 'Pushti' },
-    { class: 'fa-star', name: 'Yulduz' },
-    { class: 'fa-crown', name: 'Toj' },
-    { class: 'fa-wand-magic-sparkles', name: 'Sehr' },
-    { class: 'fa-fire', name: 'Olov' },
-    { class: 'fa-gem', name: 'Olmos' },
-    { class: 'fa-palette', name: 'Dizayn' },
-    { class: 'fa-icons', name: 'Ikonkalar' },
-    { class: 'fa-images', name: 'Rasmlar' },
-    { class: 'fa-gift', name: 'Sovg\'a' },
-    { class: 'fa-bell', name: "Qo'ng'iroq" },
-    { class: 'fa-lightbulb', name: "G'oya" },
-    { class: 'fa-circle-check', name: 'Tasdiq' },
-    { class: 'fa-music', name: 'Musiqa' },
-    { class: 'fa-camera', name: 'Kamera' },
-    { class: 'fa-shield-halved', name: 'Himoya' },
-    { class: 'fa-border-all', name: 'Kattalik' }
-  ];
+  const adminSearchInput = document.getElementById('admin-search-input');
+  const adminFilterCatTrigger = document.getElementById('admin-filter-cat-trigger');
+  const adminFilterCatLabel = document.getElementById('admin-filter-cat-label');
+
+  // Haptic Feedback Helper
+  function triggerHaptic(type = 'light') {
+    try {
+      if (tg?.HapticFeedback) {
+        if (type === 'light' || type === 'medium' || type === 'heavy') {
+          tg.HapticFeedback.impactOccurred(type);
+        } else if (type === 'success' || type === 'error' || type === 'warning') {
+          tg.HapticFeedback.notificationOccurred(type);
+        }
+      }
+    } catch (e) {}
+  }
+
+  // Toast Notification
+  function showToast(msg, codeStr = '') {
+    const toastTitle = document.getElementById('toast-title');
+    const toastCode = document.getElementById('toast-code');
+    
+    if (toastTitle) toastTitle.textContent = msg;
+    if (toastCode) {
+      if (codeStr) {
+        toastCode.textContent = codeStr;
+        toastCode.style.display = 'inline';
+      } else {
+        toastCode.style.display = 'none';
+      }
+    }
+
+    toast?.classList.remove('hidden');
+    triggerHaptic('success');
+    
+    setTimeout(() => {
+      toast?.classList.add('hidden');
+    }, 2400);
+  }
+
+  // Copy to Clipboard Helper
+  function copyToClipboard(text, customToastMsg = 'Nusxalandi!') {
+    if (!text) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(customToastMsg, text);
+      }).catch(() => {
+        fallbackCopyTextToClipboard(text, customToastMsg);
+      });
+    } else {
+      fallbackCopyTextToClipboard(text, customToastMsg);
+    }
+  }
+
+  function fallbackCopyTextToClipboard(text, customToastMsg) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.top = '0';
+    textArea.style.left = '0';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      showToast(customToastMsg, text);
+    } catch (err) {
+      showToast('❌ Nusxalab bo\'lmadi');
+    }
+    document.body.removeChild(textArea);
+  }
+
+  // Share Element Helper
+  function shareElement(code, description) {
+    const shareText = `🎨 Canva Element Kodi: ${code}\n📌 Tavsif: ${description}\n\n✨ Top-canva bot orqali izlang!`;
+    if (navigator.share) {
+      navigator.share({
+        title: 'Canva Element Kodi',
+        text: shareText,
+        url: window.location.href
+      }).catch(() => {});
+    } else {
+      copyToClipboard(shareText, '🔗 Ulasish matni nusxalandi!');
+    }
+  }
+
+  // Admin Verification Logic
+  function checkAdminPermissions() {
+    const currentUserId = tg?.initDataUnsafe?.user?.id;
+    const currentUsername = tg?.initDataUnsafe?.user?.username?.toLowerCase();
+
+    let adminUnlocked = false;
+    try {
+      adminUnlocked = localStorage.getItem('zo_admin_unlocked') === 'true';
+    } catch(e) {}
+
+    if (currentUserId && (Number(currentUserId) === SUPER_ADMIN_ID || Number(currentUserId) === ZUHRA_ADMIN_ID || adminList.includes(Number(currentUserId)))) {
+      isUserAdmin = true;
+    } else if (currentUsername && (currentUsername === 'yaxshibola' || currentUsername === 'zuhra_olimova')) {
+      isUserAdmin = true;
+    } else if (adminUnlocked) {
+      isUserAdmin = true;
+    } else {
+      isUserAdmin = false;
+    }
+  }
+
+  // Admin Secret 5-Click Unlock
+  let badgeClickCounter = 0;
+  let badgeClickTimer = null;
+  authorBadge?.addEventListener('click', () => {
+    badgeClickCounter++;
+    if (badgeClickTimer) clearTimeout(badgeClickTimer);
+
+    if (badgeClickCounter >= 5) {
+      badgeClickCounter = 0;
+      if (!isUserAdmin) {
+        openAdminLoginModal();
+      } else {
+        switchTab('admin');
+        showToast('🔓 Admin rejimidasiz');
+      }
+    } else {
+      badgeClickTimer = setTimeout(() => {
+        badgeClickCounter = 0;
+      }, 1500);
+    }
+  });
+
+  function openAdminLoginModal() {
+    if (adminPasscodeInput) adminPasscodeInput.value = '';
+    modalAdminLogin?.classList.remove('hidden');
+    adminPasscodeInput?.focus();
+  }
+
+  btnSubmitLogin?.addEventListener('click', () => {
+    const passcode = adminPasscodeInput?.value?.trim();
+    if (passcode === '777' || passcode === '2026' || passcode === 'zuhra') {
+      isUserAdmin = true;
+      try { localStorage.setItem('zo_admin_unlocked', 'true'); } catch(e) {}
+      modalAdminLogin?.classList.add('hidden');
+      switchTab('admin');
+      showToast('🔑 Admin panelga xush kelibsiz!');
+    } else {
+      showToast("❌ Noto'g'ri parol!");
+      triggerHaptic('error');
+    }
+  });
+
+  btnCancelLogin?.addEventListener('click', () => modalAdminLogin?.classList.add('hidden'));
+  modalLoginClose?.addEventListener('click', () => modalAdminLogin?.classList.add('hidden'));
+
+  adminLockBtn?.addEventListener('click', () => {
+    isUserAdmin = false;
+    try { localStorage.setItem('zo_admin_unlocked', 'false'); } catch(e) {}
+    switchTab('home');
+    showToast('🔒 Admin rejimidan chiqildi');
+  });
+
+  // Data Fetching from Supabase Backend API
+  async function fetchSupabaseElements() {
+    try {
+      const API_BASE = window.location.origin.includes('vercel.app') 
+        ? 'https://canva-element-bot.onrender.com/api/elements' 
+        : '/api/elements';
+
+      const res = await fetch(API_BASE, { cache: 'no-cache' });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          allElements = data.map(item => ({
+            id: item.id,
+            code: item.code,
+            description: item.description,
+            category: item.category,
+            isNew: item.is_new !== undefined ? item.is_new : true,
+            keywords: Array.isArray(item.keywords) ? item.keywords : []
+          }));
+          updateStats();
+          renderElements();
+          renderCategoriesGrid();
+          renderNewsElements();
+          renderAdminElements();
+        }
+      }
+    } catch (e) {
+      console.log('Using pre-bundled CANVA_DATA');
+    }
+  }
+
+  // Update Counters & Stats
+  function updateStats() {
+    if (statTotal) statTotal.textContent = allElements.length;
+  }
 
   // Category Icon Mapping
   const CATEGORY_ICONS = {
@@ -183,267 +302,6 @@ document.addEventListener('DOMContentLoaded', () => {
     'Pushti elementlar': 'fa-heart'
   };
 
-  // Uzbek Synonyms Map
-  const SYNONYMS = {
-    'shifokor': ['doktor', 'tibbiyot', 'medik', 'shifoxona', 'vrach', 'stomatolog'],
-    'doktor': ['shifokor', 'tibbiyot', 'medik', 'shifoxona', 'vrach', 'stomatolog'],
-    'kitob': ['maktab', 'ta\'lim', 'bilim', 'oqish', 'kutubxona', 'dars', 'daftar'],
-    'maktab': ['kitob', 'dars', 'o\'qituvchi', 'talaba', 'bilim', 'alifbo'],
-    'meva': ['sabzavot', 'oziq-ovqat', 'taom', 'shirinlik', 'pirog', 'muzqaymoq'],
-    'ramazon': ['hayit', 'roza', 'iftor', 'masjid', 'islom', 'umra', 'haj'],
-    'harf': ['alifbo', 'matn', 'yozuv', 'shrift', 'raqam'],
-    'smm': ['target', 'instagram', 'reklama', 'biznes', 'marketing', 'infografika']
-  };
-
-  // Safe Helper: Check if item matches admin list
-  function isAdminMatch(list, val) {
-    if (!Array.isArray(list) || !val) return false;
-    return list.some(a => String(a).toLowerCase() === String(val).toLowerCase() || Number(a) === Number(val));
-  }
-
-  // Check Admin Rights
-  function checkAdminPermissions() {
-    try {
-      // Clean up legacy auth keys
-      try { localStorage.removeItem('zo_admin_auth'); } catch (e) {}
-
-      const tgUser = tg?.initDataUnsafe?.user;
-      const urlParams = new URLSearchParams(window.location?.search || '');
-      const paramUserId = urlParams.get('user_id');
-      const sessionAuth = sessionStorage.getItem('zo_admin_session') === 'true';
-
-      let userId = tgUser?.id || paramUserId;
-      let username = tgUser?.username;
-
-      const validUsernames = ['yomonbola', 'yomonboia', 'zuhraolimova', 'zuhra_olimova', 'sokin_notalar'];
-
-      const isCoreId = userId && CORE_ADMINS.includes(Number(userId));
-      const isCoreUsername = username && validUsernames.includes(String(username).toLowerCase());
-      const isParamAdmin = urlParams.get('admin') === '1';
-      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
-      if (isCoreId || isCoreUsername || isParamAdmin || sessionAuth || isLocalhost) {
-        isUserAdmin = true;
-      } else {
-        isUserAdmin = false;
-      }
-
-      if (isUserAdmin) {
-        navItemAdmin?.classList.remove('hidden');
-      } else {
-        navItemAdmin?.classList.add('hidden');
-        if (activeTab === 'admin') {
-          switchTab('home');
-        }
-      }
-    } catch (e) {
-      console.error('Admin check error:', e);
-      isUserAdmin = false;
-      navItemAdmin?.classList.add('hidden');
-    }
-  }
-
-  // Open Admin Passcode Login Modal
-  function openAdminLoginModal() {
-    if (isUserAdmin) {
-      switchTab('admin');
-      showToast('👑 Siz Admin siz!');
-      return;
-    }
-    if (adminPasscodeInput) adminPasscodeInput.value = '';
-    modalAdminLogin?.classList.remove('hidden');
-    setTimeout(() => adminPasscodeInput?.focus(), 150);
-  }
-
-  // Submit Admin Passcode Login
-  function handleAdminLoginSubmit() {
-    const code = adminPasscodeInput ? adminPasscodeInput.value.trim() : '';
-    const validCodes = ['8544023815', '8112688757'];
-
-    if (validCodes.includes(code)) {
-      sessionStorage.setItem('zo_admin_session', 'true');
-      isUserAdmin = true;
-      navItemAdmin?.classList.remove('hidden');
-      modalAdminLogin?.classList.add('hidden');
-      switchTab('admin');
-      showToast('👑 Admin panel faollashtirildi!');
-    } else {
-      showToast('❌ Parol noto\'g\'ri!');
-    }
-  }
-
-  // Author avatar click count (5 fast clicks) for secret admin access
-  let badgeClickCount = 0;
-  let badgeClickTimer = null;
-  if (authorBadge) {
-    authorBadge.addEventListener('click', (e) => {
-      badgeClickCount++;
-      if (badgeClickTimer) clearTimeout(badgeClickTimer);
-      badgeClickTimer = setTimeout(() => { badgeClickCount = 0; }, 1500);
-
-      if (badgeClickCount >= 5) {
-        badgeClickCount = 0;
-        openAdminLoginModal();
-      }
-    });
-  }
-
-  btnSubmitLogin?.addEventListener('click', handleAdminLoginSubmit);
-  btnCancelLogin?.addEventListener('click', () => modalAdminLogin?.classList.add('hidden'));
-  modalLoginClose?.addEventListener('click', () => modalAdminLogin?.classList.add('hidden'));
-  adminPasscodeInput?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') handleAdminLoginSubmit();
-  });
-
-  // Safe Escape Regex
-  function escapeRegExp(string) {
-    if (!string) return '';
-    return String(string).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
-
-  // Highlight Matches
-  function highlightMatches(text, query) {
-    if (text === null || text === undefined) return '';
-    const str = String(text);
-    if (!query || String(query).trim().length < 2) return str;
-    try {
-      const escaped = escapeRegExp(String(query).trim());
-      const regex = new RegExp(`(${escaped})`, 'gi');
-      return str.replace(regex, '<span class="highlight-text">$1</span>');
-    } catch (e) {
-      return str;
-    }
-  }
-
-  // Fetch elements from Supabase REST API
-  async function fetchSupabaseElements() {
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/elements?select=*&order=id.asc`, {
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`
-        }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-          allElements = data.map(item => ({
-            id: item.id,
-            category: item.category || 'Turli xil',
-            code: item.code || '',
-            description: item.description || '',
-            isNew: !!item.is_new,
-            keywords: Array.isArray(item.keywords) ? item.keywords : []
-          }));
-          updateStats();
-          renderElements();
-          renderCategoriesGrid();
-          renderNewsElements();
-          if (isUserAdmin) {
-            renderAdminElements();
-            populateCategoryDropdowns();
-          }
-        }
-      }
-    } catch (e) {
-      console.log('Supabase fetch info:', e);
-    }
-  }
-
-  // Fetch admins & ensure designated core admins list
-  async function fetchSupabaseAdmins() {
-    try {
-      adminList = [SUPER_ADMIN_ID, ZUHRA_ADMIN_ID];
-      localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
-      updateStats();
-      if (isUserAdmin) renderAdminsList();
-    } catch (e) {
-      console.log('Admins list sync info:', e);
-    }
-  }
-
-  // Normalize Uzbek Diacritics
-  function normalizeText(text) {
-    if (!text) return '';
-    return String(text).toLowerCase()
-      .replace(/[‘'’`ʻ]/g, '')
-      .replace(/o[ʻ'’`]/g, 'o')
-      .replace(/g[ʻ'’`]/g, 'g')
-      .trim();
-  }
-
-  // Levenshtein Distance
-  function levenshtein(a, b) {
-    if (!a) return (b || '').length;
-    if (!b) return a.length;
-    if (a.length === 0) return b.length;
-    if (b.length === 0) return a.length;
-    const matrix = [];
-    for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-    for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
-
-    for (let i = 1; i <= b.length; i++) {
-      for (let j = 1; j <= a.length; j++) {
-        if (b.charAt(i - 1) === a.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1];
-        } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j - 1] + 1,
-            matrix[i][j - 1] + 1,
-            matrix[i - 1][j] + 1
-          );
-        }
-      }
-    }
-    return matrix[b.length][a.length];
-  }
-
-  // Search Match Score
-  function calculateSearchScore(rawQuery, item) {
-    if (!item) return 0;
-    const query = normalizeText(rawQuery);
-    if (!query) return 1;
-
-    let score = 0;
-    const descNorm = normalizeText(item.description);
-    const catNorm = normalizeText(item.category);
-    const codeNorm = normalizeText(item.code);
-    const keywordsNorm = normalizeText((item.keywords || []).join(' '));
-
-    if (codeNorm.includes(query)) score += 1000;
-    if (descNorm.includes(query)) score += 500;
-    if (catNorm.includes(query)) score += 300;
-    if (keywordsNorm.includes(query)) score += 200;
-
-    for (const [key, syns] of Object.entries(SYNONYMS)) {
-      const keyNorm = normalizeText(key);
-      const isQueryInSyns = query.includes(keyNorm) || syns.some(s => query.includes(normalizeText(s)));
-      if (isQueryInSyns) {
-        if (descNorm.includes(keyNorm) || catNorm.includes(keyNorm) || syns.some(s => descNorm.includes(normalizeText(s)))) {
-          score += 150;
-        }
-      }
-    }
-
-    const qWords = query.split(/\s+/);
-    const targetWords = `${descNorm} ${catNorm} ${keywordsNorm}`.split(/[\s,.'"-]+/);
-
-    for (const qw of qWords) {
-      if (qw.length < 3) continue;
-      for (const tw of targetWords) {
-        if (tw.length < 3) continue;
-        if (tw.startsWith(qw)) score += 100;
-        const dist = levenshtein(qw, tw);
-        if (dist <= 2 && Math.abs(qw.length - tw.length) <= 2) {
-          score += (80 - dist * 20);
-        }
-      }
-    }
-
-    return score;
-  }
-
-  // Get Categories Map
   function getCategoriesMap() {
     const map = {};
     allElements.forEach(item => {
@@ -454,267 +312,112 @@ document.addEventListener('DOMContentLoaded', () => {
     return map;
   }
 
-  // Trigger Haptic Feedback
-  function triggerHaptic(type = 'light') {
-    if (tg && tg.HapticFeedback) {
-      try {
-        if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
-        else tg.HapticFeedback.impactOccurred(type);
-      } catch (e) {}
-    }
-  }
-
-  // Toast Popup Message
-  let toastTimer = null;
-  function showToast(message, codeText = '') {
-    if (!toast) return;
-    if (toastTitle) toastTitle.textContent = message;
-    if (toastCode) toastCode.textContent = codeText;
-    toast.classList.remove('hidden');
-
-    triggerHaptic('success');
-
-    if (toastTimer) clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      toast.classList.add('hidden');
-    }, 2800);
-  }
-
-  // Copy Code to Clipboard
-  function copyToClipboard(text, customToastMsg = 'KOD NUSXALANDI!') {
-    if (!text) return;
-    navigator.clipboard.writeText(text).then(() => {
-      showToast(customToastMsg, text);
-    }).catch(() => {
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      showToast(customToastMsg, text);
-    });
-  }
-
-  // Share Element to Friends / Telegram Chats
-  function shareElement(code, desc) {
-    if (!code) return;
-    const cleanDesc = desc ? String(desc) : 'Canva premium element kodi';
-    const shareMessage = `✨ Canva Element Kodi: ${code}\n📝 Tavsif: ${cleanDesc}\n\n🌸 400+ saralangan Canva elementlarini bepul topish uchun botimizga kiring:\n👉 https://t.me/zuhracanva_bot`;
-
-    try {
-      if (window.Telegram?.WebApp?.openTelegramLink) {
-        const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/zuhracanva_bot')}&text=${encodeURIComponent(`✨ Canva Element Kodi: ${code}\n📝 Tavsif: ${cleanDesc}`)}`;
-        window.Telegram.WebApp.openTelegramLink(tgShareUrl);
-        showToast('🔗 Ulashish oynasi ochildi!');
-        return;
-      }
-    } catch (e) {}
-
-    if (navigator.share) {
-      navigator.share({
-        title: 'Canva Element Kodi',
-        text: shareMessage
-      }).catch((err) => {
-        if (err && err.name !== 'AbortError') {
-          copyToClipboard(shareMessage, '🔗 Ulashish matni nusxalandi!');
-        }
-      });
-    } else {
-      copyToClipboard(shareMessage, '🔗 Ulashish matni nusxalandi!');
-    }
-  }
-
-  // Toggle Favorite
+  // Toggle Favorite Item
   function toggleFavorite(id) {
-    const index = favorites.indexOf(id);
-    if (index > -1) {
-      favorites.splice(index, 1);
-      showToast('Saqlanganlardan olindi');
+    const numId = Number(id) || id;
+    const index = favorites.indexOf(numId);
+    if (index === -1) {
+      favorites.push(numId);
+      showToast('⭐ Saqlanganlarga qo\'shildi');
     } else {
-      favorites.push(id);
-      showToast('Saqlanganlarga qo\'shildi ⭐');
+      favorites.splice(index, 1);
+      showToast('🗑️ Saqlanganlardan olindi');
     }
     try {
       localStorage.setItem('zo_canva_favs', JSON.stringify(favorites));
     } catch (e) {}
 
-    updateStats();
     renderElements();
     renderFavoritesElements();
   }
 
-  // Update Counters & Stats
-  function updateStats() {
-    try {
-      const catMap = getCategoriesMap();
-      if (statTotal) statTotal.textContent = allElements.length;
-      if (statCategories) statCategories.textContent = Object.keys(catMap).length;
-      if (statFavs) statFavs.textContent = favorites.length;
-
-      if (isUserAdmin) {
-        if (adminStatTotal) adminStatTotal.textContent = allElements.length;
-        if (adminStatCategories) adminStatCategories.textContent = Object.keys(catMap).length;
-        if (adminStatUsers) adminStatUsers.textContent = '1+';
-        if (adminStatAdmins) adminStatAdmins.textContent = adminList.length;
-      }
-    } catch (e) {
-      console.error('Update stats error:', e);
-    }
-  }
-
-  // Interleave elements across categories safely for Home View (Non-blocking)
-  function getMixedHomeElements(elementsList) {
-    if (!Array.isArray(elementsList) || elementsList.length === 0) return [];
-
-    const catBuckets = {};
-    elementsList.forEach(item => {
-      if (!item) return;
-      const cat = item.category || 'Turli xil';
-      if (!catBuckets[cat]) catBuckets[cat] = [];
-      catBuckets[cat].push(item);
-    });
-
-    const categoryKeys = Object.keys(catBuckets);
-    const mixed = [];
-    const maxBucketSize = Math.max(0, ...Object.values(catBuckets).map(b => b.length));
-
-    for (let r = 0; r < maxBucketSize; r++) {
-      for (let k = 0; k < categoryKeys.length; k++) {
-        const item = catBuckets[categoryKeys[k]][r];
-        if (item) {
-          mixed.push(item);
-        }
-      }
-    }
-
-    return mixed;
-  }
-
-  // Filter & Rank Elements
-  function getFilteredElements() {
-    if (!Array.isArray(allElements)) return [];
-
-    // If Home View with no query/tag filter, return interleave mixed elements
-    if (currentCategory === 'all' && !currentSearchQuery && !currentTag) {
-      return getMixedHomeElements(allElements);
-    }
-
-    const results = [];
-
-    allElements.forEach(item => {
-      if (!item) return;
-
-      if (currentCategory === 'favorites') {
-        if (!favorites.includes(item.id)) return;
-      } else if (currentCategory !== 'all') {
-        if (item.category !== currentCategory) return;
-      }
-
-      if (currentTag) {
-        const itemStr = `${item.category || ''} ${item.description || ''} ${(item.keywords || []).join(' ')}`.toLowerCase();
-        if (currentTag === '3d' && !itemStr.includes('3d')) return;
-        if (currentTag === 'smm' && !itemStr.includes('smm') && !itemStr.includes('target') && !itemStr.includes('infografika')) return;
-        if (currentTag === 'estetik' && !itemStr.includes('estetik') && !itemStr.includes('aesthetic')) return;
-        if (currentTag === 'ramazon' && !itemStr.includes('ramazon') && !itemStr.includes('haj') && !itemStr.includes('umra')) return;
-        if (currentTag === 'harf' && !itemStr.includes('harf') && !itemStr.includes('raqam') && !itemStr.includes('2026')) return;
-      }
-
-      if (currentSearchQuery) {
-        const score = calculateSearchScore(currentSearchQuery, item);
-        if (score > 0) {
-          results.push({ item, score });
-        }
-      } else {
-        results.push({ item, score: 1 });
-      }
-    });
-
-    results.sort((a, b) => b.score - a.score);
-    return results.map(r => r.item);
-  }
-
-  // Generate Redesigned VisionOS Card HTML
+  // Render Single Card HTML (VisionOS 2-Column Grid Card)
   function renderCardHTML(item) {
     if (!item) return '';
-    try {
-      const itemId = item.id || Math.random();
-      const isFav = Array.isArray(favorites) && (favorites.includes(itemId) || favorites.includes(String(itemId)));
-      const favClass = isFav ? 'active fa-solid' : 'fa-regular';
-      const safeDesc = item.description ? String(item.description).replace(/"/g, '&quot;') : '';
-      const safeCode = item.code ? String(item.code) : '';
-      const safeCategory = item.category ? String(item.category) : '3D Elementlar';
-      const descHTML = highlightMatches(item.description ? String(item.description) : '', currentSearchQuery);
+    const isFav = favorites.includes(item.id) || favorites.includes(String(item.id));
+    const isNew = item.isNew || item.id <= 30;
 
-      return `
-        <div class="element-card" data-id="${itemId}">
-          <div class="card-header-row">
-            <span class="category-tag-badge">${safeCategory}</span>
-            <button class="fav-star-btn fav-btn ${isFav ? 'active' : ''}" data-id="${itemId}" title="Saqlash">
-              <i class="${favClass} fa-star"></i>
-            </button>
-          </div>
-          
-          <div class="element-card-title">
-            ${descHTML}
-          </div>
-          
-          <div class="code-block-container code-box" data-code="${safeCode}" title="Nusxalash uchun bosing">
-            <span class="code-text">${safeCode}</span>
-            <i class="fa-regular fa-copy code-copy-icon"></i>
-          </div>
-          
-          <div class="card-bottom-row">
-            <button class="btn-copy-action btn-copy" data-code="${safeCode}">
-              <i class="fa-solid fa-copy"></i> Nusxalash
-            </button>
-            <button class="btn-share-icon btn-share" data-code="${safeCode}" data-desc="${safeDesc}" title="Do'stlarga ulashish">
-              <i class="fa-solid fa-share-nodes"></i>
-            </button>
-          </div>
+    return `
+      <div class="element-card" data-id="${item.id}">
+        <div class="card-header-row">
+          <span class="category-tag-badge">${item.category || 'Bo\'lim'}</span>
+          <button class="fav-star-btn ${isFav ? 'active' : ''} fav-btn" data-id="${item.id}" aria-label="Saqlash">
+            <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+          </button>
         </div>
-      `;
-    } catch (err) {
-      console.error('Error rendering card:', err);
-      return '';
-    }
+
+        <div class="element-card-title">${item.description || 'Element kodi'}</div>
+
+        <div class="code-block-container code-box" data-code="${item.code}">
+          <span class="code-text">${item.code}</span>
+          <i class="fa-regular fa-copy code-copy-icon"></i>
+        </div>
+
+        <div class="card-bottom-row">
+          <button class="btn-copy-action btn-copy" data-code="${item.code}">
+            <i class="fa-regular fa-copy"></i> Nusxalash
+          </button>
+          <button class="btn-share-icon btn-share" data-code="${item.code}" data-desc="${item.description}">
+            <i class="fa-solid fa-arrow-turn-up"></i>
+          </button>
+        </div>
+      </div>
+    `;
   }
 
-  // Render Main Elements Grid
+  // Render Elements Grid for Home Tab
   function renderElements() {
-    try {
-      if (!elementsGrid) return;
-      const filtered = getFilteredElements();
+    if (!elementsGrid) return;
 
-      if (currentCategoryTitle) {
-        if (currentCategory === 'favorites') {
-          currentCategoryTitle.textContent = '⭐ Saqlangan elementlar';
-        } else if (currentCategory === 'all') {
-          currentCategoryTitle.textContent = currentSearchQuery ? `Qidiruv: "${currentSearchQuery}"` : 'Barcha elementlar';
-        } else {
-          currentCategoryTitle.textContent = currentCategory;
-        }
+    let filtered = [...allElements];
+
+    if (currentCategory !== 'all') {
+      filtered = filtered.filter(item => item && item.category === currentCategory);
+    }
+
+    if (currentSearchQuery) {
+      const q = currentSearchQuery.toLowerCase().trim();
+      filtered = filtered.filter(item => {
+        if (!item) return false;
+        const codeMatch = item.code && item.code.toLowerCase().includes(q);
+        const descMatch = item.description && item.description.toLowerCase().includes(q);
+        const catMatch = item.category && item.category.toLowerCase().includes(q);
+        const kwMatch = Array.isArray(item.keywords) && item.keywords.some(k => String(k).toLowerCase().includes(q));
+        return codeMatch || descMatch || catMatch || kwMatch;
+      });
+    }
+
+    if (currentTag) {
+      const tagLower = currentTag.toLowerCase().trim();
+      filtered = filtered.filter(item => {
+        if (!item || !Array.isArray(item.keywords)) return false;
+        return item.keywords.some(k => String(k).toLowerCase() === tagLower);
+      });
+    }
+
+    if (filtered.length === 0) {
+      elementsGrid.innerHTML = '';
+      emptyState?.classList.remove('hidden');
+    } else {
+      emptyState?.classList.add('hidden');
+      elementsGrid.innerHTML = filtered.map(renderCardHTML).filter(Boolean).join('');
+    }
+
+    if (currentCategoryTitle) {
+      if (currentSearchQuery) {
+        currentCategoryTitle.textContent = `Qidiruv natijalari (${filtered.length})`;
+      } else if (currentCategory !== 'all') {
+        currentCategoryTitle.textContent = `${currentCategory} (${filtered.length})`;
+      } else {
+        currentCategoryTitle.textContent = "Yangi qo'shilgan elementlar";
       }
-
-      if (!filtered || filtered.length === 0) {
-        elementsGrid.innerHTML = '';
-        if (emptyState) emptyState.classList.remove('hidden');
-        return;
-      }
-
-      if (emptyState) emptyState.classList.add('hidden');
-      const cardsHTML = filtered.map(renderCardHTML).filter(Boolean).join('');
-      elementsGrid.innerHTML = cardsHTML;
-    } catch (err) {
-      console.error('Error rendering elements grid:', err);
     }
   }
 
-  // Render Categories View Grid with Icons
+  // Render Categories View Grid
   function renderCategoriesGrid() {
     try {
-      const categoriesGridElem = document.getElementById('categories-grid');
-      if (!categoriesGridElem) return;
+      if (!categoriesGrid) return;
       const catMap = getCategoriesMap();
       let html = '';
 
@@ -728,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         `;
       }
-      categoriesGridElem.innerHTML = html;
+      categoriesGrid.innerHTML = html;
     } catch (e) {
       console.error('Render categories error:', e);
     }
@@ -737,10 +440,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Render News Elements View
   function renderNewsElements() {
     try {
-      const newsElementsGridElem = document.getElementById('news-elements-grid');
-      if (!newsElementsGridElem) return;
+      if (!newsElementsGrid) return;
       const newsItems = allElements.filter(item => item && (item.isNew || item.id <= 50));
-      newsElementsGridElem.innerHTML = newsItems.map(renderCardHTML).filter(Boolean).join('');
+      newsElementsGrid.innerHTML = newsItems.map(renderCardHTML).filter(Boolean).join('');
     } catch (e) {
       console.error('Render news error:', e);
     }
@@ -749,19 +451,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Render Favorites Tab View
   function renderFavoritesElements() {
     try {
-      const favEmptyState = document.getElementById('fav-empty-state');
-      const favoritesElementsGridElem = document.getElementById('favorites-elements-grid');
-      if (!favoritesElementsGridElem) return;
+      if (!favoritesElementsGrid) return;
 
       const favItems = allElements.filter(item => item && (favorites.includes(item.id) || favorites.includes(String(item.id))));
       
       if (favItems.length === 0) {
         if (favEmptyState) favEmptyState.classList.remove('hidden');
-        favoritesElementsGridElem.classList.add('hidden');
+        favoritesElementsGrid.classList.add('hidden');
       } else {
         if (favEmptyState) favEmptyState.classList.add('hidden');
-        favoritesElementsGridElem.classList.remove('hidden');
-        favoritesElementsGridElem.innerHTML = favItems.map(renderCardHTML).filter(Boolean).join('');
+        favoritesElementsGrid.classList.remove('hidden');
+        favoritesElementsGrid.innerHTML = favItems.map(renderCardHTML).filter(Boolean).join('');
       }
     } catch (e) {
       console.error('Render favorites error:', e);
@@ -769,120 +469,164 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* -------------------------------------------------------------
+   * VisionOS Custom Category Picker Modal Logic
+   * ------------------------------------------------------------- */
+  let pickerTarget = 'form'; // 'form' or 'admin'
+
+  function openCategoryPicker(target = 'form') {
+    pickerTarget = target;
+    const modalCategoryPicker = document.getElementById('modal-category-picker');
+    const pickerSearch = document.getElementById('cat-picker-search');
+    
+    if (pickerSearch) pickerSearch.value = '';
+    renderCategoryPickerList();
+    modalCategoryPicker?.classList.remove('hidden');
+  }
+
+  function renderCategoryPickerList(filterText = '') {
+    const listElem = document.getElementById('custom-categories-list');
+    if (!listElem) return;
+
+    const catMap = getCategoriesMap();
+    const q = filterText.toLowerCase().trim();
+    let html = '';
+
+    if (pickerTarget === 'admin') {
+      html += `
+        <div class="custom-cat-item ${currentCategory === 'all' ? 'selected' : ''}" data-cat="all">
+          <div class="cat-item-info">
+            <div class="cat-item-icon"><i class="fa-solid fa-border-all"></i></div>
+            <span class="cat-item-name">Barcha Bo'limlar</span>
+          </div>
+          <span class="cat-item-count">${allElements.length} ta</span>
+        </div>
+      `;
+    }
+
+    for (const [cat, count] of Object.entries(catMap)) {
+      if (q && !cat.toLowerCase().includes(q)) continue;
+      const icon = CATEGORY_ICONS[cat] || 'fa-layer-group';
+      const isSelected = pickerTarget === 'form' 
+        ? (formElementCatVal?.value === cat)
+        : (currentCategory === cat);
+
+      html += `
+        <div class="custom-cat-item ${isSelected ? 'selected' : ''}" data-cat="${cat}">
+          <div class="cat-item-info">
+            <div class="cat-item-icon"><i class="fa-solid ${icon}"></i></div>
+            <span class="cat-item-name">${cat}</span>
+          </div>
+          <span class="cat-item-count">${count} ta</span>
+        </div>
+      `;
+    }
+
+    if (pickerTarget === 'form') {
+      html += `
+        <div class="custom-cat-item" data-cat="__custom__" style="border-style: dashed; border-color: var(--primary-pink);">
+          <div class="cat-item-info">
+            <div class="cat-item-icon" style="background: var(--pink-soft-bg); color: var(--primary-pink);"><i class="fa-solid fa-plus"></i></div>
+            <span class="cat-item-name" style="color: var(--primary-pink);">Yangi bo'lim yaratish...</span>
+          </div>
+        </div>
+      `;
+    }
+
+    listElem.innerHTML = html;
+  }
+
+  formElementCatTrigger?.addEventListener('click', () => openCategoryPicker('form'));
+  adminFilterCatTrigger?.addEventListener('click', () => openCategoryPicker('admin'));
+
+  document.getElementById('modal-cat-picker-close')?.addEventListener('click', () => {
+    document.getElementById('modal-category-picker')?.classList.add('hidden');
+  });
+
+  document.getElementById('cat-picker-search')?.addEventListener('input', (e) => {
+    renderCategoryPickerList(e.target.value);
+  });
+
+  document.getElementById('custom-categories-list')?.addEventListener('click', (e) => {
+    const item = e.target.closest('.custom-cat-item');
+    if (!item) return;
+    const cat = item.dataset.cat;
+
+    if (pickerTarget === 'form') {
+      if (cat === '__custom__') {
+        if (formElementCatCustom) formElementCatCustom.classList.remove('hidden');
+        if (formElementCatLabel) formElementCatLabel.textContent = "Yangi bo'lim nomi...";
+        if (formElementCatVal) formElementCatVal.value = '';
+      } else {
+        if (formElementCatCustom) formElementCatCustom.classList.add('hidden');
+        if (formElementCatVal) formElementCatVal.value = cat;
+        if (formElementCatLabel) formElementCatLabel.textContent = cat;
+      }
+    } else if (pickerTarget === 'admin') {
+      currentCategory = cat;
+      if (adminFilterCatLabel) adminFilterCatLabel.textContent = cat === 'all' ? "Barcha Bo'limlar" : cat;
+      renderAdminElements();
+    }
+
+    document.getElementById('modal-category-picker')?.classList.add('hidden');
+    triggerHaptic('light');
+  });
+
+  /* -------------------------------------------------------------
    * Admin Panel Functions
    * ------------------------------------------------------------- */
 
-  function populateCategoryDropdowns() {
-    try {
-      if (!adminCategoryFilter || !categoriesDatalist) return;
-      const catMap = getCategoriesMap();
-      const categories = Object.keys(catMap);
-
-      let filterHtml = '<option value="all">Barcha Bo\'limlar</option>';
-      let datalistHtml = '';
-
-      categories.forEach(cat => {
-        filterHtml += `<option value="${cat}">${cat} (${catMap[cat]})</option>`;
-        datalistHtml += `<option value="${cat}">`;
-      });
-
-      adminCategoryFilter.innerHTML = filterHtml;
-      categoriesDatalist.innerHTML = datalistHtml;
-    } catch (e) {}
-  }
-
   function renderAdminElements() {
-    try {
-      if (!adminElementsList) return;
-      const query = normalizeText(adminSearchInput ? adminSearchInput.value : '');
-      const catFilter = adminCategoryFilter ? adminCategoryFilter.value : 'all';
+    if (!adminElementsList) return;
 
-      const filtered = allElements.filter(item => {
+    let filtered = [...allElements];
+
+    if (adminSearchInput && adminSearchInput.value.trim()) {
+      const q = adminSearchInput.value.toLowerCase().trim();
+      filtered = filtered.filter(item => {
         if (!item) return false;
-        if (catFilter !== 'all' && item.category !== catFilter) return false;
-        if (!query) return true;
-        const str = `${item.code} ${item.description} ${item.category} ${(item.keywords || []).join(' ')}`.toLowerCase();
-        return str.includes(query);
+        return (item.code && item.code.toLowerCase().includes(q)) ||
+               (item.description && item.description.toLowerCase().includes(q));
       });
+    }
 
-      if (filtered.length === 0) {
-        adminElementsList.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 11px;">Hech narsa topilmadi.</div>`;
-        return;
-      }
+    if (currentCategory !== 'all') {
+      filtered = filtered.filter(item => item && item.category === currentCategory);
+    }
 
-      adminElementsList.innerHTML = filtered.map(item => `
-        <div class="admin-item-row" data-id="${item.id}">
-          <div class="admin-item-left">
-            <span class="admin-item-code">${item.code || ''}</span>
-            <span class="admin-item-desc">${item.description || ''}</span>
-            <span class="admin-item-cat"><i class="fa-solid fa-folder"></i> ${item.category || ''}</span>
-          </div>
-          <div class="admin-item-right">
-            <button class="btn-admin-edit" data-id="${item.id}" title="Tahrirlash"><i class="fa-solid fa-pen"></i> Tahrirlash</button>
-            <button class="btn-admin-delete" data-id="${item.id}" title="O'chirish"><i class="fa-solid fa-trash"></i></button>
-          </div>
+    if (filtered.length === 0) {
+      adminElementsList.innerHTML = '<div style="padding:16px; text-align:center; color:#9E96A8; font-size:12px;">Elementlar topilmadi</div>';
+      return;
+    }
+
+    adminElementsList.innerHTML = filtered.slice(0, 100).map(item => `
+      <div class="admin-item-row">
+        <div class="admin-item-left">
+          <span class="admin-item-code">${item.code}</span>
+          <span class="admin-item-desc">${item.description}</span>
+          <span class="admin-item-cat">${item.category}</span>
         </div>
-      `).join('');
-    } catch (e) {
-      console.error('Render admin elements error:', e);
-    }
-  }
-
-  function populateCategoryDropdowns() {
-    const catSelect = document.getElementById('form-element-cat-select');
-    const adminCatFilter = document.getElementById('admin-category-filter');
-    const categoriesDatalist = document.getElementById('categories-datalist');
-    const catMap = getCategoriesMap();
-    const allCategories = Array.from(new Set([...Object.keys(CATEGORY_ICONS), ...Object.keys(catMap)]));
-
-    if (catSelect) {
-      let optionsHTML = allCategories.map(c => `<option value="${c}">${c}</option>`).join('');
-      optionsHTML += `<option value="__custom__">➕ Yangi kategoriya kiritish...</option>`;
-      catSelect.innerHTML = optionsHTML;
-    }
-
-    if (adminCatFilter) {
-      let filterHTML = `<option value="all">Barcha Bo'limlar</option>`;
-      filterHTML += allCategories.map(c => `<option value="${c}">${c}</option>`).join('');
-      adminCatFilter.innerHTML = filterHTML;
-    }
-
-    if (categoriesDatalist) {
-      categoriesDatalist.innerHTML = allCategories.map(c => `<option value="${c}">`).join('');
-    }
-  }
-
-  // Handle Category Select Change
-  const formElementCatSelect = document.getElementById('form-element-cat-select');
-  const formElementCatCustom = document.getElementById('form-element-cat-custom');
-
-  if (formElementCatSelect) {
-    formElementCatSelect.addEventListener('change', () => {
-      if (formElementCatSelect.value === '__custom__') {
-        formElementCatCustom?.classList.remove('hidden');
-        formElementCatCustom?.focus();
-      } else {
-        formElementCatCustom?.classList.add('hidden');
-      }
-    });
+        <div class="admin-item-right">
+          <button class="btn-admin-edit" data-id="${item.id}">Tahrirlash</button>
+          <button class="btn-admin-delete" data-id="${item.id}">O'chirish</button>
+        </div>
+      </div>
+    `).join('');
   }
 
   function openAddElementModal() {
     if (!modalElementForm) return;
-    populateCategoryDropdowns();
     if (modalElementTitle) modalElementTitle.innerHTML = '<i class="fa-solid fa-plus-circle"></i> Yangi Element Qo\'shish';
     if (formElementId) formElementId.value = '';
     if (formElementCode) formElementCode.value = '';
     if (formElementDesc) formElementDesc.value = '';
     
-    if (formElementCatSelect) formElementCatSelect.value = 'Trenddagi 3D Elementlar';
+    if (formElementCatVal) formElementCatVal.value = 'Trenddagi 3D Elementlar';
+    if (formElementCatLabel) formElementCatLabel.textContent = 'Trenddagi 3D Elementlar';
     if (formElementCatCustom) {
       formElementCatCustom.value = '';
       formElementCatCustom.classList.add('hidden');
     }
     
-    if (formElementIcon) formElementIcon.value = 'fa-box-open';
-    if (formIconPreview) formIconPreview.className = 'fa-solid fa-box-open';
     if (formElementKeywords) formElementKeywords.value = '';
     if (formElementIsNew) formElementIsNew.checked = true;
 
@@ -893,29 +637,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const item = allElements.find(e => e && e.id == id);
     if (!item || !modalElementForm) return;
 
-    populateCategoryDropdowns();
     if (modalElementTitle) modalElementTitle.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Elementni Tahrirlash';
     if (formElementId) formElementId.value = item.id;
     if (formElementCode) formElementCode.value = item.code || '';
     if (formElementDesc) formElementDesc.value = item.description || '';
     
     const targetCat = item.category || 'Trenddagi 3D Elementlar';
-    if (formElementCatSelect) {
-      const hasOption = Array.from(formElementCatSelect.options).some(opt => opt.value === targetCat);
-      if (hasOption) {
-        formElementCatSelect.value = targetCat;
-        if (formElementCatCustom) formElementCatCustom.classList.add('hidden');
-      } else {
-        formElementCatSelect.value = '__custom__';
-        if (formElementCatCustom) {
-          formElementCatCustom.value = targetCat;
-          formElementCatCustom.classList.remove('hidden');
-        }
-      }
-    }
+    if (formElementCatVal) formElementCatVal.value = targetCat;
+    if (formElementCatLabel) formElementCatLabel.textContent = targetCat;
+    if (formElementCatCustom) formElementCatCustom.classList.add('hidden');
 
-    if (formElementIcon) formElementIcon.value = CATEGORY_ICONS[item.category] || 'fa-box-open';
-    if (formIconPreview) formIconPreview.className = `fa-solid ${formElementIcon.value}`;
     if (formElementKeywords) formElementKeywords.value = (item.keywords || []).join(', ');
     if (formElementIsNew) formElementIsNew.checked = !!item.isNew;
 
@@ -927,13 +658,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const code = formElementCode ? formElementCode.value.trim() : '';
     const description = formElementDesc ? formElementDesc.value.trim() : '';
     
-    let category = formElementCatSelect ? formElementCatSelect.value : 'Trenddagi 3D Elementlar';
-    if (category === '__custom__') {
-      category = formElementCatCustom ? formElementCatCustom.value.trim() : '';
+    let category = formElementCatVal ? formElementCatVal.value : 'Trenddagi 3D Elementlar';
+    if (!category && formElementCatCustom) {
+      category = formElementCatCustom.value.trim();
     }
     if (!category) category = 'Trenddagi 3D Elementlar';
 
-    const iconClass = (formElementIcon ? formElementIcon.value.trim() : '') || 'fa-box-open';
     const keywordsStr = formElementKeywords ? formElementKeywords.value.trim() : '';
     const isNew = formElementIsNew ? formElementIsNew.checked : true;
 
@@ -943,7 +673,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const keywords = keywordsStr ? keywordsStr.split(',').map(k => k.trim()) : [code, description, category];
-    CATEGORY_ICONS[category] = iconClass;
 
     const payload = {
       code,
@@ -973,7 +702,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       if (id) {
         const res = await fetch(`${API_BASE}/${id}`, {
-          method: 'PATCH',
+          method: 'PUT',
           headers: authHeaders,
           body: JSON.stringify(payload)
         });
@@ -1022,7 +751,6 @@ document.addEventListener('DOMContentLoaded', () => {
       renderCategoriesGrid();
       renderNewsElements();
       renderAdminElements();
-      populateCategoryDropdowns();
     } catch (e) {
       showToast('⚠️ Xatolik yuz berdi, mahalliy saqlandi.');
     } finally {
@@ -1043,6 +771,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const initData = tg?.initData || '';
     const tgUser = tg?.initDataUnsafe?.user;
     const authHeaders = {
+      'Content-Type': 'application/json',
       'x-telegram-init-data': initData,
       'x-user-id': String(tgUser?.id || '')
     };
@@ -1067,19 +796,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function renderIconPickerGrid(filter = '') {
-    if (!iconPickerGrid) return;
-    const q = filter.toLowerCase().trim();
-    const filtered = POPULAR_ICONS.filter(i => i.name.toLowerCase().includes(q) || i.class.toLowerCase().includes(q));
-
-    iconPickerGrid.innerHTML = filtered.map(icon => `
-      <div class="icon-picker-item" data-class="${icon.class}">
-        <i class="fa-solid ${icon.class}"></i>
-        <span>${icon.name}</span>
-      </div>
-    `).join('');
-  }
-
   function renderAdminsList() {
     if (!adminsListContainer) return;
     const ADMIN_NAMES = {
@@ -1089,27 +805,23 @@ document.addEventListener('DOMContentLoaded', () => {
       "8112688757": "Zuhra 🩷"
     };
 
-    // Strictly enforce the 2 core admins
     adminList = [SUPER_ADMIN_ID, ZUHRA_ADMIN_ID];
 
     adminsListContainer.innerHTML = adminList.map(admin => {
       const numAdmin = Number(admin);
       const isSuper = numAdmin === SUPER_ADMIN_ID;
-      const isZuhra = numAdmin === ZUHRA_ADMIN_ID;
-      const displayName = ADMIN_NAMES[numAdmin] || ADMIN_NAMES[String(admin)] || (isSuper ? "Yaxshi Bola 🩵" : "Zuhra 🩷");
-      const badgeText = isSuper ? '(Asosiy Admin)' : '(Admin)';
-      const iconColor = isSuper ? '#0ea5e9' : '#ec4899';
+      const displayName = ADMIN_NAMES[numAdmin] || (isSuper ? "Yaxshi Bola 🩵" : "Zuhra 🩷");
 
       return `
-        <div class="admin-user-row" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:rgba(255,255,255,0.95); margin-bottom:10px; border-radius:14px; border:1px solid ${isSuper ? 'rgba(14,165,233,0.3)' : 'rgba(236,72,153,0.3)'}; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+        <div class="admin-user-row" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:rgba(255,255,255,0.95); margin-bottom:10px; border-radius:14px; border:1px solid ${isSuper ? 'rgba(14,165,233,0.3)' : 'rgba(236,72,153,0.3)'};">
           <div class="admin-user-info" style="display:flex; align-items:center; gap:12px;">
-            <i class="fa-solid ${isSuper ? 'fa-crown' : 'fa-user-shield'}" style="color: ${iconColor}; font-size: 18px;"></i>
+            <i class="fa-solid ${isSuper ? 'fa-crown' : 'fa-user-shield'}" style="color: ${isSuper ? '#0ea5e9' : '#ec4899'}; font-size: 18px;"></i>
             <div>
               <strong style="color:#1e293b; font-size:15px; display:block;">${displayName}</strong>
-              <small style="opacity:0.75; font-size:12px; color:#64748b;">ID: ${admin} <span style="color:${iconColor}; font-weight:600;">${badgeText}</span></small>
+              <small style="opacity:0.75; font-size:12px; color:#64748b;">ID: ${admin}</small>
             </div>
           </div>
-          <span style="font-size:11px; color:${iconColor}; font-weight:700; background:${isSuper ? 'rgba(14,165,233,0.12)' : 'rgba(236,72,153,0.12)'}; padding:4px 12px; border-radius:20px; border: 1px solid ${isSuper ? 'rgba(14,165,233,0.2)' : 'rgba(236,72,153,0.2)'};">
+          <span style="font-size:11px; color:${isSuper ? '#0ea5e9' : '#ec4899'}; font-weight:700; background:${isSuper ? 'rgba(14,165,233,0.12)' : 'rgba(236,72,153,0.12)'}; padding:4px 12px; border-radius:20px;">
             ${isSuper ? 'ASOSIY ADMIN' : 'ADMIN'}
           </span>
         </div>
@@ -1117,69 +829,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
-  async function addAdmin() {
-    const val = newAdminInput ? newAdminInput.value.trim() : '';
-    if (!val) return;
-
-    const item = isNaN(Number(val)) ? val.toLowerCase() : Number(val);
-    if (!adminList.includes(item)) {
-      adminList.push(item);
-      try {
-        localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
-      } catch (e) {}
-      if (newAdminInput) newAdminInput.value = '';
-      renderAdminsList();
-      updateStats();
-      showToast('✅ Yangi admin qo\'shildi!');
-
-      // Sync with Supabase bot_users table
-      try {
-        const isNum = !isNaN(Number(val));
-        const payload = isNum 
-          ? { id: Number(val), username: `admin_${val}`, first_name: 'Admin' } 
-          : { id: Math.floor(Math.random() * 1000000000), username: String(val).replace('@',''), first_name: 'Admin' };
-        
-        await fetch(`${SUPABASE_URL}/rest/v1/bot_users`, {
-          method: 'POST',
-          headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=representation'
-          },
-          body: JSON.stringify(payload)
-        });
-      } catch (e) {}
-    } else {
-      showToast('⚠️ Ushbu admin allaqachon mavjud!');
-    }
-  }
-
-  async function removeAdmin(item) {
-    if (item == SUPER_ADMIN_ID || Number(item) === SUPER_ADMIN_ID || item == ZUHRA_ADMIN_ID || Number(item) === ZUHRA_ADMIN_ID) {
-      return showToast('❌ Asosiy adminlarni o\'chirib bo\'lmaydi!');
-    }
-    adminList = adminList.filter(a => String(a) !== String(item));
-    try {
-      localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
-    } catch (e) {}
-    renderAdminsList();
-    updateStats();
-    showToast('🗑️ Admin huquqi olindi');
-
-    if (!isNaN(Number(item))) {
-      try {
-        await fetch(`${SUPABASE_URL}/rest/v1/bot_users?id=eq.${item}`, {
-          method: 'DELETE',
-          headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`
-          }
-        });
-      } catch (e) {}
-    }
-  }
-
+  // Backup & JSON Download Implementation
   function downloadJSONBackup() {
     const modalBackupDownload = document.getElementById('modal-backup-download');
     const backupCountElem = document.getElementById('backup-count-elem');
@@ -1189,9 +839,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const backupCopyTextBtn = document.getElementById('backup-copy-text-btn');
     const backupPreviewText = document.getElementById('backup-preview-text');
 
+    const dateStr = new Date().toISOString().split('T')[0];
+
     const backupData = {
       timestamp: new Date().toISOString(),
-      date: new Date().toISOString().split('T')[0],
+      date: dateStr,
       app: 'Canva Element Kodlari',
       author: 'Zuhra Olimova',
       totalElements: allElements.length,
@@ -1204,22 +856,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (backupCountElem) backupCountElem.textContent = `${allElements.length} ta element`;
     if (backupCountAdmin) backupCountAdmin.textContent = `${adminList.length} ta admin`;
-    if (backupDateStr) backupDateStr.textContent = `Vaqt: ${backupData.date}`;
+    if (backupDateStr) backupDateStr.textContent = `Sana: ${dateStr}`;
     if (backupPreviewText) backupPreviewText.value = jsonStr;
 
+    // Create Downloadable Blob URL
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const blobUrl = URL.createObjectURL(blob);
+
     if (backupDirectLink) {
-      backupDirectLink.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr);
-      backupDirectLink.download = `canva_elements_backup_${backupData.date}.json`;
+      backupDirectLink.href = blobUrl;
+      backupDirectLink.download = `canva_elements_backup_${dateStr}.json`;
     }
 
     if (backupCopyTextBtn) {
       backupCopyTextBtn.onclick = () => {
-        copyToClipboard(jsonStr, '📋 Backup JSON nusxalandi!');
+        copyToClipboard(jsonStr, '📋 Backup kodi nusxalandi!');
       };
     }
 
+    // Auto-trigger browser file download link
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = `canva_elements_backup_${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
     modalBackupDownload?.classList.remove('hidden');
-    showToast('💾 Zaxira fayli tayyorlandi!');
+    showToast('💾 Zaxira fayli yuklab olindi!');
+  }
+
+  // Admin Settings Modal Logic
+  function openAdminSettingsModal() {
+    const modalSettings = document.getElementById('modal-admin-settings');
+    const channelInput = document.getElementById('settings-channel-input');
+    const forceSubToggle = document.getElementById('settings-force-sub-toggle');
+
+    let savedSettings = { channel: '@zuhracanva_official', forceSub: true };
+    try {
+      const stored = localStorage.getItem('zo_canva_settings');
+      if (stored) savedSettings = JSON.parse(stored);
+    } catch(e) {}
+
+    if (channelInput) channelInput.value = savedSettings.channel || '@zuhracanva_official';
+    if (forceSubToggle) forceSubToggle.checked = !!savedSettings.forceSub;
+
+    modalSettings?.classList.remove('hidden');
+  }
+
+  async function saveAdminSettings() {
+    const channelInput = document.getElementById('settings-channel-input');
+    const forceSubToggle = document.getElementById('settings-force-sub-toggle');
+
+    const channelVal = channelInput ? channelInput.value.trim() : '@zuhracanva_official';
+    const isEnabled = forceSubToggle ? forceSubToggle.checked : true;
+
+    const settingsObj = { channel: channelVal, forceSub: isEnabled };
+    try {
+      localStorage.setItem('zo_canva_settings', JSON.stringify(settingsObj));
+    } catch(e) {}
+
+    const API_BASE = window.location.origin.includes('vercel.app') 
+      ? 'https://canva-element-bot.onrender.com/api' 
+      : '/api';
+
+    try {
+      await fetch(`${API_BASE}/settings/force-sub`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channelUsername: channelVal, isEnabled })
+      });
+    } catch(e) {}
+
+    document.getElementById('modal-admin-settings')?.classList.add('hidden');
+    showToast('⚙️ Bot sozlamalari saqlandi!');
   }
 
   // Auto-sliding Featured Banner Carousel Logic
@@ -1298,7 +1008,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tabName === 'favorites') renderFavoritesElements();
     if (tabName === 'admin') {
       renderAdminElements();
-      populateCategoryDropdowns();
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1315,14 +1024,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Additional Page Navigation Buttons
+  // Navigation Buttons
   document.getElementById('btn-view-all-news')?.addEventListener('click', () => switchTab('news'));
   document.getElementById('btn-explore-favs')?.addEventListener('click', () => switchTab('home'));
   document.getElementById('btn-news-back')?.addEventListener('click', () => switchTab('home'));
   document.getElementById('btn-admin-back')?.addEventListener('click', () => switchTab('home'));
-  document.getElementById('admin-btn-settings')?.addEventListener('click', () => showToast('⚙️ Sozlamalar menyusi'));
+  
+  // Settings & Backup Modals Click Handlers
+  document.getElementById('admin-btn-settings')?.addEventListener('click', openAdminSettingsModal);
+  document.getElementById('btn-cancel-settings')?.addEventListener('click', () => document.getElementById('modal-admin-settings')?.classList.add('hidden'));
+  document.getElementById('modal-settings-close')?.addEventListener('click', () => document.getElementById('modal-admin-settings')?.classList.add('hidden'));
+  document.getElementById('btn-save-settings')?.addEventListener('click', saveAdminSettings);
 
-  // Global Event Delegation for Elements Grid & Admin Table
+  // Global Event Delegation for Cards & Admin Actions
   document.addEventListener('click', (e) => {
     const copyBtn = e.target.closest('.btn-copy');
     const shareBtn = e.target.closest('.btn-share');
@@ -1332,8 +1046,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const adminEditBtn = e.target.closest('.btn-admin-edit');
     const adminDeleteBtn = e.target.closest('.btn-admin-delete');
-    const removeAdminBtn = e.target.closest('.btn-remove-admin');
-    const iconItem = e.target.closest('.icon-picker-item');
 
     if (copyBtn || codeBox) {
       const code = (copyBtn || codeBox).dataset.code;
@@ -1353,17 +1065,10 @@ document.addEventListener('DOMContentLoaded', () => {
       openEditElementModal(adminEditBtn.dataset.id);
     } else if (adminDeleteBtn) {
       deleteElement(adminDeleteBtn.dataset.id);
-    } else if (removeAdminBtn) {
-      removeAdmin(removeAdminBtn.dataset.admin);
-    } else if (iconItem) {
-      const iconClass = iconItem.dataset.class;
-      if (formElementIcon) formElementIcon.value = iconClass;
-      if (formIconPreview) formIconPreview.className = `fa-solid ${iconClass}`;
-      modalIconPicker?.classList.add('hidden');
     }
   });
 
-  // Admin Quick Action Buttons
+  // Admin Action Row Buttons
   adminBtnAddElement?.addEventListener('click', openAddElementModal);
   adminBtnManageAdmins?.addEventListener('click', () => {
     renderAdminsList();
@@ -1380,30 +1085,12 @@ document.addEventListener('DOMContentLoaded', () => {
   btnCancelElement?.addEventListener('click', () => modalElementForm?.classList.add('hidden'));
   modalElementClose?.addEventListener('click', () => modalElementForm?.classList.add('hidden'));
 
-  // Icon Picker Modal Events
-  btnOpenIconPicker?.addEventListener('click', () => {
-    renderIconPickerGrid();
-    modalIconPicker?.classList.remove('hidden');
-  });
-  btnCloseIconPicker?.addEventListener('click', () => modalIconPicker?.classList.add('hidden'));
-  modalIconClose?.addEventListener('click', () => modalIconPicker?.classList.add('hidden'));
-
-  iconSearchInput?.addEventListener('input', (e) => {
-    renderIconPickerGrid(e.target.value);
-  });
-
-  formElementIcon?.addEventListener('input', (e) => {
-    if (formIconPreview) formIconPreview.className = `fa-solid ${e.target.value.trim() || 'fa-box-open'}`;
-  });
-
   // Admin Management Modal Events
-  btnSaveNewAdmin?.addEventListener('click', addAdmin);
   btnCloseAdminsModal?.addEventListener('click', () => modalManageAdmins?.classList.add('hidden'));
   modalAdminsClose?.addEventListener('click', () => modalManageAdmins?.classList.add('hidden'));
 
   // Admin Filter Inputs
   adminSearchInput?.addEventListener('input', renderAdminElements);
-  adminCategoryFilter?.addEventListener('change', renderAdminElements);
 
   // Search Input Events
   function updateSearchUIState() {
@@ -1475,16 +1162,8 @@ document.addEventListener('DOMContentLoaded', () => {
     renderElements();
   });
 
-  // Fav Stat Click
-  favStatBtn?.addEventListener('click', () => {
-    switchTab('favorites');
-  });
-
-  // Backup Modal Events
+  // Backup Modal Close Buttons
   document.getElementById('modal-backup-close')?.addEventListener('click', () => {
-    document.getElementById('modal-backup-download')?.classList.add('hidden');
-  });
-  document.getElementById('btn-close-backup-modal')?.addEventListener('click', () => {
     document.getElementById('modal-backup-download')?.classList.add('hidden');
   });
 
@@ -1494,5 +1173,4 @@ document.addEventListener('DOMContentLoaded', () => {
   try { renderElements(); } catch (e) { console.error('Render elements error:', e); }
   try { renderCategoriesGrid(); } catch (e) { console.error('Categories error:', e); }
   try { fetchSupabaseElements(); } catch (e) { console.error('Supabase fetch error:', e); }
-  try { fetchSupabaseAdmins(); } catch (e) { console.error('Supabase admins fetch error:', e); }
 });

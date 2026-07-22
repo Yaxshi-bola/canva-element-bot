@@ -17,7 +17,7 @@
   <!-- FontAwesome Free Icons 6.5.1 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   
-  <link rel="stylesheet" href="styles.css?v=3.0" />
+  <link rel="stylesheet" href="styles.css?v=4.0" />
 </head>
 <body class="apple-vision-theme">
 
@@ -101,7 +101,7 @@
     <!-- VIEW 1: HOME TAB -->
     <div class="tab-view active" id="view-home">
       
-      <!-- Auto-Sliding Featured Banner Carousel -->
+      <!-- Auto-Sliding Featured Banner Carousel (User Uploaded Compressed Banners) -->
       <div class="featured-carousel-card" id="featured-carousel-card">
         <div class="carousel-track" id="carousel-track">
           <!-- Slide 1 -->
@@ -112,7 +112,7 @@
               <p class="featured-desc">Eng so'nggi 3D va estetik elementlar endi siz uchun.</p>
             </div>
             <div class="featured-illustration">
-              <img src="assets/banner_gift.png" alt="3D Gift" loading="lazy" />
+              <img src="assets/user_banner1.jpg" alt="3D Gift Banner" loading="lazy" />
             </div>
           </div>
           <!-- Slide 2 -->
@@ -123,7 +123,7 @@
               <p class="featured-desc">Post va Story dizaynlaringiz uchun estetik 3D harflar.</p>
             </div>
             <div class="featured-illustration">
-              <img src="assets/banner_shapes.png" alt="3D Shapes" loading="lazy" />
+              <img src="assets/user_banner2.jpg" alt="3D Shapes Banner" loading="lazy" />
             </div>
           </div>
           <!-- Slide 3 -->
@@ -134,7 +134,7 @@
               <p class="featured-desc">Instagram va Telegram kanallar uchun trend elementlar.</p>
             </div>
             <div class="featured-illustration">
-              <img src="assets/banner_smm.png" alt="3D SMM" loading="lazy" />
+              <img src="assets/user_banner3.jpg" alt="3D SMM Banner" loading="lazy" />
             </div>
           </div>
         </div>
@@ -268,9 +268,10 @@
         <div class="admin-search-bar">
           <i class="fa-solid fa-magnifying-glass"></i>
           <input type="text" id="admin-search-input" placeholder="Element kodi yoki nomi..." />
-          <select id="admin-category-filter">
-            <option value="all">Barcha Bo'limlar</option>
-          </select>
+          <button class="custom-select-trigger" id="admin-filter-cat-trigger">
+            <span id="admin-filter-cat-label">Barcha Bo'limlar</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
         </div>
         <div class="admin-elements-list" id="admin-elements-list"></div>
       </div>
@@ -309,7 +310,7 @@
     </div>
   </nav>
 
-  <!-- Modals -->
+  <!-- MODALS -->
   
   <!-- Add/Edit Element Modal -->
   <div class="modal-overlay hidden" id="modal-element-form">
@@ -333,9 +334,11 @@
 
         <div class="form-group">
           <label>Kategoriyasi</label>
-          <select id="form-element-cat-select" class="form-select">
-            <option value="Trenddagi 3D Elementlar">Trenddagi 3D Elementlar</option>
-          </select>
+          <button type="button" class="custom-select-trigger" id="form-element-cat-trigger">
+            <span id="form-element-cat-label">Trenddagi 3D Elementlar</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <input type="hidden" id="form-element-cat-val" value="Trenddagi 3D Elementlar" />
           <input type="text" id="form-element-cat-custom" class="form-input custom-cat-input hidden" placeholder="Yangi kategoriya nomini yozing..." />
         </div>
 
@@ -359,6 +362,23 @@
     </div>
   </div>
 
+  <!-- Custom VisionOS Category Picker Modal -->
+  <div class="modal-overlay hidden" id="modal-category-picker">
+    <div class="modal-card modal-bottom-sheet">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-layer-group"></i> Bo'limni Tanlang</h3>
+        <button class="modal-close-btn" id="modal-cat-picker-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="cat-picker-search" placeholder="Bo'lim nomini qidirish..." />
+        </div>
+        <div class="custom-categories-list" id="custom-categories-list"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Manage Admins Modal -->
   <div class="modal-overlay hidden" id="modal-manage-admins">
     <div class="modal-card">
@@ -371,6 +391,70 @@
       </div>
       <div class="modal-footer">
         <button class="btn-modal-cancel" id="btn-close-admins-modal">Yopish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Settings Modal -->
+  <div class="modal-overlay hidden" id="modal-admin-settings">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-gear"></i> Bot Sozlamalari</h3>
+        <button class="modal-close-btn" id="modal-settings-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Majburiy Obuna Kanali Username</label>
+          <input type="text" id="settings-channel-input" placeholder="masalan: @kanaliz_nomi" />
+          <small class="form-help">Bot ushbu kanalda administrator bo'lishi kerak!</small>
+        </div>
+
+        <div class="form-checkbox-group" style="margin-top: 14px;">
+          <label class="checkbox-container">
+            <input type="checkbox" id="settings-force-sub-toggle" />
+            <span class="checkmark"></span>
+            Majburiy obuna rejimini yoqish (Faollashtirish)
+          </label>
+        </div>
+
+        <div class="form-group" style="margin-top: 14px;">
+          <label>Mini App Havolasi</label>
+          <input type="text" id="settings-webapp-url" readonly value="https://canva-element-kodlari-zuhra-olimova.vercel.app" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" id="btn-cancel-settings">Bekor qilish</button>
+        <button class="btn-modal-save" id="btn-save-settings"><i class="fa-solid fa-check"></i> Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Download JSON Backup Modal -->
+  <div class="modal-overlay hidden" id="modal-backup-download">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-file-arrow-down"></i> JSON Backup Yuklab Olish</h3>
+        <button class="modal-close-btn" id="modal-backup-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Barcha elementlar va sozlamalarning zaxira nusxasi tayyor:</p>
+        
+        <div class="backup-stats-box">
+          <div class="backup-stat-row"><i class="fa-solid fa-cubes-stacked"></i> <span id="backup-count-elem">408 ta element</span></div>
+          <div class="backup-stat-row"><i class="fa-solid fa-user-shield"></i> <span id="backup-count-admin">2 ta admin</span></div>
+          <div class="backup-stat-row"><i class="fa-regular fa-clock"></i> <span id="backup-date-str">Sana: bugun</span></div>
+        </div>
+
+        <div class="form-group" style="margin-top: 12px;">
+          <label>Backup kodi (nusxalash uchun):</label>
+          <textarea id="backup-preview-text" class="backup-textarea" readonly></textarea>
+        </div>
+      </div>
+      <div class="modal-footer" style="flex-wrap: wrap;">
+        <button class="btn-modal-cancel" id="backup-copy-text-btn"><i class="fa-regular fa-copy"></i> Kodni nusxalash</button>
+        <a id="backup-direct-link" class="btn-modal-save" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+          <i class="fa-solid fa-download"></i> Faylni yuklab olish
+        </a>
       </div>
     </div>
   </div>
@@ -404,7 +488,7 @@
   </div>
 
   <!-- Include Data and Main Logic Scripts -->
-  <script src="data.js?v=3.0"></script>
-  <script src="app.js?v=3.0"></script>
+  <script src="data.js?v=4.0"></script>
+  <script src="app.js?v=4.0"></script>
 </body>
 </html>

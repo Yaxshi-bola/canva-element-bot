@@ -84,9 +84,7 @@ body.apple-vision-theme {
   right: -50px;
 }
 
-/* -------------------------------------------------------------
- * HEADER SECTION
- * ------------------------------------------------------------- */
+/* HEADER SECTION */
 .app-header {
   padding: 16px 16px 8px;
   background: transparent;
@@ -215,9 +213,7 @@ body.apple-vision-theme {
   -webkit-text-fill-color: transparent;
 }
 
-/* -------------------------------------------------------------
- * STICKY SEARCH & CATEGORY CHIPS
- * ------------------------------------------------------------- */
+/* STICKY SEARCH & CATEGORY CHIPS */
 .sticky-search-section {
   position: sticky;
   top: 0;
@@ -335,9 +331,7 @@ body.apple-vision-theme {
   transform: scale(0.95);
 }
 
-/* -------------------------------------------------------------
- * MAIN CONTENT AREA & TAB VIEWS
- * ------------------------------------------------------------- */
+/* MAIN CONTENT AREA & TAB VIEWS */
 .main-content {
   max-width: 540px;
   margin: 0 auto;
@@ -358,17 +352,15 @@ body.apple-vision-theme {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* -------------------------------------------------------------
- * FEATURED AUTO-SLIDING CAROUSEL BANNER
- * ------------------------------------------------------------- */
+/* FEATURED AUTO-SLIDING CAROUSEL BANNER */
 .featured-carousel-card {
   position: relative;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 246, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 240, 246, 0.92) 100%);
   border: 1px solid rgba(255, 45, 141, 0.15);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
   overflow: hidden;
-  height: 96px;
+  height: 98px;
   margin-bottom: 20px;
 }
 
@@ -385,7 +377,7 @@ body.apple-vision-theme {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px 10px 16px;
+  padding: 10px 16px;
 }
 
 .featured-info {
@@ -428,19 +420,22 @@ body.apple-vision-theme {
 }
 
 .featured-illustration {
-  width: 76px;
-  height: 76px;
+  width: 78px;
+  height: 78px;
   flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(255, 45, 141, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #FFFFFF;
 }
 
 .featured-illustration img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 10px rgba(255, 45, 141, 0.2));
+  object-fit: cover;
 }
 
 .carousel-dots {
@@ -467,9 +462,7 @@ body.apple-vision-theme {
   background: var(--primary-pink);
 }
 
-/* -------------------------------------------------------------
- * SECTION HEADERS & TITLE ROWS
- * ------------------------------------------------------------- */
+/* SECTION HEADERS & TITLE ROWS */
 .section-header-row {
   display: flex;
   align-items: center;
@@ -495,9 +488,7 @@ body.apple-vision-theme {
   gap: 4px;
 }
 
-/* -------------------------------------------------------------
- * 2-COLUMN ELEMENT CARDS GRID
- * ------------------------------------------------------------- */
+/* 2-COLUMN ELEMENT CARDS GRID */
 .elements-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -663,9 +654,7 @@ body.apple-vision-theme {
   background: var(--pink-soft-bg);
 }
 
-/* -------------------------------------------------------------
- * CATEGORIES VIEW TAB
- * ------------------------------------------------------------- */
+/* CATEGORIES VIEW TAB */
 .tab-page-header {
   display: flex;
   align-items: center;
@@ -748,9 +737,7 @@ body.apple-vision-theme {
   color: var(--primary-pink);
 }
 
-/* -------------------------------------------------------------
- * FAVORITES EMPTY STATE & VIEW
- * ------------------------------------------------------------- */
+/* FAVORITES EMPTY STATE & VIEW */
 .fav-empty-state {
   display: flex;
   flex-direction: column;
@@ -812,9 +799,7 @@ body.apple-vision-theme {
   box-shadow: 0 6px 18px rgba(255, 45, 141, 0.3);
 }
 
-/* -------------------------------------------------------------
- * ADMIN PANEL VIEW (VERTICAL ACTION LIST)
- * ------------------------------------------------------------- */
+/* ADMIN PANEL VIEW (VERTICAL ACTION LIST) */
 .admin-header-icon {
   color: var(--primary-pink);
 }
@@ -892,16 +877,111 @@ body.apple-vision-theme {
   margin-bottom: 12px;
 }
 
-.admin-search-bar input, .admin-search-bar select {
-  height: 40px;
+.admin-search-bar input {
+  flex: 1;
+  height: 42px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--card-border);
   background: var(--card-bg);
-  padding: 0 10px;
+  padding: 0 12px;
   font-size: 12px;
 }
 
-.admin-search-bar input { flex: 1; }
+/* CUSTOM VISIONOS DROPDOWN TRIGGER BUTTON (Replaces ugly browser select) */
+.custom-select-trigger {
+  height: 42px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition: var(--transition);
+  width: 100%;
+}
+
+.custom-select-trigger:active {
+  background: var(--pink-soft-bg);
+  border-color: var(--primary-pink);
+}
+
+.custom-select-trigger span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-select-trigger i {
+  color: var(--primary-pink);
+  font-size: 11px;
+}
+
+/* CUSTOM CATEGORIES LIST IN MODAL */
+.custom-categories-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 340px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+.custom-cat-item {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.custom-cat-item:active, .custom-cat-item.selected {
+  background: var(--pink-soft-bg);
+  border-color: var(--primary-pink);
+}
+
+.cat-item-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cat-item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--pink-soft-bg);
+  color: var(--primary-pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.cat-item-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.cat-item-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary-pink);
+  background: rgba(255, 45, 141, 0.1);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
 
 .admin-elements-list {
   display: flex;
@@ -948,9 +1028,7 @@ body.apple-vision-theme {
 .btn-admin-edit { background: var(--pink-soft-bg); color: var(--primary-pink); }
 .btn-admin-delete { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
-/* -------------------------------------------------------------
- * FLOATING GLASSMORPHISM BOTTOM NAVIGATION BAR
- * ------------------------------------------------------------- */
+/* FLOATING GLASSMORPHISM BOTTOM NAVIGATION BAR */
 .bottom-nav-bar {
   position: fixed;
   bottom: 12px;
@@ -1031,9 +1109,62 @@ body.apple-vision-theme {
   border-radius: var(--radius-pill);
 }
 
-/* -------------------------------------------------------------
- * MODALS & OVERLAYS
- * ------------------------------------------------------------- */
+/* BACKUP & SETTINGS MODALS STYLES */
+.backup-stats-box {
+  background: var(--pink-soft-bg);
+  border: 1px solid rgba(255, 45, 141, 0.15);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+}
+
+.backup-stat-row {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.backup-stat-row i { color: var(--primary-pink); }
+
+.backup-textarea {
+  width: 100%;
+  height: 110px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--card-border);
+  background: #F7F5F9;
+  padding: 8px 10px;
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-primary);
+  resize: none;
+  outline: none;
+}
+
+.form-help {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  display: block;
+}
+
+/* Checkbox container styling */
+.checkbox-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+/* MODALS & OVERLAYS */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -1087,6 +1218,29 @@ body.apple-vision-theme {
   padding: 16px 20px;
   max-height: 70vh;
   overflow-y: auto;
+}
+
+.modal-search-box {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.modal-search-box input {
+  width: 100%;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--card-border);
+  padding: 0 12px 0 34px;
+  font-size: 12px;
+}
+
+.modal-search-box i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary-pink);
+  font-size: 12px;
 }
 
 .form-group {
