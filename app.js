@@ -1,6 +1,5 @@
 /* -------------------------------------------------------------
- * Canva Element Kodlari Telegram Mini App — Supabase REST Logic
- * Supabase URL: https://mjenunxgakcvyzcikjmi.supabase.co
+ * Canva Element Kodlari Telegram Mini App — Logic v3
  * Author: Zuhra Olimova
  * ------------------------------------------------------------- */
 
@@ -37,13 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const emptyState = document.getElementById('empty-state');
   const resetFilterBtn = document.getElementById('reset-filter-btn');
   const currentCategoryTitle = document.getElementById('current-category-title');
-  const resultsCountLabel = document.getElementById('results-count');
   const copyAllBtn = document.getElementById('copy-all-btn');
   const statTotal = document.getElementById('stat-total');
   const statCategories = document.getElementById('stat-categories');
   const statFavs = document.getElementById('stat-favs');
-  const favCountTag = document.getElementById('fav-count-tag');
-  const favCountTop = document.getElementById('fav-count-top');
   const favStatBtn = document.getElementById('fav-stat-btn');
   const toast = document.getElementById('toast');
   const toastCode = document.getElementById('toast-code');
@@ -308,8 +304,6 @@ document.addEventListener('DOMContentLoaded', () => {
     statTotal.textContent = allElements.length;
     statCategories.textContent = Object.keys(catMap).length;
     statFavs.textContent = favorites.length;
-    if (favCountTag) favCountTag.textContent = favorites.length;
-    if (favCountTop) favCountTop.textContent = favorites.length;
   }
 
   // Filter & Rank Elements
@@ -346,17 +340,17 @@ document.addEventListener('DOMContentLoaded', () => {
     return results.map(r => r.item);
   }
 
-  // Generate Card HTML
+  // Generate Ultra-Compact Card HTML
   function renderCardHTML(item) {
     const isFav = favorites.includes(item.id);
     const favClass = isFav ? 'active fa-solid' : 'fa-regular';
-    const newBadgeHTML = item.isNew ? `<span class="new-badge">YANGI ✨</span>` : '';
+    const newBadgeHTML = item.isNew ? `<span class="new-badge">NEW</span>` : '';
     const descHTML = highlightMatches(item.description, currentSearchQuery);
 
     return `
       <div class="element-card" data-id="${item.id}">
         <div class="card-header">
-          <span class="category-tag"><i class="fa-solid fa-folder-open"></i> ${item.category} ${newBadgeHTML}</span>
+          <span class="category-tag"><i class="fa-solid fa-folder"></i> ${item.category} ${newBadgeHTML}</span>
           <button class="fav-btn ${isFav ? 'active' : ''}" data-id="${item.id}" title="Saqlash">
             <i class="${favClass} fa-star"></i>
           </button>
@@ -375,8 +369,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <button class="btn-copy" data-code="${item.code}">
             <i class="fa-solid fa-copy"></i> Nusxalash
           </button>
-          <button class="btn-canva" data-code="${item.code}">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i> Canva'da
+          <button class="btn-canva" data-code="${item.code}" title="Canva'da ochish">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
           </button>
         </div>
       </div>
@@ -395,8 +389,6 @@ document.addEventListener('DOMContentLoaded', () => {
       currentCategoryTitle.textContent = currentCategory;
     }
 
-    if (resultsCountLabel) resultsCountLabel.textContent = `${filtered.length} ta element`;
-
     if (filtered.length === 0) {
       elementsGrid.innerHTML = '';
       emptyState.classList.remove('hidden');
@@ -407,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elementsGrid.innerHTML = filtered.map(renderCardHTML).join('');
   }
 
-  // Render Categories View Grid
+  // Render Categories View Grid with Icons
   function renderCategoriesGrid() {
     const catMap = getCategoriesMap();
     let html = '';
@@ -447,17 +439,12 @@ document.addEventListener('DOMContentLoaded', () => {
     favoritesElementsGrid.innerHTML = favItems.map(renderCardHTML).join('');
   }
 
-  // Switch Tabs (Both Top Tabs and Bottom Navbar)
+  // Switch Bottom Navbar Tabs
   function switchTab(tabName) {
     activeTab = tabName;
 
-    // Update Bottom Navbar Active
+    // Update Bottom Navbar Active Button
     document.querySelectorAll('.bottom-navbar .nav-item').forEach(item => {
-      item.classList.toggle('active', item.dataset.tab === tabName);
-    });
-
-    // Update Top Tabs Active
-    document.querySelectorAll('.top-nav-tabs .top-nav-btn').forEach(item => {
       item.classList.toggle('active', item.dataset.tab === tabName);
     });
 
@@ -478,8 +465,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tabName === 'favorites') renderFavoritesElements();
   }
 
-  // Bottom Navbar & Top Nav Tabs Click Listeners
-  document.querySelectorAll('.bottom-navbar .nav-item, .top-nav-tabs .top-nav-btn').forEach(btn => {
+  // Bottom Navbar Click Listener
+  document.querySelectorAll('.bottom-navbar .nav-item').forEach(btn => {
     btn.addEventListener('click', () => {
       switchTab(btn.dataset.tab);
     });

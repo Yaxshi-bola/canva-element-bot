@@ -87,23 +87,7 @@
       </button>
     </div>
     
-    <!-- Top Main Navigation Bar -->
-    <div class="top-nav-tabs" id="top-nav-tabs">
-      <button class="top-nav-btn active" data-tab="home">
-        <i class="fa-solid fa-house"></i> Bosh sahifa
-      </button>
-      <button class="top-nav-btn" data-tab="categories">
-        <i class="fa-solid fa-layer-group"></i> Bo'limlar
-      </button>
-      <button class="top-nav-btn" data-tab="news">
-        <i class="fa-solid fa-newspaper"></i> Yangiliklar <span class="badge-mini">NEW</span>
-      </button>
-      <button class="top-nav-btn" data-tab="favorites">
-        <i class="fa-solid fa-heart"></i> Saqlanganlar (<span id="fav-count-top">0</span>)
-      </button>
-    </div>
-
-    <!-- Quick Tag Scroll Bar -->
+    <!-- Quick Tag Chips Filter Bar -->
     <div class="hot-filters-scroll" id="hot-filters-scroll">
       <button class="tag-chip active" data-category="all">
         <i class="fa-solid fa-border-all"></i> Barchasi
@@ -134,11 +118,11 @@
       <div class="active-section-bar" id="active-section-bar">
         <h2 class="current-category-title" id="current-category-title">Barcha elementlar</h2>
         <button class="copy-all-btn" id="copy-all-btn" title="Ushbu bo'limdagi barcha kodlarni nusxalash">
-          <i class="fa-solid fa-copy"></i> Bo'limni nusxalash
+          <i class="fa-solid fa-copy"></i> Nusxalash
         </button>
       </div>
 
-      <!-- Elements Grid -->
+      <!-- Compact Elements Grid -->
       <div class="elements-grid" id="elements-grid">
         <!-- Injected via JS -->
       </div>
@@ -170,14 +154,17 @@
     <div class="tab-view hidden" id="view-news">
       <div class="view-header">
         <h2><i class="fa-solid fa-newspaper gradient-text"></i> Yangiliklar & Yangi Kodlar</h2>
-        <p>Supabase bazasi orqali eng so'nggi qo'shilgan yangi elementlar</p>
+        <p>Eng so'nggi qo'shilgan yangi elementlar va maslahatlar</p>
       </div>
 
-      <!-- News Alert Card -->
+      <!-- News Alert Card with 3D Cover Image -->
       <div class="news-banner">
-        <div class="banner-badge">SUPABASE CONNECTED ⚡</div>
-        <h3>Eng Trend 3D va Estetik Elementlar Qo'shildi!</h3>
-        <p>Admin panel bot orqali kiritilgan yangi elementlar Supabase bazasidan avtomatik ravishda bu yerda aks etadi.</p>
+        <div class="news-banner-content">
+          <div class="banner-badge">YANGILIK ✨</div>
+          <h3>Eng Trend 3D va Estetik Elementlar Qo'shildi!</h3>
+          <p>Admin panel bot orqali kiritilgan yangi elementlar Supabase bazasidan avtomatik ravishda bu yerda aks etadi.</p>
+        </div>
+        <img src="assets/cat_3d_cover.jpg" alt="3D Cover" class="news-banner-img" />
       </div>
 
       <h3 class="subview-title"><i class="fa-solid fa-sparkles"></i> Yangi Qo'shilgan Elementlar:</h3>
