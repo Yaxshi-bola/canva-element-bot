@@ -670,7 +670,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <i class="fa-solid fa-copy"></i> Nusxalash
             </button>
             <button class="btn-share" data-code="${safeCode}" data-desc="${safeDesc}" title="Do'stlarga ulashish">
-              <i class="fa-solid fa-share-nodes"></i> Ulashish
+              <i class="fa-solid fa-share-nodes"></i>
             </button>
           </div>
         </div>

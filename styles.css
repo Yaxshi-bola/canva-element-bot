@@ -547,12 +547,14 @@ body {
 .card-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   width: 100%;
+  overflow: hidden;
 }
 
 .btn-copy {
   flex: 1;
+  min-width: 0;
   padding: 8px 10px;
   border-radius: var(--radius-sm);
   border: none;
@@ -567,6 +569,7 @@ body {
   gap: 5px;
   box-shadow: 0 2px 6px rgba(255, 46, 147, 0.2);
   transition: var(--transition);
+  white-space: nowrap;
 }
 
 .btn-copy:hover {
@@ -575,19 +578,19 @@ body {
 }
 
 .btn-share {
-  flex: 1;
-  padding: 8px 10px;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  padding: 0;
   border-radius: var(--radius-sm);
   border: 1.2px solid var(--primary-pink);
   background: #ffffff;
   color: var(--primary-pink);
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 13px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
 }
