@@ -204,25 +204,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // Check Admin Rights
   function checkAdminPermissions() {
     try {
+      // Clean up legacy auth keys
+      try { localStorage.removeItem('zo_admin_auth'); } catch (e) {}
+
       const tgUser = tg?.initDataUnsafe?.user;
       const urlParams = new URLSearchParams(window.location?.search || '');
-      const paramAdmin = urlParams.get('admin') === '1';
       const paramUserId = urlParams.get('user_id');
-      const localAuth = localStorage.getItem('zo_admin_auth') === 'true';
+      const sessionAuth = sessionStorage.getItem('zo_admin_session') === 'true';
 
       let userId = tgUser?.id || paramUserId;
       let username = tgUser?.username;
 
       const validUsernames = ['yomonbola', 'yomonboia', 'zuhraolimova', 'zuhra_olimova', 'sokin_notalar'];
 
-      if (
-        localAuth ||
-        paramAdmin ||
-        (userId && CORE_ADMINS.includes(Number(userId))) ||
-        (username && validUsernames.includes(String(username).toLowerCase())) ||
-        window.location.hostname === 'localhost' ||
-        window.location.hostname === '127.0.0.1'
-      ) {
+      const isCoreId = userId && CORE_ADMINS.includes(Number(userId));
+      const isCoreUsername = username && validUsernames.includes(String(username).toLowerCase());
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+      if (isCoreId || isCoreUsername || sessionAuth || isLocalhost) {
         isUserAdmin = true;
       } else {
         isUserAdmin = false;
@@ -232,10 +231,14 @@ document.addEventListener('DOMContentLoaded', () => {
         navItemAdmin?.classList.remove('hidden');
       } else {
         navItemAdmin?.classList.add('hidden');
+        if (activeTab === 'admin') {
+          switchTab('home');
+        }
       }
     } catch (e) {
       console.error('Admin check error:', e);
       isUserAdmin = false;
+      navItemAdmin?.classList.add('hidden');
     }
   }
 
@@ -254,10 +257,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Submit Admin Passcode Login
   function handleAdminLoginSubmit() {
     const code = adminPasscodeInput ? adminPasscodeInput.value.trim() : '';
-    const validCodes = ['12060704', '8544023815', '8112688757'];
+    const validCodes = ['8544023815', '8112688757'];
 
-    if (validCodes.includes(code) || isAdminMatch(adminList, code)) {
-      localStorage.setItem('zo_admin_auth', 'true');
+    if (validCodes.includes(code)) {
+      sessionStorage.setItem('zo_admin_session', 'true');
       isUserAdmin = true;
       navItemAdmin?.classList.remove('hidden');
       modalAdminLogin?.classList.add('hidden');
