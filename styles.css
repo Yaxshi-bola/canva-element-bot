@@ -1639,3 +1639,34 @@ body.is-searching .sticky-search-section {
   border-color: var(--primary-pink);
   transform: translateY(-2px);
 }
+
+/* Backup Modal Styles */
+.backup-stats-box {
+  background: var(--pink-light);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.backup-stat-item {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.backup-stat-item i {
+  color: var(--primary-pink);
+}
+
+.backup-actions-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}

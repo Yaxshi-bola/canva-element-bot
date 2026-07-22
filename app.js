@@ -349,6 +349,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Fetch admins from Supabase bot_users table
+  async function fetchSupabaseAdmins() {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/bot_users?select=*`, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+      });
+      if (res.ok) {
+        const users = await res.json();
+        if (Array.isArray(users)) {
+          users.forEach(u => {
+            if (u.id && !adminList.includes(u.id) && !adminList.includes(Number(u.id))) {
+              adminList.push(Number(u.id));
+            }
+            if (u.username && !adminList.includes(u.username.toLowerCase())) {
+              adminList.push(u.username.toLowerCase());
+            }
+          });
+          try {
+            localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
+          } catch (e) {}
+          updateStats();
+          if (isUserAdmin) renderAdminsList();
+        }
+      }
+    } catch (e) {
+      console.log('Supabase admins fetch info:', e);
+    }
+  }
+
   // Normalize Uzbek Diacritics
   function normalizeText(text) {
     if (!text) return '';
@@ -988,7 +1020,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
-  function addAdmin() {
+  async function addAdmin() {
     const val = newAdminInput ? newAdminInput.value.trim() : '';
     if (!val) return;
 
@@ -1002,12 +1034,31 @@ document.addEventListener('DOMContentLoaded', () => {
       renderAdminsList();
       updateStats();
       showToast('✅ Yangi admin qo\'shildi!');
+
+      // Sync with Supabase bot_users table
+      try {
+        const isNum = !isNaN(Number(val));
+        const payload = isNum 
+          ? { id: Number(val), username: `admin_${val}`, first_name: 'Admin' } 
+          : { id: Math.floor(Math.random() * 1000000000), username: String(val).replace('@',''), first_name: 'Admin' };
+        
+        await fetch(`${SUPABASE_URL}/rest/v1/bot_users`, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {}
     } else {
       showToast('⚠️ Ushbu admin allaqachon mavjud!');
     }
   }
 
-  function removeAdmin(item) {
+  async function removeAdmin(item) {
     if (item == SUPER_ADMIN_ID || Number(item) === SUPER_ADMIN_ID) {
       return showToast('❌ Bosh adminni o\'chirib bo\'lmaydi!');
     }
@@ -1018,9 +1069,29 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAdminsList();
     updateStats();
     showToast('🗑️ Admin huquqi olindi');
+
+    if (!isNaN(Number(item))) {
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/bot_users?id=eq.${item}`, {
+          method: 'DELETE',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+          }
+        });
+      } catch (e) {}
+    }
   }
 
   function downloadJSONBackup() {
+    const modalBackupDownload = document.getElementById('modal-backup-download');
+    const backupCountElem = document.getElementById('backup-count-elem');
+    const backupCountAdmin = document.getElementById('backup-count-admin');
+    const backupDateStr = document.getElementById('backup-date-str');
+    const backupDirectLink = document.getElementById('backup-direct-link');
+    const backupCopyTextBtn = document.getElementById('backup-copy-text-btn');
+    const backupPreviewText = document.getElementById('backup-preview-text');
+
     const backupData = {
       timestamp: new Date().toISOString(),
       date: new Date().toISOString().split('T')[0],
@@ -1033,18 +1104,25 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const jsonStr = JSON.stringify(backupData, null, 2);
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `canva_elements_backup_${backupData.date}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    if (backupCountElem) backupCountElem.textContent = `${allElements.length} ta element`;
+    if (backupCountAdmin) backupCountAdmin.textContent = `${adminList.length} ta admin`;
+    if (backupDateStr) backupDateStr.textContent = `Vaqt: ${backupData.date}`;
+    if (backupPreviewText) backupPreviewText.value = jsonStr;
 
-    showToast('💾 Backup fayli yuklab olindi!');
+    if (backupDirectLink) {
+      backupDirectLink.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr);
+      backupDirectLink.download = `canva_elements_backup_${backupData.date}.json`;
+    }
+
+    if (backupCopyTextBtn) {
+      backupCopyTextBtn.onclick = () => {
+        copyToClipboard(jsonStr, '📋 Backup JSON nusxalandi!');
+      };
+    }
+
+    modalBackupDownload?.classList.remove('hidden');
+    showToast('💾 Zaxira fayli tayyorlandi!');
   }
 
   // Switch Bottom Navbar Tabs
@@ -1244,10 +1322,19 @@ document.addEventListener('DOMContentLoaded', () => {
     switchTab('favorites');
   });
 
+  // Backup Modal Events
+  document.getElementById('modal-backup-close')?.addEventListener('click', () => {
+    document.getElementById('modal-backup-download')?.classList.add('hidden');
+  });
+  document.getElementById('btn-close-backup-modal')?.addEventListener('click', () => {
+    document.getElementById('modal-backup-download')?.classList.add('hidden');
+  });
+
   // Initial Safe Execution
   try { checkAdminPermissions(); } catch (e) { console.error('Admin check error:', e); }
   try { updateStats(); } catch (e) { console.error('Stats error:', e); }
   try { renderElements(); } catch (e) { console.error('Render elements error:', e); }
   try { renderCategoriesGrid(); } catch (e) { console.error('Categories error:', e); }
   try { fetchSupabaseElements(); } catch (e) { console.error('Supabase fetch error:', e); }
+  try { fetchSupabaseAdmins(); } catch (e) { console.error('Supabase admins fetch error:', e); }
 });

@@ -438,7 +438,7 @@
         <button class="modal-close-btn" id="modal-login-close"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
-        <p class="modal-subtitle">Admin paneldan foydalanish uchun parol yoki Telegram ID-ingizni kiriting:</p>
+        <p class="modal-subtitle">Admin paneldan foydalanish uchun parolni kiriting:</p>
         <div class="form-group">
           <label for="admin-passcode-input">Admin Paroli</label>
           <input type="password" id="admin-passcode-input" placeholder="Parolni kiriting..." autocomplete="current-password" />
@@ -447,6 +447,42 @@
       <div class="modal-footer">
         <button class="btn-modal-cancel" id="btn-cancel-login">Bekor qilish</button>
         <button class="btn-modal-save" id="btn-submit-login"><i class="fa-solid fa-key"></i> Kirish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: Backup Download & Copy Modal -->
+  <div class="modal-overlay hidden" id="modal-backup-download">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-database"></i> Database Zaxira Nusxasi (Backup)</h3>
+        <button class="modal-close-btn" id="modal-backup-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-subtitle">Supabase va tizimdagi barcha elementlar, bo'limlar hamda adminlar ro'yxati zaxiralandi:</p>
+        
+        <div class="backup-stats-box">
+          <div class="backup-stat-item"><i class="fa-solid fa-cubes-stacked"></i> <span id="backup-count-elem">407 ta element</span></div>
+          <div class="backup-stat-item"><i class="fa-solid fa-user-shield"></i> <span id="backup-count-admin">1 ta admin</span></div>
+          <div class="backup-stat-item"><i class="fa-solid fa-calendar-check"></i> <span id="backup-date-str">Vaqt: Hozir</span></div>
+        </div>
+
+        <div class="backup-actions-group">
+          <a id="backup-direct-link" href="#" download="canva_elements_backup.json" class="admin-action-btn primary" style="text-decoration:none; text-align:center;">
+            <i class="fa-solid fa-file-arrow-down"></i> JSON Faylni Yuklab Olish
+          </a>
+          <button id="backup-copy-text-btn" class="admin-action-btn secondary">
+            <i class="fa-solid fa-copy"></i> JSON Matnini Nusxalash
+          </button>
+        </div>
+
+        <div class="form-group" style="margin-top: 10px;">
+          <label>JSON Ma'lumotlar Preview:</label>
+          <textarea id="backup-preview-text" readonly style="width:100%; height:100px; font-family:monospace; font-size:10px; padding:6px; border:1px solid var(--card-border); border-radius:var(--radius-sm); outline:none; resize:none;"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" id="btn-close-backup-modal">Yopish</button>
       </div>
     </div>
   </div>
