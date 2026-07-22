@@ -8,6 +8,7 @@
     "build": "cd bot && npm install"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.19.2",
     "node-telegram-bot-api": "^0.66.0"
   },
