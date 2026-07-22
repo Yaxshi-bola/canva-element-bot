@@ -713,7 +713,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Render Categories View Grid with Icons
   function renderCategoriesGrid() {
     try {
-      if (!categoriesGrid) return;
+      const categoriesGridElem = document.getElementById('categories-grid');
+      if (!categoriesGridElem) return;
       const catMap = getCategoriesMap();
       let html = '';
 
@@ -721,13 +722,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const icon = CATEGORY_ICONS[cat] || 'fa-layer-group';
         html += `
           <div class="category-card" data-category="${cat}">
-            <div class="cat-icon-circle"><i class="fa-solid ${icon}"></i></div>
-            <div class="cat-title">${cat}</div>
-            <span class="cat-count-badge">${count} ta element</span>
+            <div class="cat-icon-wrapper"><i class="fa-solid ${icon}"></i></div>
+            <div class="cat-card-title">${cat}</div>
+            <span class="cat-card-count">${count} ta element</span>
           </div>
         `;
       }
-      categoriesGrid.innerHTML = html;
+      categoriesGridElem.innerHTML = html;
     } catch (e) {
       console.error('Render categories error:', e);
     }
@@ -736,9 +737,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Render News Elements View
   function renderNewsElements() {
     try {
-      if (!newsElementsGrid) return;
-      const newsItems = allElements.filter(item => item && (item.isNew || item.id <= 30));
-      newsElementsGrid.innerHTML = newsItems.map(renderCardHTML).filter(Boolean).join('');
+      const newsElementsGridElem = document.getElementById('news-elements-grid');
+      if (!newsElementsGridElem) return;
+      const newsItems = allElements.filter(item => item && (item.isNew || item.id <= 50));
+      newsElementsGridElem.innerHTML = newsItems.map(renderCardHTML).filter(Boolean).join('');
     } catch (e) {
       console.error('Render news error:', e);
     }
@@ -747,19 +749,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // Render Favorites Tab View
   function renderFavoritesElements() {
     try {
-      if (!favoritesElementsGrid) return;
-      const favItems = allElements.filter(item => item && favorites.includes(item.id));
+      const favEmptyState = document.getElementById('fav-empty-state');
+      const favoritesElementsGridElem = document.getElementById('favorites-elements-grid');
+      if (!favoritesElementsGridElem) return;
+
+      const favItems = allElements.filter(item => item && (favorites.includes(item.id) || favorites.includes(String(item.id))));
+      
       if (favItems.length === 0) {
-        favoritesElementsGrid.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon"><i class="fa-solid fa-heart-crack"></i></div>
-            <h3>Saqlanganlar bo'sh</h3>
-            <p>Sevimli elementlaringizni yulduzcha ⭐ tugmasi orqali saqlab qo'yishingiz mumkin.</p>
-          </div>
-        `;
-        return;
+        if (favEmptyState) favEmptyState.classList.remove('hidden');
+        favoritesElementsGridElem.classList.add('hidden');
+      } else {
+        if (favEmptyState) favEmptyState.classList.add('hidden');
+        favoritesElementsGridElem.classList.remove('hidden');
+        favoritesElementsGridElem.innerHTML = favItems.map(renderCardHTML).filter(Boolean).join('');
       }
-      favoritesElementsGrid.innerHTML = favItems.map(renderCardHTML).filter(Boolean).join('');
     } catch (e) {
       console.error('Render favorites error:', e);
     }
@@ -1259,21 +1262,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     activeTab = tabName;
 
-    document.querySelectorAll('.bottom-nav-bar .nav-item').forEach(item => {
+    // Highlight navbar buttons
+    document.querySelectorAll('#bottom-nav-bar .nav-item').forEach(item => {
       item.classList.toggle('active', item.dataset.tab === tabName);
     });
 
+    // Hide all tab views
     document.querySelectorAll('.tab-view').forEach(view => {
       view.classList.add('hidden');
     });
 
+    // Show target view
     const activeView = document.getElementById(`view-${tabName}`);
     if (activeView) {
       activeView.classList.remove('hidden');
     }
 
+    // Toggle sticky search bar visibility
+    const searchSection = document.getElementById('sticky-search-section');
+    if (searchSection) {
+      if (tabName === 'home' || tabName === 'news') {
+        searchSection.classList.remove('hidden');
+      } else {
+        searchSection.classList.add('hidden');
+      }
+    }
+
     triggerHaptic('light');
 
+    if (tabName === 'home') renderElements();
     if (tabName === 'categories') renderCategoriesGrid();
     if (tabName === 'news') renderNewsElements();
     if (tabName === 'favorites') renderFavoritesElements();
@@ -1281,14 +1298,20 @@ document.addEventListener('DOMContentLoaded', () => {
       renderAdminElements();
       populateCategoryDropdowns();
     }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Bottom Navbar Click Listener
-  document.querySelectorAll('.bottom-nav-bar .nav-item').forEach(btn => {
-    btn.addEventListener('click', () => {
-      switchTab(btn.dataset.tab);
+  // Bottom Navbar Delegation Listener
+  const bottomNavBarElem = document.getElementById('bottom-nav-bar');
+  if (bottomNavBarElem) {
+    bottomNavBarElem.addEventListener('click', (e) => {
+      const navBtn = e.target.closest('.nav-item');
+      if (navBtn && navBtn.dataset.tab) {
+        switchTab(navBtn.dataset.tab);
+      }
     });
-  });
+  }
 
   // Additional Page Navigation Buttons
   document.getElementById('btn-view-all-news')?.addEventListener('click', () => switchTab('news'));
