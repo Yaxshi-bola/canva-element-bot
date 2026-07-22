@@ -1,0 +1,14 @@
+{
+  "name": "canva-element-bot",
+  "version": "1.0.0",
+  "description": "Canva Element Kodlari Telegram Bot by Zuhra Olimova",
+  "main": "bot/server.js",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "node-telegram-bot-api": "^0.66.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

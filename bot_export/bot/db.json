@@ -1,0 +1,39 @@
+{
+  "users": {
+    "8544023815": {
+      "id": 8544023815,
+      "username": "yomonboIa",
+      "first_name": "⌘",
+      "created_at": "2026-07-22T06:07:45.041Z",
+      "last_active": "2026-07-22T06:28:27.854Z",
+      "last_active_date": "2026-07-22"
+    },
+    "8112688757": {
+      "id": 8112688757,
+      "username": "sokin_notalar",
+      "first_name": "🎶",
+      "created_at": "2026-07-22T06:10:07.251Z",
+      "last_active": "2026-07-22T06:10:07.253Z",
+      "last_active_date": "2026-07-22"
+    }
+  },
+  "customElements": [
+    {
+      "id": "custom_1",
+      "category": "Trenddagi 3D Elementlar",
+      "code": "set:nAG35oM8lfI",
+      "description": "Shisha element 3D (Yangi)",
+      "date": "2026-07-22T06:27:43.513Z",
+      "isNew": true
+    }
+  ],
+  "settings": {
+    "forceChannel": "",
+    "forceChannelLink": "",
+    "forceSubActive": false,
+    "webAppUrl": "https://canva-element-kodlari-zuhra-olimova.vercel.app"
+  },
+  "stats": {
+    "totalBroadcasts": 0
+  }
+}
