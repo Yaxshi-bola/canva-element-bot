@@ -395,6 +395,18 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    // Automatically hide banner during active search or category filtering so results show instantly
+    const featuredBanner = document.getElementById('featured-carousel-card');
+    const isFilteredOrSearching = !!currentSearchQuery || currentCategory !== 'all' || !!currentTag;
+
+    if (featuredBanner) {
+      if (isFilteredOrSearching) {
+        featuredBanner.classList.add('hidden');
+      } else {
+        featuredBanner.classList.remove('hidden');
+      }
+    }
+
     if (filtered.length === 0) {
       elementsGrid.innerHTML = '';
       emptyState?.classList.remove('hidden');
