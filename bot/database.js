@@ -1,6 +1,6 @@
 /* -------------------------------------------------------------
- * JSON Database Manager for Telegram Bot
- * Admin ID: 8544023815
+ * JSON Database Manager for Telegram Bot & Custom Elements
+ * Author: Zuhra Olimova
  * ------------------------------------------------------------- */
 
 const fs = require('fs');
@@ -10,9 +10,19 @@ const DB_PATH = path.join(__dirname, 'db.json');
 
 const defaultData = {
   users: {},
+  customElements: [
+    {
+      id: 'custom_1',
+      category: 'Trenddagi 3D Elementlar',
+      code: 'set:nAG35oM8lfI',
+      description: 'Shisha element 3D (Yangi)',
+      date: new Date().toISOString(),
+      isNew: true
+    }
+  ],
   settings: {
-    forceChannel: '', // e.g. "@mychannel" or "-100123456789"
-    forceChannelLink: '', // e.g. "https://t.me/mychannel"
+    forceChannel: '',
+    forceChannelLink: '',
     forceSubActive: false,
     webAppUrl: 'https://canva-element-kodlari-zuhra-olimova.vercel.app'
   },
@@ -31,11 +41,12 @@ function loadData() {
     const parsed = JSON.parse(raw);
     return {
       users: parsed.users || {},
+      customElements: parsed.customElements || defaultData.customElements,
       settings: { ...defaultData.settings, ...(parsed.settings || {}) },
       stats: { ...defaultData.stats, ...(parsed.stats || {}) }
     };
   } catch (err) {
-    console.error('Error loading DB, using defaults:', err);
+    console.error('Error loading DB:', err);
     return defaultData;
   }
 }
@@ -77,16 +88,38 @@ class DB {
     saveData(this.data);
   }
 
+  // Add Custom Canva Element
+  addCustomElement(code, description, category) {
+    const newElement = {
+      id: `custom_${Date.now()}`,
+      code: code.trim(),
+      description: description.trim(),
+      category: category.trim() || 'Trenddagi 3D Elementlar',
+      date: new Date().toISOString(),
+      isNew: true
+    };
+    this.data.customElements.unshift(newElement);
+    saveData(this.data);
+    return newElement;
+  }
+
+  // Get Custom Elements
+  getCustomElements() {
+    return this.data.customElements || [];
+  }
+
   // Get Stats
   getStats() {
     const allUsers = Object.values(this.data.users);
     const totalUsers = allUsers.length;
     const today = new Date().toISOString().split('T')[0];
     const activeToday = allUsers.filter(u => u.last_active_date === today).length;
+    const customCount = (this.data.customElements || []).length;
 
     return {
       totalUsers,
       activeToday,
+      customCount,
       forceChannel: this.data.settings.forceChannel || 'Sozlanmagan',
       forceSubActive: this.data.settings.forceSubActive ? 'Yoqilgan ✅' : 'O\'chirilgan ❌',
       webAppUrl: this.data.settings.webAppUrl
@@ -112,11 +145,6 @@ class DB {
 
   toggleForceSub(status) {
     this.data.settings.forceSubActive = status;
-    saveData(this.data);
-  }
-
-  setWebAppUrl(url) {
-    this.data.settings.webAppUrl = url;
     saveData(this.data);
   }
 }

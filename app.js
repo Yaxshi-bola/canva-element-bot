@@ -1,10 +1,10 @@
 /* -------------------------------------------------------------
- * Canva Element Kodlari Telegram Mini App — Smart Search & Deep Link Engine
+ * Canva Element Kodlari Telegram Mini App — Logic v2 with Navbar
  * Author: Zuhra Olimova
  * ------------------------------------------------------------- */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize Telegram WebApp SDK
+  // Telegram WebApp SDK Initialization
   const tg = window.Telegram?.WebApp;
   if (tg) {
     tg.ready();
@@ -15,17 +15,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Data State
-  const allElements = window.CANVA_DATA || [];
+  let allElements = window.CANVA_DATA || [];
+  let customElements = [];
   let favorites = JSON.parse(localStorage.getItem('zo_canva_favs') || '[]');
   let currentCategory = 'all';
   let currentSearchQuery = '';
   let currentTag = '';
+  let activeTab = 'home';
 
   // DOM Elements
   const searchInput = document.getElementById('search-input');
   const clearSearchBtn = document.getElementById('clear-search');
-  const categoryPillsContainer = document.getElementById('category-pills');
   const elementsGrid = document.getElementById('elements-grid');
+  const newsElementsGrid = document.getElementById('news-elements-grid');
+  const favoritesElementsGrid = document.getElementById('favorites-elements-grid');
+  const categoriesGrid = document.getElementById('categories-grid');
   const emptyState = document.getElementById('empty-state');
   const resetFilterBtn = document.getElementById('reset-filter-btn');
   const currentCategoryTitle = document.getElementById('current-category-title');
@@ -40,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const toastCode = document.getElementById('toast-code');
   const toastTitle = document.getElementById('toast-title');
 
-  // Comprehensive Uzbek Synonyms Map
+  // Uzbek Synonyms Map
   const SYNONYMS = {
     'shifokor': ['doktor', 'tibbiyot', 'medik', 'shifoxona', 'vrach', 'boshqaruv', 'gigiyena', 'stomatolog', 'suyak'],
     'doktor': ['shifokor', 'tibbiyot', 'medik', 'shifoxona', 'vrach', 'stomatolog'],
@@ -63,19 +67,71 @@ document.addEventListener('DOMContentLoaded', () => {
     'telefon': ['kompyuter', 'gadjet', 'noutbuk', 'it', 'dasturchi', 'texnologiya']
   };
 
-  // Normalize Uzbek Diacritics & Punctuation
+  // Category Icon Mapping
+  const CATEGORY_ICONS = {
+    'Trenddagi 3D Elementlar': 'fa-box-open',
+    'SMM, Target, Dizayn va Infografika': 'fa-bullhorn',
+    'Abstrakt Elementlar va Shakllar': 'fa-shapes',
+    'Aesthetic/Estetik Elementlar': 'fa-sparkles',
+    'Kosmik Elementlar': 'fa-rocket',
+    'Ajoyib va Qiziqarli Elementlar': 'fa-face-smile-beam',
+    'Bog\' va Gullar': 'fa-seedling',
+    'Sport, Musobaqa va Sovrinlar': 'fa-trophy',
+    'Texnologiya, Kompyuter va Telefon': 'fa-laptop-code',
+    'Kasblar va Ish Qurollari': 'fa-user-tie',
+    'Animatsiyali stikerlar.': 'fa-film',
+    'Kuzgi elementlar': 'fa-leaf',
+    'Talabalar uchun': 'fa-graduation-cap',
+    'O’qituvchilar uchun': 'fa-chalkboard-user',
+    'Meva va sabzavotlar, Shirinliklar. Oshxona. Uy va xona': 'fa-utensils',
+    'Ramazon': 'fa-moon',
+    'Harflar va Raqamlar': 'fa-font',
+    'Bolalar uchun': 'fa-baby',
+    'Turli xil': 'fa-border-all',
+    'Pushti elementlar': 'fa-heart'
+  };
+
+  // Fetch dynamic custom elements from bot API
+  async function fetchCustomElements() {
+    try {
+      const res = await fetch('https://canva-element-bot.onrender.com/api/custom-elements');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.elements) {
+          customElements = data.elements;
+          // Prepend custom elements
+          const formattedCustom = customElements.map((item, idx) => ({
+            id: `c_${item.id || idx}`,
+            category: item.category,
+            code: item.code,
+            description: item.description,
+            isNew: true,
+            keywords: [item.code, item.description, item.category]
+          }));
+
+          allElements = [...formattedCustom, ...(window.CANVA_DATA || [])];
+          updateStats();
+          renderElements();
+          renderCategoriesGrid();
+          renderNewsElements();
+        }
+      }
+    } catch (e) {
+      console.log('Custom elements API offline, using local data');
+    }
+  }
+
+  // Normalize Uzbek Diacritics
   function normalizeText(text) {
     if (!text) return '';
     return text.toLowerCase()
       .replace(/[‘'’`ʻ]/g, '')
       .replace(/o[ʻ'’`]/g, 'o')
       .replace(/g[ʻ'’`]/g, 'g')
-      .replace(/sh/g, 'sh')
-      .replace(/ch/g, 'ch')
       .trim();
   }
 
-  // Levenshtein Distance for Typo Tolerance
+  // Levenshtein Distance
   function levenshtein(a, b) {
     if (a.length === 0) return b.length;
     if (b.length === 0) return a.length;
@@ -99,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return matrix[b.length][a.length];
   }
 
-  // Smart Search Match & Scoring System
+  // Search Match Score
   function calculateSearchScore(rawQuery, item) {
     const query = normalizeText(rawQuery);
     if (!query) return 1;
@@ -110,15 +166,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const codeNorm = normalizeText(item.code);
     const keywordsNorm = normalizeText((item.keywords || []).join(' '));
 
-    // 1. Exact Code Match
     if (codeNorm.includes(query)) score += 1000;
-
-    // 2. Exact Word / Substring Match in Description or Category
     if (descNorm.includes(query)) score += 500;
     if (catNorm.includes(query)) score += 300;
     if (keywordsNorm.includes(query)) score += 200;
 
-    // 3. Synonym Matching
     for (const [key, syns] of Object.entries(SYNONYMS)) {
       const keyNorm = normalizeText(key);
       const isQueryInSyns = query.includes(keyNorm) || syns.some(s => query.includes(normalizeText(s)));
@@ -129,7 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // 4. Fuzzy Matching for Typos (Levenshtein Distance <= 2)
     const qWords = query.split(/\s+/);
     const targetWords = `${descNorm} ${catNorm} ${keywordsNorm}`.split(/[\s,.'"-]+/);
 
@@ -149,32 +200,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Categories Map
-  const categoriesMap = {};
-  allElements.forEach(item => {
-    categoriesMap[item.category] = (categoriesMap[item.category] || 0) + 1;
-  });
-
-  // Render Category Pills
-  function renderCategoryPills() {
-    let html = `
-      <button class="category-pill ${currentCategory === 'all' ? 'active' : ''}" data-category="all">
-        Barchasi (${allElements.length})
-      </button>
-      <button class="category-pill ${currentCategory === 'favorites' ? 'active' : ''}" data-category="favorites">
-        ⭐ Saqlanganlar (${favorites.length})
-      </button>
-    `;
-
-    for (const [cat, count] of Object.entries(categoriesMap)) {
-      const activeClass = currentCategory === cat ? 'active' : '';
-      html += `
-        <button class="category-pill ${activeClass}" data-category="${cat}">
-          ${cat} (${count})
-        </button>
-      `;
-    }
-
-    categoryPillsContainer.innerHTML = html;
+  function getCategoriesMap() {
+    const map = {};
+    allElements.forEach(item => {
+      map[item.category] = (map[item.category] || 0) + 1;
+    });
+    return map;
   }
 
   // Trigger Haptic Feedback
@@ -215,22 +246,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Open Canva App Deep Link with Fallback to Elements Search
+  // Open Canva App Deep Link
   function openCanvaDeepLink(code) {
-    // 1. Copy code to clipboard first
     copyToClipboard(code, '📋 KOD NUSXALANDI! (Canva -> Elementlar)');
 
-    // 2. Canva Elements search URL (Forces tab=elements)
     const canvaWebUrl = `https://www.canva.com/search?tab=elements&q=${encodeURIComponent(code)}`;
     const canvaAppDeepLink = `canva://search?q=${encodeURIComponent(code)}`;
 
-    // Try Deep Link to App
     const now = Date.now();
     window.location.href = canvaAppDeepLink;
 
     setTimeout(() => {
       if (Date.now() - now < 1800) {
-        // App didn't open, fallback to browser Elements search
         window.open(canvaWebUrl, '_blank');
       }
     }, 1200);
@@ -248,31 +275,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     localStorage.setItem('zo_canva_favs', JSON.stringify(favorites));
     updateStats();
-    renderCategoryPills();
     renderElements();
+    renderFavoritesElements();
   }
 
   // Update Counters & Stats
   function updateStats() {
+    const catMap = getCategoriesMap();
     statTotal.textContent = allElements.length;
-    statCategories.textContent = Object.keys(categoriesMap).length;
+    statCategories.textContent = Object.keys(catMap).length;
     statFavs.textContent = favorites.length;
     favCountTag.textContent = favorites.length;
   }
 
-  // Get Filtered & Ranked Elements
+  // Filter & Rank Elements
   function getFilteredElements() {
     const results = [];
 
     allElements.forEach(item => {
-      // Category Filter
       if (currentCategory === 'favorites') {
         if (!favorites.includes(item.id)) return;
       } else if (currentCategory !== 'all') {
         if (item.category !== currentCategory) return;
       }
 
-      // Hot Tag Filter
       if (currentTag) {
         const itemStr = `${item.category} ${item.description} ${(item.keywords || []).join(' ')}`.toLowerCase();
         if (currentTag === '3d' && !itemStr.includes('3d')) return;
@@ -282,7 +308,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentTag === 'harf' && !itemStr.includes('harf') && !itemStr.includes('raqam') && !itemStr.includes('2026')) return;
       }
 
-      // Search Query Match Score
       if (currentSearchQuery) {
         const score = calculateSearchScore(currentSearchQuery, item);
         if (score > 0) {
@@ -293,24 +318,50 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Sort by Score Descending
     results.sort((a, b) => b.score - a.score);
     return results.map(r => r.item);
   }
 
-  // Highlight Query Text
-  function highlightMatches(text, query) {
-    if (!query || query.length < 2) return text;
-    const normQuery = normalizeText(query);
-    const regex = new RegExp(`(${normQuery})`, 'gi');
-    return text.replace(regex, '<span class="highlight-text">$1</span>');
+  // Generate Card HTML
+  function renderCardHTML(item) {
+    const isFav = favorites.includes(item.id);
+    const favClass = isFav ? 'active fa-solid' : 'fa-regular';
+    const newBadgeHTML = item.isNew ? `<span class="new-badge">YANGI ✨</span>` : '';
+
+    return `
+      <div class="element-card" data-id="${item.id}">
+        <div class="card-header">
+          <span class="category-tag"><i class="fa-solid fa-folder-open"></i> ${item.category} ${newBadgeHTML}</span>
+          <button class="fav-btn ${isFav ? 'active' : ''}" data-id="${item.id}" title="Saqlash">
+            <i class="${favClass} fa-star"></i>
+          </button>
+        </div>
+        
+        <div class="element-description">
+          ${item.description}
+        </div>
+        
+        <div class="code-box" data-code="${item.code}" title="Nusxalash uchun bosing">
+          <span class="code-text">${item.code}</span>
+          <i class="fa-regular fa-copy code-copy-icon"></i>
+        </div>
+        
+        <div class="card-actions">
+          <button class="btn-copy" data-code="${item.code}">
+            <i class="fa-solid fa-copy"></i> Nusxalash
+          </button>
+          <button class="btn-canva" data-code="${item.code}">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Canva'da
+          </button>
+        </div>
+      </div>
+    `;
   }
 
-  // Render Elements Grid
+  // Render Main Elements Grid
   function renderElements() {
     const filtered = getFilteredElements();
 
-    // Section Title & Count Update
     if (currentCategory === 'favorites') {
       currentCategoryTitle.textContent = '⭐ Saqlangan elementlar';
     } else if (currentCategory === 'all') {
@@ -328,52 +379,89 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     emptyState.classList.add('hidden');
-
-    let html = '';
-    filtered.forEach(item => {
-      const isFav = favorites.includes(item.id);
-      const favClass = isFav ? 'active fa-solid' : 'fa-regular';
-      const highlightedDesc = highlightMatches(item.description, currentSearchQuery);
-
-      html += `
-        <div class="element-card" data-id="${item.id}">
-          <div class="card-header">
-            <span class="category-tag"><i class="fa-solid fa-folder-open"></i> ${item.category}</span>
-            <button class="fav-btn ${isFav ? 'active' : ''}" data-id="${item.id}" title="Saqlash">
-              <i class="${favClass} fa-star"></i>
-            </button>
-          </div>
-          
-          <div class="element-description">
-            ${highlightedDesc}
-          </div>
-          
-          <div class="code-box" data-code="${item.code}" title="Nusxalash uchun bosing">
-            <span class="code-text">${item.code}</span>
-            <i class="fa-regular fa-copy code-copy-icon"></i>
-          </div>
-          
-          <div class="card-actions">
-            <button class="btn-copy" data-code="${item.code}">
-              <i class="fa-solid fa-copy"></i> Nusxalash
-            </button>
-            <button class="btn-canva" data-code="${item.code}">
-              <i class="fa-solid fa-arrow-up-right-from-square"></i> Canva'da
-            </button>
-          </div>
-        </div>
-      `;
-    });
-
-    elementsGrid.innerHTML = html;
+    elementsGrid.innerHTML = filtered.map(renderCardHTML).join('');
   }
 
-  // Global Event Delegation
-  elementsGrid.addEventListener('click', (e) => {
+  // Render Categories View Grid
+  function renderCategoriesGrid() {
+    const catMap = getCategoriesMap();
+    let html = '';
+
+    for (const [cat, count] of Object.entries(catMap)) {
+      const icon = CATEGORY_ICONS[cat] || 'fa-layer-group';
+      html += `
+        <div class="category-card" data-category="${cat}">
+          <div class="cat-icon-circle"><i class="fa-solid ${icon}"></i></div>
+          <div class="cat-title">${cat}</div>
+          <span class="cat-count-badge">${count} ta element</span>
+        </div>
+      `;
+    }
+    categoriesGrid.innerHTML = html;
+  }
+
+  // Render News Elements View
+  function renderNewsElements() {
+    const newsItems = allElements.filter(item => item.isNew || item.id <= 30);
+    newsElementsGrid.innerHTML = newsItems.map(renderCardHTML).join('');
+  }
+
+  // Render Favorites Tab View
+  function renderFavoritesElements() {
+    const favItems = allElements.filter(item => favorites.includes(item.id));
+    if (favItems.length === 0) {
+      favoritesElementsGrid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon"><i class="fa-solid fa-heart-crack"></i></div>
+          <h3>Saqlanganlar bo'sh</h3>
+          <p>Sevimli elementlaringizni yulduzcha ⭐ tugmasi orqali saqlab qo'yishingiz mumkin.</p>
+        </div>
+      `;
+      return;
+    }
+    favoritesElementsGrid.innerHTML = favItems.map(renderCardHTML).join('');
+  }
+
+  // Switch Bottom Navbar Tabs
+  function switchTab(tabName) {
+    activeTab = tabName;
+
+    // Update Nav Bar Items Active Class
+    document.querySelectorAll('.bottom-navbar .nav-item').forEach(item => {
+      item.classList.toggle('active', item.dataset.tab === tabName);
+    });
+
+    // Update Views Visibility
+    document.querySelectorAll('.tab-view').forEach(view => {
+      view.classList.add('hidden');
+    });
+
+    const activeView = document.getElementById(`view-${tabName}`);
+    if (activeView) {
+      activeView.classList.remove('hidden');
+    }
+
+    triggerHaptic('light');
+
+    if (tabName === 'categories') renderCategoriesGrid();
+    if (tabName === 'news') renderNewsElements();
+    if (tabName === 'favorites') renderFavoritesElements();
+  }
+
+  // Bottom Navbar Click Listener
+  document.querySelectorAll('.bottom-navbar .nav-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchTab(btn.dataset.tab);
+    });
+  });
+
+  // Global Event Delegation for Elements Grid
+  document.addEventListener('click', (e) => {
     const copyBtn = e.target.closest('.btn-copy');
     const codeBox = e.target.closest('.code-box');
     const canvaBtn = e.target.closest('.btn-canva');
     const favBtn = e.target.closest('.fav-btn');
+    const catCard = e.target.closest('.category-card');
 
     if (copyBtn || codeBox) {
       const code = (copyBtn || codeBox).dataset.code;
@@ -382,12 +470,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const code = canvaBtn.dataset.code;
       openCanvaDeepLink(code);
     } else if (favBtn) {
-      const id = parseInt(favBtn.dataset.id, 10);
+      const id = parseInt(favBtn.dataset.id, 10) || favBtn.dataset.id;
       toggleFavorite(id);
+    } else if (catCard) {
+      currentCategory = catCard.dataset.category;
+      switchTab('home');
+      renderElements();
     }
   });
 
-  // Search Input Events & Collapsing Mobile UI for Keyboard
+  // Search Input Events
   function updateSearchUIState() {
     const isSearching = !!currentSearchQuery || document.activeElement === searchInput;
     document.body.classList.toggle('is-searching', isSearching);
@@ -398,6 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
     currentSearchQuery = e.target.value;
     clearSearchBtn.classList.toggle('hidden', !currentSearchQuery);
 
+    if (activeTab !== 'home') switchTab('home');
     updateSearchUIState();
 
     if (searchDebounce) clearTimeout(searchDebounce);
@@ -406,17 +499,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 100);
   });
 
-  searchInput.addEventListener('focus', () => {
-    updateSearchUIState();
-  });
-
+  searchInput.addEventListener('focus', () => updateSearchUIState());
   searchInput.addEventListener('blur', () => {
-    if (!currentSearchQuery) {
-      document.body.classList.remove('is-searching');
-    }
+    if (!currentSearchQuery) document.body.classList.remove('is-searching');
   });
 
-  // Clear Search Button
   clearSearchBtn.addEventListener('click', () => {
     searchInput.value = '';
     currentSearchQuery = '';
@@ -424,19 +511,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.remove('is-searching');
     renderElements();
     triggerHaptic('light');
-  });
-
-  // Category Pills Click Event
-  categoryPillsContainer.addEventListener('click', (e) => {
-    const pill = e.target.closest('.category-pill');
-    if (pill) {
-      currentCategory = pill.dataset.category;
-      currentTag = '';
-      document.querySelectorAll('.tag-chip').forEach(t => t.classList.remove('active'));
-      renderCategoryPills();
-      renderElements();
-      triggerHaptic('light');
-    }
   });
 
   // Hot Tag Chips Event
@@ -452,7 +526,8 @@ document.addEventListener('DOMContentLoaded', () => {
         currentTag = chip.dataset.tag;
         currentCategory = 'all';
       }
-      renderCategoryPills();
+
+      if (activeTab !== 'home') switchTab('home');
       renderElements();
       triggerHaptic('light');
     });
@@ -468,11 +543,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.remove('is-searching');
     document.querySelectorAll('.tag-chip').forEach(t => t.classList.remove('active'));
     document.querySelector('.tag-chip[data-category="all"]').classList.add('active');
-    renderCategoryPills();
     renderElements();
   });
 
-  // Copy All Codes in Current View
+  // Copy All Codes
   copyAllBtn.addEventListener('click', () => {
     const filtered = getFilteredElements();
     if (filtered.length === 0) return;
@@ -483,13 +557,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Fav Stat Click
   favStatBtn.addEventListener('click', () => {
-    currentCategory = 'favorites';
-    renderCategoryPills();
-    renderElements();
+    switchTab('favorites');
   });
 
   // Initial Load
   updateStats();
-  renderCategoryPills();
   renderElements();
+  renderCategoriesGrid();
+  fetchCustomElements();
 });

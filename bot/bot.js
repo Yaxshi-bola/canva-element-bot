@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------
- * Canva Element Kodlari Telegram Bot & Admin Panel
+ * Canva Element Kodlari Telegram Bot & Expanded Admin Panel
  * Token: 8914431726:AAEsGTEXLUCLaL0gSq9ztAt7EBubh1Ge27o
  * Admin ID: 8544023815
  * Author: Zuhra Olimova
@@ -17,6 +17,7 @@ console.log('🤖 Canva Element Kodlari Bot starting...');
 
 // Admin state tracking
 const adminState = {};
+const pendingElement = {};
 
 // Helper: Check Admin
 function isAdmin(userId) {
@@ -67,9 +68,9 @@ function getAdminKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        [{ text: '📊 Statistika' }, { text: '📢 Barchaga Xabar Yuborish' }],
-        [{ text: '🔗 Majburiy Obuna Kanalini Sozlash' }, { text: "🔄 Obuna Holatini O'zgartirish" }],
-        [{ text: '🏠 Bosh Menyuga Qaytish' }]
+        [{ text: '📊 Statistika' }, { text: '➕ Yangi Element Qo\'shish' }],
+        [{ text: '📢 Barchaga Xabar Yuborish' }, { text: '🔗 Majburiy Obuna Kanalini Sozlash' }],
+        [{ text: '🔄 Obuna Holatini O\'zgartirish' }, { text: '🏠 Bosh Menyuga Qaytish' }]
       ],
       resize_keyboard: true
     }
@@ -112,7 +113,6 @@ bot.onText(/\/start/, async (msg) => {
 
 function sendWelcomeMessage(chatId, userId) {
   const { inlineKeyboard, replyKeyboard } = getUserKeyboard(userId);
-  const firstName = userId;
 
   const welcomeText = `🌸 **Canva Element Kodlari Katalogi — Zuhra Olimova**\n\n` +
     `Assalomu alaykum!\n\n` +
@@ -136,7 +136,7 @@ function sendWelcomeMessage(chatId, userId) {
   }
 }
 
-// Callback Query Handler (Sub Check)
+// Callback Query Handler
 bot.on('callback_query', async (query) => {
   const userId = query.from.id;
   const chatId = query.message.chat.id;
@@ -182,7 +182,8 @@ bot.on('message', async (msg) => {
     const stats = db.getStats();
     const statsText = `📊 **BOT STATISTIKASI**\n\n` +
       `👤 **Barcha foydalanuvchilar:** ${stats.totalUsers} ta\n` +
-      `🔥 **Bugun faol foydalanuvchilar:** ${stats.activeToday} ta\n\n` +
+      `🔥 **Bugun faol foydalanuvchilar:** ${stats.activeToday} ta\n` +
+      `✨ **Admin qo'shgan yangi kodlar:** ${stats.customCount} ta\n\n` +
       `📢 **Majburiy obuna kanali:** ${stats.forceChannel}\n` +
       `⚙️ **Majburiy obuna holati:** ${stats.forceSubActive}\n` +
       `🔗 **Mini App Havolasi:** ${stats.webAppUrl}`;
@@ -207,12 +208,51 @@ bot.on('message', async (msg) => {
     return bot.sendMessage(chatId, `✏️ Barcha foydalanuvchilarga yubormoqchi bo'lgan xabaringizni yuboring (matn, rasm yoki media):\n\n_Bekor qilish uchun /cancel deb yozing._`, { parse_mode: 'Markdown' });
   }
 
+  // Add New Element Flow
+  if (text === "➕ Yangi Element Qo'shish") {
+    adminState[userId] = 'add_code';
+    pendingElement[userId] = {};
+    return bot.sendMessage(chatId, `1️⃣ **Element kodini yuboring** (masalan: \`set:nAG35oM8lfI\`):`, { parse_mode: 'Markdown' });
+  }
+
   if (text === '/cancel') {
     adminState[userId] = null;
+    pendingElement[userId] = {};
     return bot.sendMessage(chatId, `❌ Amal bekor qilindi.`, getAdminKeyboard());
   }
 
   // Handle Admin Input States
+  if (adminState[userId] === 'add_code') {
+    pendingElement[userId].code = text.trim();
+    adminState[userId] = 'add_desc';
+    return bot.sendMessage(chatId, `2️⃣ **Element tavsifini yuboring** (masalan: \`Marmar 3D loy shakllar\`):`);
+  }
+
+  if (adminState[userId] === 'add_desc') {
+    pendingElement[userId].description = text.trim();
+    adminState[userId] = 'add_cat';
+    return bot.sendMessage(chatId, `3️⃣ **Element bo'limini yuboring** (masalan: \`Trenddagi 3D Elementlar\`, \`SMM, Target, Dizayn\` va h.k.):`);
+  }
+
+  if (adminState[userId] === 'add_cat') {
+    pendingElement[userId].category = text.trim();
+    const elem = pendingElement[userId];
+    db.addCustomElement(elem.code, elem.description, elem.category);
+
+    adminState[userId] = null;
+    pendingElement[userId] = {};
+
+    return bot.sendMessage(
+      chatId,
+      `🎉 **Yangi element muvaffaqiyatli qo'shildi!**\n\n` +
+      `📌 **Kod:** \`${elem.code}\`\n` +
+      `📝 **Tavsif:** ${elem.description}\n` +
+      `📂 **Bo'lim:** ${elem.category}\n\n` +
+      `*Ushbu element avtomatik tarzda Mini App-ning "Yangiliklar & Yangi Kodlar" bo'limida ko'rinadi!*`,
+      { parse_mode: 'Markdown', ...getAdminKeyboard() }
+    );
+  }
+
   if (adminState[userId] === 'awaiting_channel') {
     adminState[userId] = null;
     const channelInput = text.trim();
@@ -232,7 +272,7 @@ bot.on('message', async (msg) => {
         await bot.copyMessage(targetId, chatId, msg.message_id);
         successCount++;
       } catch (e) {
-        // User blocked bot or invalid
+        // User blocked
       }
     }
 

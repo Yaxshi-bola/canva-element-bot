@@ -113,41 +113,76 @@
     </div>
   </div>
 
-  <!-- Main Content -->
+  <!-- Main Views Container -->
   <main class="main-content" id="main-content">
 
-    <!-- Categories Accordion / Pills -->
-    <div class="categories-bar" id="categories-bar">
-      <div class="section-label">
-        <span><i class="fa-solid fa-list-ul"></i> Bo'lim tanlang:</span>
-        <span class="results-count" id="results-count">407 ta element</span>
+    <!-- VIEW 1: HOME TAB -->
+    <div class="tab-view active" id="view-home">
+      <div class="active-section-bar" id="active-section-bar">
+        <h2 class="current-category-title" id="current-category-title">Barcha elementlar</h2>
+        <button class="copy-all-btn" id="copy-all-btn" title="Ushbu bo'limdagi barcha kodlarni nusxalash">
+          <i class="fa-solid fa-copy"></i> Bo'limni nusxalash
+        </button>
       </div>
-      <div class="category-pills" id="category-pills">
+
+      <!-- Elements Grid -->
+      <div class="elements-grid" id="elements-grid">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state hidden" id="empty-state">
+        <div class="empty-icon"><i class="fa-solid fa-magnifying-glass-minus"></i></div>
+        <h3>Hech narsa topilmadi</h3>
+        <p>Iltimos, boshqacha so'z bilan qidirib ko'ring (masalan: <em>3d, doktor, kitob, ramazon, meva, harf</em>)</p>
+        <button class="reset-btn" id="reset-filter-btn">
+          <i class="fa-solid fa-rotate-left"></i> Qidiruvni tozalash
+        </button>
+      </div>
+    </div>
+
+    <!-- VIEW 2: CATEGORIES TAB -->
+    <div class="tab-view hidden" id="view-categories">
+      <div class="view-header">
+        <h2><i class="fa-solid fa-layer-group gradient-text"></i> Barcha Bo'limlar</h2>
+        <p>Kerakli kategoriyani tanlab element kodlarini ajratib oling</p>
+      </div>
+
+      <div class="categories-grid" id="categories-grid">
         <!-- Injected via JS -->
       </div>
     </div>
 
-    <!-- Current Category Bar -->
-    <div class="active-section-bar" id="active-section-bar">
-      <h2 class="current-category-title" id="current-category-title">Barcha elementlar</h2>
-      <button class="copy-all-btn" id="copy-all-btn" title="Ushbu bo'limdagi barcha kodlarni nusxalash">
-        <i class="fa-solid fa-copy"></i> Bo'limni nusxalash
-      </button>
+    <!-- VIEW 3: NEWS & NEW ELEMENTS TAB -->
+    <div class="tab-view hidden" id="view-news">
+      <div class="view-header">
+        <h2><i class="fa-solid fa-newspaper gradient-text"></i> Yangiliklar & Yangi Kodlar</h2>
+        <p>Zuhra Olimova tomonidan eng so'nggi qo'shilgan yangi elementlar va maslahatlar</p>
+      </div>
+
+      <!-- News Alert Card -->
+      <div class="news-banner">
+        <div class="banner-badge">YANGILIK ✨</div>
+        <h3>Eng Trend 3D va Estetik Elementlar Qo'shildi!</h3>
+        <p>Botingiz va Mini App-ga yangi element kiritish admin paneli orqali real-vaqtda yangilanib boradi.</p>
+      </div>
+
+      <h3 class="subview-title"><i class="fa-solid fa-sparkles"></i> Yangi Qo'shilgan Elementlar:</h3>
+      <div class="elements-grid" id="news-elements-grid">
+        <!-- Injected via JS -->
+      </div>
     </div>
 
-    <!-- Elements Grid -->
-    <div class="elements-grid" id="elements-grid">
-      <!-- Injected via JS -->
-    </div>
+    <!-- VIEW 4: FAVORITES TAB -->
+    <div class="tab-view hidden" id="view-favorites">
+      <div class="view-header">
+        <h2><i class="fa-solid fa-heart gradient-text"></i> Saqlangan Elementlar</h2>
+        <p>Siz yulduzcha ⭐ bilan saqlab qo me'yoriy qo'ygan element kodlaringiz</p>
+      </div>
 
-    <!-- Empty State -->
-    <div class="empty-state hidden" id="empty-state">
-      <div class="empty-icon"><i class="fa-solid fa-magnifying-glass-minus"></i></div>
-      <h3>Hech narsa topilmadi</h3>
-      <p>Iltimos, boshqacha so'z bilan qidirib ko'ring (masalan: <em>3d, doktor, kitob, ramazon, meva, harf</em>)</p>
-      <button class="reset-btn" id="reset-filter-btn">
-        <i class="fa-solid fa-rotate-left"></i> Qidiruvni tozalash
-      </button>
+      <div class="elements-grid" id="favorites-elements-grid">
+        <!-- Injected via JS -->
+      </div>
     </div>
 
   </main>
@@ -175,6 +210,28 @@
       </div>
     </div>
   </footer>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-navbar">
+    <button class="nav-item active" data-tab="home">
+      <i class="fa-solid fa-house"></i>
+      <span>Bosh sahifa</span>
+    </button>
+    <button class="nav-item" data-tab="categories">
+      <i class="fa-solid fa-grid-2"></i>
+      <i class="fa-solid fa-layer-group"></i>
+      <span>Bo'limlar</span>
+    </button>
+    <button class="nav-item" data-tab="news">
+      <i class="fa-solid fa-newspaper"></i>
+      <span class="nav-badge">NEW</span>
+      <span>Yangiliklar</span>
+    </button>
+    <button class="nav-item" data-tab="favorites">
+      <i class="fa-solid fa-heart"></i>
+      <span>Saqlanganlar</span>
+    </button>
+  </nav>
 
   <!-- Toast Notification -->
   <div id="toast" class="toast hidden">
