@@ -549,8 +549,22 @@ body {
   width: 100%;
 }
 
+.card-actions button:not(.btn-copy),
+.card-actions .btn-share,
+.card-actions .btn-canva,
+.card-actions a,
+.card-actions .btn-icon-only {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 .btn-copy {
-  width: 100%;
+  width: 100% !important;
   padding: 7px 10px;
   border-radius: 8px;
   border: none;

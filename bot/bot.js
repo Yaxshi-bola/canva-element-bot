@@ -67,7 +67,8 @@ function getUserKeyboard(userId) {
   const settings = db.getSettings();
   const webAppUrl = settings.webAppUrl || 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
   const isAdm = db.isAdmin(userId);
-  const targetUrl = isAdm ? `${webAppUrl}?admin=1&user_id=${userId}` : `${webAppUrl}?user_id=${userId}`;
+  const ts = Date.now();
+  const targetUrl = isAdm ? `${webAppUrl}?admin=1&user_id=${userId}&v=${ts}` : `${webAppUrl}?user_id=${userId}&v=${ts}`;
 
   const inlineKeyboard = [
     [
@@ -84,7 +85,7 @@ function getUserKeyboard(userId) {
     inlineKeyboard.push([
       {
         text: 'Admin Panel (Mini App)',
-        web_app: { url: `${webAppUrl}?admin=1&user_id=${userId}` },
+        web_app: { url: `${webAppUrl}?admin=1&user_id=${userId}&v=${ts}` },
         style: 'success',
         icon_custom_emoji_id: PREMIUM_EMOJIS.CROWN
       }
