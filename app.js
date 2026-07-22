@@ -495,22 +495,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Open Canva App Deep Link
-  function openCanvaDeepLink(code) {
-    if (!code) return;
-    copyToClipboard(code, '📋 KOD NUSXALANDI! (Canva -> Elementlar)');
+  // Share Element Function
+  function shareElement(code, desc) {
+    try {
+      if (!code) return;
+      const textDesc = desc ? String(desc) : '';
+      const shareText = `🌸 Canva Element kodi: ${code}\n📝 Tavsif: ${textDesc}\n\n✨ Mini App: https://t.me/canva_element_bot`;
 
-    const canvaWebUrl = `https://www.canva.com/search?tab=elements&q=${encodeURIComponent(code)}`;
-    const canvaAppDeepLink = `canva://search?q=${encodeURIComponent(code)}`;
-
-    const now = Date.now();
-    window.location.href = canvaAppDeepLink;
-
-    setTimeout(() => {
-      if (Date.now() - now < 1800) {
-        window.open(canvaWebUrl, '_blank');
+      if (navigator.share) {
+        navigator.share({
+          title: 'Canva Element Kodi',
+          text: shareText
+        }).catch((err) => {
+          if (err && err.name !== 'AbortError') {
+            copyToClipboard(shareText, '🔗 Ulashish matni nusxalandi!');
+          }
+        });
+      } else {
+        copyToClipboard(shareText, '🔗 Ulashish matni nusxalandi!');
       }
-    }, 1200);
+    } catch (e) {
+      console.error('Share error:', e);
+      if (code) copyToClipboard(code, '📋 KOD NUSXALANDI!');
+    }
   }
 
   // Toggle Favorite
