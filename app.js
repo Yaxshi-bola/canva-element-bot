@@ -500,11 +500,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function shareElement(code, desc) {
     if (!code) return;
     const cleanDesc = desc ? String(desc) : 'Canva premium element kodi';
-    const shareMessage = `✨ Canva Element Kodi: ${code}\n📝 Tavsif: ${cleanDesc}\n\n🌸 400+ saralangan Canva elementlarini bepul topish uchun botimizga kiring:\n👉 https://t.me/canva_element_bot`;
+    const shareMessage = `✨ Canva Element Kodi: ${code}\n📝 Tavsif: ${cleanDesc}\n\n🌸 400+ saralangan Canva elementlarini bepul topish uchun botimizga kiring:\n👉 https://t.me/zuhracanva_bot`;
 
     try {
       if (window.Telegram?.WebApp?.openTelegramLink) {
-        const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/canva_element_bot')}&text=${encodeURIComponent(`✨ Canva Element Kodi: ${code}\n📝 Tavsif: ${cleanDesc}`)}`;
+        const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/zuhracanva_bot')}&text=${encodeURIComponent(`✨ Canva Element Kodi: ${code}\n📝 Tavsif: ${cleanDesc}`)}`;
         window.Telegram.WebApp.openTelegramLink(tgShareUrl);
         showToast('🔗 Ulashish oynasi ochildi!');
         return;
