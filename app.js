@@ -10,11 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       tg.ready();
       tg.expand();
-      if (tg.setHeaderColor) {
-        tg.setHeaderColor('#fff5f9');
-      }
-    } catch (e) {}
-  }
+  // Auto-Cleanup Observer: Immediately remove any legacy share/canva buttons from DOM
+  try {
+    const observer = new MutationObserver(() => {
+      document.querySelectorAll('.btn-share, .btn-canva, .card-actions button:not(.btn-copy)').forEach(btn => btn.remove());
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  } catch (e) {}
 
   // Supabase REST Config
   const SUPABASE_URL = 'https://mjenunxgakcvyzcikjmi.supabase.co';
