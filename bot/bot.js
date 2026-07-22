@@ -41,6 +41,27 @@ async function checkUserSubscription(userId) {
   }
 }
 
+// Registered Telegram Premium Custom Emoji IDs
+const PREMIUM_EMOJIS = {
+  SUCCESS_CHECK: '5980930633298350051',  // Green Checkmark (Yashil Ptichka / Success)
+  DANGER_STOP: '5240241223632954241',    // Red Stop Circle (Qizil Kres / Danger)
+  SHARE: '5798697374247291954',          // Share Icon (Ulashish)
+  TELEGRAM: '5830262682338465584',       // Telegram Shield Icon
+  INSTAGRAM: '5830394890021770129',      // Instagram Shield Icon
+  SAKURA: '5440354006335495210',         // Sakura Flower
+  PINK_HEART: '5465540480538254161',     // Sparkling Pink Heart
+  SPARKLES: '5472164874886846699',       // Sparkles (3D)
+  TULIP: '5404835520150773707',          // Tulip (Estetik)
+  TARGET: '5458795341774083865',         // Target (SMM)
+  CLAPPER: '5375464961822695044',        // Movie Clapper (Animatsiya)
+  LIGHTNING: '5431449001532594346',      // Lightning (Tezkor Qidiruv)
+  CLIPBOARD: '5987635334945444280',      // Clipboard (Nusxalash)
+  DOWN_ARROW: '5406745015365943482',     // Down Arrow
+  CROWN: '5229011542011299168',          // Admin Crown
+  BLUE_HEART: '5433856365061746058',     // Yaxshi Bola Blue Heart
+  ZUHRA_HEART: '5213147217015122287'     // Zuhra Pink Heart
+};
+
 // Get User Keyboards
 function getUserKeyboard(userId) {
   const settings = db.getSettings();
@@ -52,7 +73,9 @@ function getUserKeyboard(userId) {
     [
       {
         text: '🌸 Canva Element Kodlari (Mini App)',
-        web_app: { url: targetUrl }
+        web_app: { url: targetUrl },
+        style: 'primary',
+        icon_custom_emoji_id: PREMIUM_EMOJIS.SAKURA
       }
     ]
   ];
@@ -61,7 +84,9 @@ function getUserKeyboard(userId) {
     inlineKeyboard.push([
       {
         text: '👑 Admin Panel (Mini App)',
-        web_app: { url: `${webAppUrl}?admin=1&user_id=${userId}` }
+        web_app: { url: `${webAppUrl}?admin=1&user_id=${userId}` },
+        style: 'success',
+        icon_custom_emoji_id: PREMIUM_EMOJIS.CROWN
       }
     ]);
   }
@@ -111,8 +136,22 @@ bot.onText(/\/start/, async (msg) => {
         parse_mode: 'HTML',
         reply_markup: {
           inline_keyboard: [
-            [{ text: "📢 Kanalga a'zo bo'lish", url: channelLink }],
-            [{ text: '✅ Obunani tekshirish', callback_data: 'check_sub' }]
+            [
+              { 
+                text: "📢 Kanalga a'zo bo'lish", 
+                url: channelLink,
+                style: 'danger',
+                icon_custom_emoji_id: PREMIUM_EMOJIS.TELEGRAM
+              }
+            ],
+            [
+              { 
+                text: '✅ Obunani tekshirish', 
+                callback_data: 'check_sub',
+                style: 'success',
+                icon_custom_emoji_id: PREMIUM_EMOJIS.SUCCESS_CHECK
+              }
+            ]
           ]
         }
       }
