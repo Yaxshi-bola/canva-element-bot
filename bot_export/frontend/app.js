@@ -1270,12 +1270,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hide all tab views
     document.querySelectorAll('.tab-view').forEach(view => {
       view.classList.add('hidden');
+      view.classList.remove('active');
     });
 
     // Show target view
     const activeView = document.getElementById(`view-${tabName}`);
     if (activeView) {
       activeView.classList.remove('hidden');
+      activeView.classList.add('active');
     }
 
     // Toggle sticky search bar visibility

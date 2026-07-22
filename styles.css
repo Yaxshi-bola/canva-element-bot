@@ -345,12 +345,12 @@ body.apple-vision-theme {
 }
 
 .tab-view {
-  display: none;
-}
-
-.tab-view.active {
   display: block;
   animation: fadeIn 0.3s ease-out;
+}
+
+.tab-view.hidden {
+  display: none !important;
 }
 
 @keyframes fadeIn {
