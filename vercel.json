@@ -1,7 +1,12 @@
 {
   "version": 2,
   "name": "canva-element-kodlari-zuhra-olimova",
+  "public": true,
   "cleanUrls": true,
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
