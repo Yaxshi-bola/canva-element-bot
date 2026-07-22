@@ -546,14 +546,12 @@ body {
 /* Compact Card Action Buttons */
 .card-actions {
   display: flex;
-  align-items: center;
-  gap: 5px;
   width: 100%;
 }
 
 .btn-copy {
-  flex: 1;
-  padding: 7px 8px;
+  width: 100%;
+  padding: 7px 10px;
   border-radius: 8px;
   border: none;
   background: linear-gradient(135deg, var(--pink-gradient-start), var(--pink-gradient-end));
@@ -564,7 +562,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 5px;
   box-shadow: 0 2px 6px rgba(255, 46, 147, 0.2);
   transition: var(--transition);
 }
@@ -572,30 +570,6 @@ body {
 .btn-copy:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 46, 147, 0.35);
-}
-
-.btn-share {
-  width: 32px;
-  height: 29px;
-  border-radius: 8px;
-  border: 1px solid var(--card-border);
-  background: #ffffff;
-  color: var(--primary-pink);
-  font-size: 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition);
-  flex-shrink: 0;
-}
-
-.btn-share:hover {
-  background: var(--pink-light);
-  border-color: var(--primary-pink);
-  transform: translateY(-1px);
-  color: var(--primary-pink-dark);
 }
 
 /* Categories View Grid */

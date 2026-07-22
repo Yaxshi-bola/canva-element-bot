@@ -495,31 +495,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Share Element Function
-  function shareElement(code, desc) {
-    try {
-      if (!code) return;
-      const textDesc = desc ? String(desc) : '';
-      const shareText = `🌸 Canva Element kodi: ${code}\n📝 Tavsif: ${textDesc}\n\n✨ Mini App: https://t.me/canva_element_bot`;
-
-      if (navigator.share) {
-        navigator.share({
-          title: 'Canva Element Kodi',
-          text: shareText
-        }).catch((err) => {
-          if (err && err.name !== 'AbortError') {
-            copyToClipboard(shareText, '🔗 Ulashish matni nusxalandi!');
-          }
-        });
-      } else {
-        copyToClipboard(shareText, '🔗 Ulashish matni nusxalandi!');
-      }
-    } catch (e) {
-      console.error('Share error:', e);
-      if (code) copyToClipboard(code, '📋 KOD NUSXALANDI!');
-    }
-  }
-
   // Toggle Favorite
   function toggleFavorite(id) {
     const index = favorites.indexOf(id);
@@ -663,9 +638,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="card-actions">
             <button class="btn-copy" data-code="${safeCode}">
               <i class="fa-solid fa-copy"></i> Nusxalash
-            </button>
-            <button class="btn-share" data-code="${safeCode}" data-desc="${safeDesc}" title="Ulashish">
-              <i class="fa-solid fa-share-nodes"></i>
             </button>
           </div>
         </div>
@@ -1244,7 +1216,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Global Event Delegation for Elements Grid & Admin Table
   document.addEventListener('click', (e) => {
     const copyBtn = e.target.closest('.btn-copy');
-    const shareBtn = e.target.closest('.btn-share');
     const codeBox = e.target.closest('.code-box');
     const favBtn = e.target.closest('.fav-btn');
     const catCard = e.target.closest('.category-card');
@@ -1257,10 +1228,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (copyBtn || codeBox) {
       const code = (copyBtn || codeBox).dataset.code;
       copyToClipboard(code);
-    } else if (shareBtn) {
-      const code = shareBtn.dataset.code;
-      const desc = shareBtn.dataset.desc;
-      shareElement(code, desc);
     } else if (favBtn) {
       const id = parseInt(favBtn.dataset.id, 10) || favBtn.dataset.id;
       toggleFavorite(id);
