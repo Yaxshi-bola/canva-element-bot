@@ -257,9 +257,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Submit Admin Passcode Login
   function handleAdminLoginSubmit() {
     const code = adminPasscodeInput ? adminPasscodeInput.value.trim() : '';
-    const validCodes = ['8544023815', 'admin', 'admin2026', 'zuhra2026', 'zo2026', 'canva2026'];
+    const validCodes = ['12060704', '8544023815'];
 
-    if (validCodes.includes(code.toLowerCase()) || isAdminMatch(adminList, code)) {
+    if (validCodes.includes(code) || isAdminMatch(adminList, code)) {
       localStorage.setItem('zo_admin_auth', 'true');
       isUserAdmin = true;
       navItemAdmin?.classList.remove('hidden');
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Author badge click count for secret admin access
+  // Author avatar click count (5 fast clicks) for secret admin access
   let badgeClickCount = 0;
   let badgeClickTimer = null;
   if (authorBadge) {
@@ -280,17 +280,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (badgeClickTimer) clearTimeout(badgeClickTimer);
       badgeClickTimer = setTimeout(() => { badgeClickCount = 0; }, 1500);
 
-      if (badgeClickCount >= 3) {
+      if (badgeClickCount >= 5) {
         badgeClickCount = 0;
         openAdminLoginModal();
       }
-    });
-  }
-
-  if (adminLockBtn) {
-    adminLockBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      openAdminLoginModal();
     });
   }
 

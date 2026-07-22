@@ -972,20 +972,6 @@ body.is-searching .sticky-search-section {
  * ------------------------------------------------------------- */
 
 /* Admin Nav Tab Badge */
-.admin-lock-icon {
-  font-size: 11px;
-  color: var(--primary-pink-dark);
-  cursor: pointer;
-  margin-left: 4px;
-  opacity: 0.6;
-  transition: transform 0.2s, opacity 0.2s;
-}
-
-.admin-lock-icon:hover {
-  opacity: 1;
-  transform: scale(1.2);
-}
-
 .admin-badge {
   background: linear-gradient(135deg, #ffd700, #ff8c00) !important;
   color: #000 !important;
