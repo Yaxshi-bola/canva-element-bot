@@ -655,10 +655,7 @@ document.addEventListener('DOMContentLoaded', () => {
           
           <div class="card-actions">
             <button class="btn-copy" data-code="${safeCode}">
-              <i class="fa-solid fa-copy"></i> Nusxalash
-            </button>
-            <button class="btn-canva" data-code="${safeCode}" title="Canva'da ochish">
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              <i class="fa-solid fa-copy"></i> Kodni Nusxalash
             </button>
           </div>
         </div>
@@ -1182,9 +1179,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (copyBtn || codeBox) {
       const code = (copyBtn || codeBox).dataset.code;
       copyToClipboard(code);
-    } else if (canvaBtn) {
-      const code = canvaBtn.dataset.code;
-      openCanvaDeepLink(code);
     } else if (favBtn) {
       const id = parseInt(favBtn.dataset.id, 10) || favBtn.dataset.id;
       toggleFavorite(id);
