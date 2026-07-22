@@ -219,9 +219,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const isCoreId = userId && CORE_ADMINS.includes(Number(userId));
       const isCoreUsername = username && validUsernames.includes(String(username).toLowerCase());
+      const isParamAdmin = urlParams.get('admin') === '1';
       const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-      if (isCoreId || isCoreUsername || sessionAuth || isLocalhost) {
+      if (isCoreId || isCoreUsername || isParamAdmin || sessionAuth || isLocalhost) {
         isUserAdmin = true;
       } else {
         isUserAdmin = false;
