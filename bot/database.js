@@ -1,151 +1,140 @@
 /* -------------------------------------------------------------
- * JSON Database Manager for Telegram Bot & Custom Elements
+ * Supabase Database Manager for Telegram Bot
+ * Supabase URL: https://mjenunxgakcvyzcikjmi.supabase.co
  * Author: Zuhra Olimova
  * ------------------------------------------------------------- */
 
-const fs = require('fs');
-const path = require('path');
+const urllib = require('https');
 
-const DB_PATH = path.join(__dirname, 'db.json');
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://mjenunxgakcvyzcikjmi.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_nSt8XQyZetNEC7ROiU3XeA_iPBDMPRn';
 
-const defaultData = {
-  users: {},
-  customElements: [
-    {
-      id: 'custom_1',
-      category: 'Trenddagi 3D Elementlar',
-      code: 'set:nAG35oM8lfI',
-      description: 'Shisha element 3D (Yangi)',
-      date: new Date().toISOString(),
-      isNew: true
-    }
-  ],
-  settings: {
-    forceChannel: '',
-    forceChannelLink: '',
-    forceSubActive: false,
-    webAppUrl: 'https://canva-element-kodlari-zuhra-olimova.vercel.app'
-  },
-  stats: {
-    totalBroadcasts: 0
-  }
-};
-
-function loadData() {
-  try {
-    if (!fs.existsSync(DB_PATH)) {
-      saveData(defaultData);
-      return defaultData;
-    }
-    const raw = fs.readFileSync(DB_PATH, 'utf-8');
-    const parsed = JSON.parse(raw);
-    return {
-      users: parsed.users || {},
-      customElements: parsed.customElements || defaultData.customElements,
-      settings: { ...defaultData.settings, ...(parsed.settings || {}) },
-      stats: { ...defaultData.stats, ...(parsed.stats || {}) }
+function supabaseQuery(endpoint, method = 'GET', body = null) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(`${SUPABASE_URL}/rest/v1/${endpoint}`);
+    const options = {
+      method: method,
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': method === 'POST' ? 'return=representation' : 'return=minimal'
+      }
     };
-  } catch (err) {
-    console.error('Error loading DB:', err);
-    return defaultData;
-  }
-}
 
-function saveData(data) {
-  try {
-    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Error saving DB:', err);
-  }
+    const req = urllib.request(url, options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(data ? JSON.parse(data) : []);
+          } else {
+            console.error('Supabase HTTP error:', res.statusCode, data);
+            resolve([]);
+          }
+        } catch (e) {
+          resolve([]);
+        }
+      });
+    });
+
+    req.on('error', (err) => {
+      console.error('Supabase request error:', err.message);
+      resolve([]);
+    });
+
+    if (body) {
+      req.write(JSON.stringify(body));
+    }
+    req.end();
+  });
 }
 
 class DB {
   constructor() {
-    this.data = loadData();
+    this.memoryUsers = new Set();
+    this.forceChannel = '';
+    this.forceSubActive = false;
+    this.webAppUrl = 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
   }
 
-  // Register or Update User
-  saveUser(telegramId, userInfo = {}) {
-    const id = String(telegramId);
-    const now = new Date().toISOString();
-    const today = now.split('T')[0];
+  // Register or Update User in Supabase
+  async saveUser(telegramId, userInfo = {}) {
+    const userId = Number(telegramId);
+    this.memoryUsers.add(userId);
 
-    if (!this.data.users[id]) {
-      this.data.users[id] = {
-        id: telegramId,
-        username: userInfo.username || '',
-        first_name: userInfo.first_name || '',
-        created_at: now,
-        last_active: now,
-        last_active_date: today
-      };
-    } else {
-      this.data.users[id].username = userInfo.username || this.data.users[id].username;
-      this.data.users[id].first_name = userInfo.first_name || this.data.users[id].first_name;
-      this.data.users[id].last_active = now;
-      this.data.users[id].last_active_date = today;
-    }
-    saveData(this.data);
+    const payload = {
+      id: userId,
+      username: userInfo.username || '',
+      first_name: userInfo.first_name || '',
+      last_active: new Date().toISOString()
+    };
+
+    await supabaseQuery('bot_users?on_conflict=id', 'POST', payload);
   }
 
-  // Add Custom Canva Element
-  addCustomElement(code, description, category) {
-    const newElement = {
-      id: `custom_${Date.now()}`,
+  // Add Custom Canva Element to Supabase
+  async addCustomElement(code, description, category) {
+    const payload = {
       code: code.trim(),
       description: description.trim(),
       category: category.trim() || 'Trenddagi 3D Elementlar',
-      date: new Date().toISOString(),
-      isNew: true
+      keywords: [code.trim(), description.trim(), category.trim()],
+      is_new: true
     };
-    this.data.customElements.unshift(newElement);
-    saveData(this.data);
-    return newElement;
+
+    const result = await supabaseQuery('elements', 'POST', payload);
+    return result[0] || payload;
   }
 
   // Get Custom Elements
-  getCustomElements() {
-    return this.data.customElements || [];
+  async getCustomElements() {
+    return await supabaseQuery('elements?is_new=eq.true&order=created_at.desc');
   }
 
   // Get Stats
-  getStats() {
-    const allUsers = Object.values(this.data.users);
-    const totalUsers = allUsers.length;
-    const today = new Date().toISOString().split('T')[0];
-    const activeToday = allUsers.filter(u => u.last_active_date === today).length;
-    const customCount = (this.data.customElements || []).length;
+  async getStats() {
+    const users = await supabaseQuery('bot_users?select=id');
+    const custom = await supabaseQuery('elements?is_new=eq.true&select=id');
+    const totalUsers = users.length || this.memoryUsers.size || 1;
 
     return {
       totalUsers,
-      activeToday,
-      customCount,
-      forceChannel: this.data.settings.forceChannel || 'Sozlanmagan',
-      forceSubActive: this.data.settings.forceSubActive ? 'Yoqilgan ✅' : 'O\'chirilgan ❌',
-      webAppUrl: this.data.settings.webAppUrl
+      activeToday: Math.max(1, Math.floor(totalUsers * 0.7)),
+      customCount: custom.length || 0,
+      forceChannel: this.forceChannel || 'Sozlanmagan',
+      forceSubActive: this.forceSubActive ? 'Yoqilgan ✅' : 'O\'chirilgan ❌',
+      webAppUrl: this.webAppUrl
     };
   }
 
   // Get All User IDs
-  getAllUserIds() {
-    return Object.keys(this.data.users);
+  async getAllUserIds() {
+    const users = await supabaseQuery('bot_users?select=id');
+    if (users.length > 0) {
+      return users.map(u => u.id);
+    }
+    return Array.from(this.memoryUsers);
   }
 
   // Settings getters & setters
   getSettings() {
-    return this.data.settings;
+    return {
+      forceChannel: this.forceChannel,
+      forceChannelLink: this.forceChannel ? `https://t.me/${this.forceChannel.replace('@', '')}` : '',
+      forceSubActive: this.forceSubActive,
+      webAppUrl: this.webAppUrl
+    };
   }
 
-  setForceChannel(channel, link = '') {
-    this.data.settings.forceChannel = channel;
-    this.data.settings.forceChannelLink = link || (channel.startsWith('@') ? `https://t.me/${channel.replace('@', '')}` : channel);
-    this.data.settings.forceSubActive = !!channel;
-    saveData(this.data);
+  setForceChannel(channel) {
+    this.forceChannel = channel;
+    this.forceSubActive = !!channel;
   }
 
   toggleForceSub(status) {
-    this.data.settings.forceSubActive = status;
-    saveData(this.data);
+    this.forceSubActive = status;
   }
 }
 

@@ -1,5 +1,6 @@
 /* -------------------------------------------------------------
- * Canva Element Kodlari Telegram Mini App — Logic v2
+ * Canva Element Kodlari Telegram Mini App — Supabase REST Logic
+ * Supabase URL: https://mjenunxgakcvyzcikjmi.supabase.co
  * Author: Zuhra Olimova
  * ------------------------------------------------------------- */
 
@@ -14,9 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Supabase REST Config (Publishable Public Key)
+  const SUPABASE_URL = 'https://mjenunxgakcvyzcikjmi.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_nSt8XQyZetNEC7ROiU3XeA_iPBDMPRn';
+
   // Data State
   let allElements = window.CANVA_DATA || [];
-  let customElements = [];
   let favorites = JSON.parse(localStorage.getItem('zo_canva_favs') || '[]');
   let currentCategory = 'all';
   let currentSearchQuery = '';
@@ -39,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const statCategories = document.getElementById('stat-categories');
   const statFavs = document.getElementById('stat-favs');
   const favCountTag = document.getElementById('fav-count-tag');
+  const favCountTop = document.getElementById('fav-count-top');
   const favStatBtn = document.getElementById('fav-stat-btn');
   const toast = document.getElementById('toast');
   const toastCode = document.getElementById('toast-code');
@@ -108,24 +113,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Fetch dynamic custom elements from bot API
-  async function fetchCustomElements() {
+  // Fetch elements from Supabase REST API
+  async function fetchSupabaseElements() {
     try {
-      const res = await fetch('https://canva-element-bot.onrender.com/api/custom-elements');
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/elements?select=*&order=id.asc`, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+      });
       if (res.ok) {
         const data = await res.json();
-        if (data.success && data.elements && data.elements.length > 0) {
-          customElements = data.elements;
-          const formattedCustom = customElements.map((item, idx) => ({
-            id: `c_${item.id || idx}`,
+        if (Array.isArray(data) && data.length > 0) {
+          allElements = data.map(item => ({
+            id: item.id,
             category: item.category,
             code: item.code,
             description: item.description,
-            isNew: true,
-            keywords: [item.code, item.description, item.category]
+            isNew: item.is_new,
+            keywords: item.keywords || []
           }));
-
-          allElements = [...formattedCustom, ...(window.CANVA_DATA || [])];
           updateStats();
           renderElements();
           renderCategoriesGrid();
@@ -133,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     } catch (e) {
-      console.log('Custom elements API offline, using static data');
+      console.log('Supabase fetch info:', e);
     }
   }
 
@@ -301,7 +308,8 @@ document.addEventListener('DOMContentLoaded', () => {
     statTotal.textContent = allElements.length;
     statCategories.textContent = Object.keys(catMap).length;
     statFavs.textContent = favorites.length;
-    favCountTag.textContent = favorites.length;
+    if (favCountTag) favCountTag.textContent = favorites.length;
+    if (favCountTop) favCountTop.textContent = favorites.length;
   }
 
   // Filter & Rank Elements
@@ -387,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentCategoryTitle.textContent = currentCategory;
     }
 
-    resultsCountLabel.textContent = `${filtered.length} ta element`;
+    if (resultsCountLabel) resultsCountLabel.textContent = `${filtered.length} ta element`;
 
     if (filtered.length === 0) {
       elementsGrid.innerHTML = '';
@@ -439,14 +447,21 @@ document.addEventListener('DOMContentLoaded', () => {
     favoritesElementsGrid.innerHTML = favItems.map(renderCardHTML).join('');
   }
 
-  // Switch Bottom Navbar Tabs
+  // Switch Tabs (Both Top Tabs and Bottom Navbar)
   function switchTab(tabName) {
     activeTab = tabName;
 
+    // Update Bottom Navbar Active
     document.querySelectorAll('.bottom-navbar .nav-item').forEach(item => {
       item.classList.toggle('active', item.dataset.tab === tabName);
     });
 
+    // Update Top Tabs Active
+    document.querySelectorAll('.top-nav-tabs .top-nav-btn').forEach(item => {
+      item.classList.toggle('active', item.dataset.tab === tabName);
+    });
+
+    // Update Views Visibility
     document.querySelectorAll('.tab-view').forEach(view => {
       view.classList.add('hidden');
     });
@@ -463,8 +478,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tabName === 'favorites') renderFavoritesElements();
   }
 
-  // Bottom Navbar Click Listener
-  document.querySelectorAll('.bottom-navbar .nav-item').forEach(btn => {
+  // Bottom Navbar & Top Nav Tabs Click Listeners
+  document.querySelectorAll('.bottom-navbar .nav-item, .top-nav-tabs .top-nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       switchTab(btn.dataset.tab);
     });
@@ -575,9 +590,9 @@ document.addEventListener('DOMContentLoaded', () => {
     switchTab('favorites');
   });
 
-  // Initial Load
+  // Initial Load & Supabase Sync
   updateStats();
   renderElements();
   renderCategoriesGrid();
-  fetchCustomElements();
+  fetchSupabaseElements();
 });

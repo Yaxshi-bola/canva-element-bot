@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------
- * Canva Element Kodlari Telegram Mini App — Mobile-First Pink & White
+ * Canva Element Kodlari Telegram Mini App — Pink & White Aesthetic
  * Author: Zuhra Olimova
  * ------------------------------------------------------------- */
 
@@ -52,7 +52,7 @@ body {
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-  padding-bottom: 90px; /* Space for Floating Bottom Navbar */
+  padding-bottom: 95px; /* Room for Bottom Navbar */
 }
 
 /* Background Glowing Orbs */
@@ -234,7 +234,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 245, 249, 0.95);
+  background: rgba(255, 245, 249, 0.96);
   backdrop-filter: blur(12px);
   padding: 10px 14px 6px;
   border-bottom: 1px solid var(--card-border);
@@ -302,12 +302,66 @@ body {
   color: #ffffff;
 }
 
+/* Top Navigation Tabs */
+.top-nav-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 0 4px;
+  scrollbar-width: none;
+}
+
+.top-nav-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.top-nav-btn {
+  flex: 0 0 auto;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--card-border);
+  background: #ffffff;
+  color: var(--text-main);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.top-nav-btn i {
+  color: var(--primary-pink);
+}
+
+.top-nav-btn.active, .top-nav-btn:hover {
+  background: linear-gradient(135deg, var(--pink-gradient-start), var(--pink-gradient-end));
+  color: #ffffff !important;
+  border-color: transparent;
+  box-shadow: 0 4px 12px var(--pink-glow);
+}
+
+.top-nav-btn.active i, .top-nav-btn:hover i {
+  color: #ffffff !important;
+}
+
+.badge-mini {
+  background: #ffffff;
+  color: var(--primary-pink);
+  font-size: 8px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 6px;
+}
+
 /* Hot Tag Filter Horizontal Scroll */
 .hot-filters-scroll {
   display: flex;
   gap: 6px;
   overflow-x: auto;
-  padding: 8px 0 2px;
+  padding: 4px 0 2px;
   scrollbar-width: none;
 }
 
@@ -336,13 +390,9 @@ body {
 }
 
 .tag-chip:hover, .tag-chip.active {
-  background: linear-gradient(135deg, var(--pink-gradient-start), var(--pink-gradient-end));
-  color: #ffffff;
-  border-color: transparent;
-}
-
-.tag-chip:hover i, .tag-chip.active i {
-  color: #ffffff;
+  background: var(--pink-chip-bg);
+  color: var(--pink-chip-text);
+  border-color: var(--primary-pink);
 }
 
 /* Main Content Layout */
