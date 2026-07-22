@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "name": "canva-element-kodlari-zuhra-olimova",
+  "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
+    }
+  ]
+}

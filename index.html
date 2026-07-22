@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Canva Element Kodlari — Zuhra Olimova</title>
+  <meta name="description" content="Canva uchun 400+ saralangan 3D, Estetik, SMM va Animatsiyali element kodlari to'plami. Zuhra Olimova muallifligida." />
+  
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="pink-white-theme">
+
+  <!-- Background Decorative Glowing Orbs -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <!-- Header Section -->
+  <header class="app-header" id="app-header">
+    <div class="header-container">
+      <div class="author-badge">
+        <div class="avatar-ring">
+          <span class="avatar-text">ZO</span>
+        </div>
+        <div class="author-info">
+          <div class="author-name">Zuhra Olimova <i class="fa-solid fa-circle-check verified-icon"></i></div>
+          <div class="author-title">Canva Elementlar Katalogi</div>
+        </div>
+      </div>
+      
+      <h1 class="main-title">
+        Canva Element <span class="gradient-text">Kodlari</span>
+      </h1>
+      
+      <!-- Compact Stats Grid -->
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-cubes-stacked"></i></div>
+          <div class="stat-data">
+            <span class="stat-value" id="stat-total">407</span>
+            <span class="stat-label">Element</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-layer-group"></i></div>
+          <div class="stat-data">
+            <span class="stat-value" id="stat-categories">20</span>
+            <span class="stat-label">Bo'lim</span>
+          </div>
+        </div>
+        <div class="stat-card" id="fav-stat-btn">
+          <div class="stat-icon fav-icon"><i class="fa-solid fa-heart"></i></div>
+          <div class="stat-data">
+            <span class="stat-value" id="stat-favs">0</span>
+            <span class="stat-label">Saqlangan</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Search Header Bar -->
+  <div class="sticky-search-section" id="sticky-search-section">
+    <div class="search-wrapper">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input 
+        type="text" 
+        id="search-input" 
+        placeholder="Aqlli qidiruv (masalan: 3d, doktor, harf, ramazon, kitob)..." 
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+      />
+      <button id="clear-search" class="clear-btn hidden" aria-label="Tozalash">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    
+    <!-- Quick Tag Scroll Bar -->
+    <div class="hot-filters-scroll" id="hot-filters-scroll">
+      <button class="tag-chip active" data-category="all">
+        <i class="fa-solid fa-border-all"></i> Barchasi
+      </button>
+      <button class="tag-chip" data-category="favorites">
+        <i class="fa-solid fa-heart"></i> Saqlanganlar (<span id="fav-count-tag">0</span>)
+      </button>
+      <button class="tag-chip" data-tag="3d">
+        <i class="fa-solid fa-box-open"></i> 3D
+      </button>
+      <button class="tag-chip" data-tag="smm">
+        <i class="fa-solid fa-bullhorn"></i> SMM
+      </button>
+      <button class="tag-chip" data-tag="estetik">
+        <i class="fa-solid fa-sparkles"></i> Estetik
+      </button>
+      <button class="tag-chip" data-tag="ramazon">
+        <i class="fa-solid fa-moon"></i> Ramazon
+      </button>
+      <button class="tag-chip" data-tag="harf">
+        <i class="fa-solid fa-font"></i> Harf
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content" id="main-content">
+
+    <!-- Categories Accordion / Pills -->
+    <div class="categories-bar" id="categories-bar">
+      <div class="section-label">
+        <span><i class="fa-solid fa-list-ul"></i> Bo'lim tanlang:</span>
+        <span class="results-count" id="results-count">407 ta element</span>
+      </div>
+      <div class="category-pills" id="category-pills">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+
+    <!-- Current Category Bar -->
+    <div class="active-section-bar" id="active-section-bar">
+      <h2 class="current-category-title" id="current-category-title">Barcha elementlar</h2>
+      <button class="copy-all-btn" id="copy-all-btn" title="Ushbu bo'limdagi barcha kodlarni nusxalash">
+        <i class="fa-solid fa-copy"></i> Bo'limni nusxalash
+      </button>
+    </div>
+
+    <!-- Elements Grid -->
+    <div class="elements-grid" id="elements-grid">
+      <!-- Injected via JS -->
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state hidden" id="empty-state">
+      <div class="empty-icon"><i class="fa-solid fa-magnifying-glass-minus"></i></div>
+      <h3>Hech narsa topilmadi</h3>
+      <p>Iltimos, boshqacha so'z bilan qidirib ko'ring (masalan: <em>3d, doktor, kitob, ramazon, meva, harf</em>)</p>
+      <button class="reset-btn" id="reset-filter-btn">
+        <i class="fa-solid fa-rotate-left"></i> Qidiruvni tozalash
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Author Info & Usage Rules Footer -->
+  <footer class="app-footer" id="app-footer">
+    <div class="footer-container">
+      <div class="footer-card">
+        <div class="footer-author">
+          <div class="author-avatar-large">ZO</div>
+          <div class="footer-author-text">
+            <h3>Zuhra Olimova</h3>
+            <p>Canva element kodlari to'plami va eksklyuziv qo'llanmasi</p>
+          </div>
+        </div>
+        
+        <div class="rules-box">
+          <h4><i class="fa-solid fa-lightbulb"></i> Canva'da Ishlatish Qo'llanmasi</h4>
+          <ul>
+            <li><i class="fa-solid fa-1"></i> Kod ustiga bosing — u avtomatik vaqtinchalik xotiraga <strong>(clipboard)</strong> nusxalanadi.</li>
+            <li><i class="fa-solid fa-2"></i> Canva ilovasi / saytiga o'tib, <strong>Elements (Elementlar)</strong> bo'limiga kirasiz.</li>
+            <li><i class="fa-solid fa-3"></i> Qidiruv joyiga kiritilgan kodni <strong>Paste (Qo'yish)</strong> qilib izlaysiz!</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden">
+    <div class="toast-icon" id="toast-icon"><i class="fa-solid fa-circle-check"></i></div>
+    <div class="toast-content">
+      <span class="toast-title" id="toast-title">Nusxalandi!</span>
+      <span class="toast-code" id="toast-code">set:nAG35oM8lfI</span>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

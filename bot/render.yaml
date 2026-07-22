@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: canva-element-bot
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: BOT_TOKEN
+        value: 8914431726:AAEsGTEXLUCLaL0gSq9ztAt7EBubh1Ge27o
+      - key: NODE_VERSION
+        value: 18.0.0
