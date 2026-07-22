@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------
  * Supabase Database Manager for Telegram Bot & Mini App
  * Supabase URL: https://mjenunxgakcvyzcikjmi.supabase.co
- * Author: Zuhra Olimova
+ * Author: Zuhra Olimova & Yaxshi Bola
  * ------------------------------------------------------------- */
 
 const urllib = require('https');
@@ -57,31 +57,40 @@ function supabaseQuery(endpoint, method = 'GET', body = null) {
 class DB {
   constructor() {
     this.memoryUsers = new Set();
-    this.forceChannel = '';
+    this.forceChannel = '@zuhracanva_official';
     this.forceSubActive = false;
     this.webAppUrl = 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
     this.superAdminId = 8544023815;
     this.zuhraAdminId = 8112688757;
     this.adminsList = [8544023815, 8112688757];
+    this.loadAdminsFromFile();
+  }
+
+  loadAdminsFromFile() {
+    try {
+      if (fs.existsSync(ADMINS_FILE)) {
+        const raw = fs.readFileSync(ADMINS_FILE, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.adminsList = Array.from(new Set([this.superAdminId, this.zuhraAdminId, ...parsed]));
+          return;
+        }
+      }
+    } catch (e) {}
+    this.adminsList = [this.superAdminId, this.zuhraAdminId];
     this.saveAdminsToFile();
   }
 
-  // Load admins strictly returning the 2 core admins
-  loadAdmins() {
-    return [this.superAdminId, this.zuhraAdminId];
-  }
-
-  // Save admins to file
   saveAdminsToFile() {
     try {
-      fs.writeFileSync(ADMINS_FILE, JSON.stringify([this.superAdminId, this.zuhraAdminId], null, 2), 'utf-8');
+      fs.writeFileSync(ADMINS_FILE, JSON.stringify(this.adminsList, null, 2), 'utf-8');
     } catch (e) {
       console.error('Admins save error:', e.message);
     }
   }
 
   getAdmins() {
-    return [this.superAdminId, this.zuhraAdminId];
+    return this.adminsList;
   }
 
   isAdmin(userId) {
@@ -90,21 +99,36 @@ class DB {
     const strId = String(userId).toLowerCase().trim();
     const validUsernames = ['yomonbola', 'yomonboia', 'zuhraolimova', 'zuhra_olimova', 'sokin_notalar'];
 
-    return (
-      numId === this.superAdminId ||
-      numId === this.zuhraAdminId ||
-      strId === '8544023815' ||
-      strId === '8112688757' ||
-      validUsernames.includes(strId)
-    );
+    if (numId === this.superAdminId || numId === this.zuhraAdminId || validUsernames.includes(strId)) {
+      return true;
+    }
+
+    return this.adminsList.some(a => String(a).toLowerCase().trim() === strId || Number(a) === numId);
   }
 
   addAdmin(idOrUsername) {
-    return false; // Fixed 2 admins mode
+    if (!idOrUsername) return false;
+    const item = isNaN(Number(idOrUsername)) ? String(idOrUsername).trim() : Number(idOrUsername);
+    if (!this.adminsList.includes(item)) {
+      this.adminsList.push(item);
+      this.saveAdminsToFile();
+      return true;
+    }
+    return false;
   }
 
   removeAdmin(idOrUsername) {
-    return false; // Cannot remove core admins
+    const numId = Number(idOrUsername);
+    if (numId === this.superAdminId || numId === this.zuhraAdminId) {
+      return false; // Cannot remove core super admins
+    }
+    const lenBefore = this.adminsList.length;
+    this.adminsList = this.adminsList.filter(a => String(a).toLowerCase().trim() !== String(idOrUsername).toLowerCase().trim());
+    if (this.adminsList.length < lenBefore) {
+      this.saveAdminsToFile();
+      return true;
+    }
+    return false;
   }
 
   // Register or Update User in Supabase
@@ -205,12 +229,15 @@ class DB {
   }
 
   setForceChannel(channel) {
-    this.forceChannel = channel;
-    this.forceSubActive = !!channel;
+    if (!channel) {
+      this.forceChannel = '';
+      return;
+    }
+    this.forceChannel = channel.startsWith('@') ? channel : `@${channel}`;
   }
 
   toggleForceSub(status) {
-    this.forceSubActive = status;
+    this.forceSubActive = !!status;
   }
 }
 

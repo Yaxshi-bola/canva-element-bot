@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------
- * Canva Element Kodlari — Apple VisionOS / iOS 18 Main JS (v4.0)
+ * Canva Element Kodlari — Apple VisionOS / iOS 18 Main JS (v6.0)
  * Zuhra Olimova & Yaxshi Bola
  * ------------------------------------------------------------- */
 
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.execCommand('copy');
       showToast(customToastMsg, text);
     } catch (err) {
-      showToast('❌ Nusxalab bo\'lmadi');
+      showToast("❌ Nusxalab bo'lmadi");
     }
     document.body.removeChild(textArea);
   }
@@ -169,24 +169,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Admin Verification Logic
+  // Admin Verification Logic (Hide Admin tab by default for non-admins)
   function checkAdminPermissions() {
     const currentUserId = tg?.initDataUnsafe?.user?.id;
     const currentUsername = tg?.initDataUnsafe?.user?.username?.toLowerCase();
+    const navItemAdmin = document.getElementById('nav-item-admin');
 
     let adminUnlocked = false;
     try {
       adminUnlocked = localStorage.getItem('zo_admin_unlocked') === 'true';
     } catch(e) {}
 
-    if (currentUserId && (Number(currentUserId) === SUPER_ADMIN_ID || Number(currentUserId) === ZUHRA_ADMIN_ID || adminList.includes(Number(currentUserId)))) {
+    if (currentUserId && (Number(currentUserId) === SUPER_ADMIN_ID || Number(currentUserId) === ZUHRA_ADMIN_ID || adminList.includes(Number(currentUserId)) || adminList.includes(String(currentUserId)))) {
       isUserAdmin = true;
-    } else if (currentUsername && (currentUsername === 'yaxshibola' || currentUsername === 'zuhra_olimova')) {
+    } else if (currentUsername && (currentUsername === 'yaxshibola' || currentUsername === 'zuhra_olimova' || adminList.includes(`@${currentUsername}`) || adminList.includes(currentUsername))) {
       isUserAdmin = true;
     } else if (adminUnlocked) {
       isUserAdmin = true;
     } else {
       isUserAdmin = false;
+    }
+
+    if (navItemAdmin) {
+      if (isUserAdmin) {
+        navItemAdmin.classList.remove('hidden');
+      } else {
+        navItemAdmin.classList.add('hidden');
+      }
     }
   }
 
@@ -223,6 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (passcode === '777' || passcode === '2026' || passcode === 'zuhra') {
       isUserAdmin = true;
       try { localStorage.setItem('zo_admin_unlocked', 'true'); } catch(e) {}
+      checkAdminPermissions();
       modalAdminLogin?.classList.add('hidden');
       switchTab('admin');
       showToast('🔑 Admin panelga xush kelibsiz!');
@@ -238,6 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
   adminLockBtn?.addEventListener('click', () => {
     isUserAdmin = false;
     try { localStorage.setItem('zo_admin_unlocked', 'false'); } catch(e) {}
+    checkAdminPermissions();
     switchTab('home');
     showToast('🔒 Admin rejimidan chiqildi');
   });
@@ -331,11 +342,10 @@ document.addEventListener('DOMContentLoaded', () => {
     renderFavoritesElements();
   }
 
-  // Render Single Card HTML (VisionOS 2-Column Grid Card)
+  // Render Single Card HTML
   function renderCardHTML(item) {
     if (!item) return '';
     const isFav = favorites.includes(item.id) || favorites.includes(String(item.id));
-    const isNew = item.isNew || item.id <= 30;
 
     return `
       <div class="element-card" data-id="${item.id}">
@@ -584,7 +594,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* -------------------------------------------------------------
-   * Admin Panel Functions
+   * Admin Panel & Admin Management Functions
    * ------------------------------------------------------------- */
 
   function renderAdminElements() {
@@ -808,6 +818,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Dynamic Admin List & Management Functions
   function renderAdminsList() {
     if (!adminsListContainer) return;
     const ADMIN_NAMES = {
@@ -817,28 +828,91 @@ document.addEventListener('DOMContentLoaded', () => {
       "8112688757": "Zuhra 🩷"
     };
 
-    adminList = [SUPER_ADMIN_ID, ZUHRA_ADMIN_ID];
+    const uniqueAdmins = Array.from(new Set([SUPER_ADMIN_ID, ZUHRA_ADMIN_ID, ...adminList]));
+    adminList = uniqueAdmins;
 
     adminsListContainer.innerHTML = adminList.map(admin => {
       const numAdmin = Number(admin);
-      const isSuper = numAdmin === SUPER_ADMIN_ID;
-      const displayName = ADMIN_NAMES[numAdmin] || (isSuper ? "Yaxshi Bola 🩵" : "Zuhra 🩷");
+      const isSuper = numAdmin === SUPER_ADMIN_ID || numAdmin === ZUHRA_ADMIN_ID;
+      const displayName = ADMIN_NAMES[numAdmin] || (isSuper ? (numAdmin === SUPER_ADMIN_ID ? "Yaxshi Bola 🩵" : "Zuhra 🩷") : `Admin (${admin})`);
 
       return `
-        <div class="admin-user-row" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:rgba(255,255,255,0.95); margin-bottom:10px; border-radius:14px; border:1px solid ${isSuper ? 'rgba(14,165,233,0.3)' : 'rgba(236,72,153,0.3)'};">
-          <div class="admin-user-info" style="display:flex; align-items:center; gap:12px;">
-            <i class="fa-solid ${isSuper ? 'fa-crown' : 'fa-user-shield'}" style="color: ${isSuper ? '#0ea5e9' : '#ec4899'}; font-size: 18px;"></i>
+        <div class="admin-user-row" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--card-bg); margin-bottom:8px; border-radius:var(--radius-md); border:1px solid var(--card-border);">
+          <div class="admin-user-info" style="display:flex; align-items:center; gap:10px;">
+            <i class="fa-solid ${isSuper ? 'fa-crown' : 'fa-user-shield'}" style="color: ${isSuper ? '#0ea5e9' : '#ec4899'}; font-size: 16px;"></i>
             <div>
-              <strong style="color:#1e293b; font-size:15px; display:block;">${displayName}</strong>
-              <small style="opacity:0.75; font-size:12px; color:#64748b;">ID: ${admin}</small>
+              <strong style="color:var(--text-primary); font-size:13px; display:block;">${displayName}</strong>
+              <small style="font-size:11px; color:var(--text-secondary);">ID / User: ${admin}</small>
             </div>
           </div>
-          <span style="font-size:11px; color:${isSuper ? '#0ea5e9' : '#ec4899'}; font-weight:700; background:${isSuper ? 'rgba(14,165,233,0.12)' : 'rgba(236,72,153,0.12)'}; padding:4px 12px; border-radius:20px;">
-            ${isSuper ? 'ASOSIY ADMIN' : 'ADMIN'}
-          </span>
+          ${isSuper 
+            ? `<span style="font-size:10px; color:${numAdmin === SUPER_ADMIN_ID ? '#0ea5e9' : '#ec4899'}; font-weight:700; background:rgba(14,165,233,0.1); padding:3px 10px; border-radius:12px;">ASOSIY ADMIN</span>`
+            : `<button class="btn-remove-admin" data-admin="${admin}" style="padding:4px 10px; border-radius:12px; background:rgba(239,68,68,0.1); color:#ef4444; border:none; font-size:11px; font-weight:700; cursor:pointer;">O'chirish</button>`
+          }
         </div>
       `;
     }).join('');
+  }
+
+  async function addAdmin() {
+    const input = document.getElementById('new-admin-input');
+    const val = input ? input.value.trim() : '';
+    if (!val) {
+      return showToast("⚠️ Admin ID yoki Username yozing!");
+    }
+
+    const item = isNaN(Number(val)) ? val : Number(val);
+    if (!adminList.includes(item) && !adminList.includes(String(item))) {
+      adminList.push(item);
+      try {
+        localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
+      } catch (e) {}
+
+      if (input) input.value = '';
+      renderAdminsList();
+      checkAdminPermissions();
+      showToast("✅ Yangi admin qo'shildi!");
+
+      const API_BASE = window.location.origin.includes('vercel.app') 
+        ? 'https://canva-element-bot.onrender.com/api' 
+        : '/api';
+
+      try {
+        await fetch(`${API_BASE}/admins`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adminId: item })
+        });
+      } catch (e) {}
+    } else {
+      showToast("⚠️ Ushbu admin allaqachon mavjud!");
+    }
+  }
+
+  async function removeAdmin(item) {
+    const numAdmin = Number(item);
+    if (numAdmin === SUPER_ADMIN_ID || numAdmin === ZUHRA_ADMIN_ID) {
+      return showToast("❌ Asosiy adminlarni o'chirib bo'lmaydi!");
+    }
+
+    adminList = adminList.filter(a => String(a) !== String(item) && Number(a) !== numAdmin);
+    try {
+      localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
+    } catch (e) {}
+
+    renderAdminsList();
+    checkAdminPermissions();
+    showToast("🗑️ Admin huquqi olindi");
+
+    const API_BASE = window.location.origin.includes('vercel.app') 
+      ? 'https://canva-element-bot.onrender.com/api' 
+      : '/api';
+
+    try {
+      await fetch(`${API_BASE}/admins/${item}`, {
+        method: 'DELETE'
+      });
+    } catch (e) {}
   }
 
   // Backup & JSON Download Implementation
@@ -1048,6 +1122,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('modal-settings-close')?.addEventListener('click', () => document.getElementById('modal-admin-settings')?.classList.add('hidden'));
   document.getElementById('btn-save-settings')?.addEventListener('click', saveAdminSettings);
 
+  // Dynamic Add Admin Button Handler
+  document.getElementById('btn-save-new-admin')?.addEventListener('click', addAdmin);
+
   // Global Event Delegation for Cards & Admin Actions
   document.addEventListener('click', (e) => {
     const copyBtn = e.target.closest('.btn-copy');
@@ -1058,6 +1135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const adminEditBtn = e.target.closest('.btn-admin-edit');
     const adminDeleteBtn = e.target.closest('.btn-admin-delete');
+    const removeAdminBtn = e.target.closest('.btn-remove-admin');
 
     if (copyBtn || codeBox) {
       const code = (copyBtn || codeBox).dataset.code;
@@ -1077,6 +1155,8 @@ document.addEventListener('DOMContentLoaded', () => {
       openEditElementModal(adminEditBtn.dataset.id);
     } else if (adminDeleteBtn) {
       deleteElement(adminDeleteBtn.dataset.id);
+    } else if (removeAdminBtn) {
+      removeAdmin(removeAdminBtn.dataset.admin);
     }
   });
 

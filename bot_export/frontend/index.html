@@ -282,7 +282,7 @@
         <span>Saqlanganlar</span>
       </button>
       
-      <button class="nav-item" data-tab="admin" id="nav-item-admin">
+      <button class="nav-item hidden" data-tab="admin" id="nav-item-admin">
         <i class="fa-solid fa-shield-halved"></i>
         <span>Admin</span>
       </button>
@@ -366,6 +366,13 @@
         <button class="modal-close-btn" id="modal-admins-close"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
+        <div class="form-group">
+          <label>Yangi Admin Telegram ID yoki Username</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="new-admin-input" placeholder="masalan: 123456789 yoki @username" style="flex:1;" />
+            <button class="btn-modal-save" id="btn-save-new-admin" style="white-space:nowrap;"><i class="fa-solid fa-plus"></i> Qo'shish</button>
+          </div>
+        </div>
         <div class="admins-list-container" id="admins-list-container"></div>
       </div>
       <div class="modal-footer">
@@ -467,7 +474,7 @@
   </div>
 
   <!-- Include Data and Main Logic Scripts -->
-  <script src="data.js?v=6.0"></script>
-  <script src="app.js?v=6.0"></script>
+  <script src="data.js?v=7.0"></script>
+  <script src="app.js?v=7.0"></script>
 </body>
 </html>

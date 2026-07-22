@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------
  * Render Web Service Entrypoint
  * Express Server + Telegram Bot + Custom Elements API + Backup Cron
- * Author: Zuhra Olimova
+ * Author: Zuhra Olimova & Yaxshi Bola
  * ------------------------------------------------------------- */
 
 const express = require('express');
@@ -64,7 +64,6 @@ function requireAdminAuth(req, res, next) {
     }
   }
 
-  // Header / query fallback for verified admin IDs
   const reqUserId = req.headers['x-user-id'] || req.query.user_id || req.body?.admin_user_id;
   if (reqUserId && db.isAdmin(reqUserId)) {
     return next();
@@ -139,6 +138,33 @@ app.get('/api/admins', (req, res) => {
     admins: db.getAdmins(),
     superAdminId: db.getSettings().superAdminId
   });
+});
+
+// API: Add Admin
+app.post('/api/admins', requireAdminAuth, (req, res) => {
+  const { adminId } = req.body;
+  if (!adminId) return res.status(400).json({ success: false, error: 'adminId required' });
+  const added = db.addAdmin(adminId);
+  res.json({ success: added, admins: db.getAdmins() });
+});
+
+// API: Delete Admin
+app.delete('/api/admins/:id', requireAdminAuth, (req, res) => {
+  const { id } = req.params;
+  const removed = db.removeAdmin(id);
+  res.json({ success: removed, admins: db.getAdmins() });
+});
+
+// API: Settings Get & Update (Protected Admin)
+app.get('/api/settings', (req, res) => {
+  res.json({ success: true, settings: db.getSettings() });
+});
+
+app.post('/api/settings/force-sub', (req, res) => {
+  const { channelUsername, isEnabled } = req.body;
+  if (channelUsername !== undefined) db.setForceChannel(channelUsername);
+  if (isEnabled !== undefined) db.toggleForceSub(isEnabled);
+  res.json({ success: true, settings: db.getSettings() });
 });
 
 // API: System Stats
