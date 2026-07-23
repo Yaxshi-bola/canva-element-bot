@@ -780,21 +780,30 @@ bot.on('callback_query', async (query) => {
     return bot.sendMessage(chatId, `✏️ Yangi kanal username yoki linkini yuboring (masalan: \`@yangi_kanal\` yoki \`https://t.me/yangi_kanal\`):`, { parse_mode: 'Markdown' });
   }
 
-  if (data === 'chan_list' || data === 'chan_remove_menu' || data === 'chan_check_admins') {
-    await bot.answerCallbackQuery(query.id, { text: '🔍 Kanal holati tekshirilmoqda...' });
+  async function renderChannelListMenu(chatId, messageId = null) {
     const channels = db.getForceChannels();
     if (channels.length === 0) {
-      return bot.sendMessage(chatId, `📭 Hozircha hech qanday majburiy obuna kanali ulangan emas.`, getAdminKeyboard(userId));
+      const msgText = `📭 **Hozircha hech qanday majburiy obuna kanali ulangan emas.**`;
+      const btnMarkup = { inline_keyboard: [[{ text: '➕ Kanal qo\'shish', callback_data: 'chan_add' }]] };
+      if (messageId) {
+        return bot.editMessageText(msgText, { chatId, message_id: messageId, parse_mode: 'Markdown', reply_markup: btnMarkup }).catch(() => {
+          bot.sendMessage(chatId, msgText, { parse_mode: 'Markdown', reply_markup: btnMarkup });
+        });
+      }
+      return bot.sendMessage(chatId, msgText, { parse_mode: 'Markdown', reply_markup: btnMarkup });
     }
+
+    // Fast parallel admin status check for all channels
+    const statusResults = await Promise.all(channels.map(ch => checkBotChannelAdminStatus(ch)));
 
     let reportText = `📋 **ULANGAN MAJBURlY OBUNA KANALLARI VA BOT ADMINLIK HOLATI:**\n\n`;
     const inlineButtons = [];
 
     for (let i = 0; i < channels.length; i++) {
       const ch = channels[i];
-      const adminStatus = await checkBotChannelAdminStatus(ch);
+      const adminStatus = statusResults[i];
       const statusIcon = adminStatus.isAdmin ? '🟢' : '🔴';
-      
+
       reportText += `${i + 1}. **${ch}**\n   └ ${statusIcon} Status: ${adminStatus.message}\n\n`;
 
       const chClean = ch.replace('@', '');
@@ -802,7 +811,7 @@ bot.on('callback_query', async (query) => {
 
       inlineButtons.push([
         { text: `📢 ${ch}`, url: chUrl },
-        { text: `🗑 O'chirish`, callback_data: `chan_delete_${ch}` }
+        { text: `🗑 O'chirish`, callback_data: `chan_del_idx_${i}` }
       ]);
     }
 
@@ -811,18 +820,46 @@ bot.on('callback_query', async (query) => {
       { text: '➕ Kanal qo\'shish', callback_data: 'chan_add' }
     ]);
 
+    if (messageId) {
+      return bot.editMessageText(reportText, {
+        chat_id: chatId,
+        message_id: messageId,
+        parse_mode: 'Markdown',
+        reply_markup: { inline_keyboard: inlineButtons }
+      }).catch(() => {
+        bot.sendMessage(chatId, reportText, { parse_mode: 'Markdown', reply_markup: { inline_keyboard: inlineButtons } });
+      });
+    }
+
     return bot.sendMessage(chatId, reportText, {
       parse_mode: 'Markdown',
       reply_markup: { inline_keyboard: inlineButtons }
     });
   }
 
+  if (data === 'chan_list' || data === 'chan_remove_menu' || data === 'chan_check_admins') {
+    await bot.answerCallbackQuery(query.id, { text: '🔍 Kanal holati tekshirilmoqda...' });
+    return renderChannelListMenu(chatId, query.message?.message_id);
+  }
+
+  if (data.startsWith('chan_del_idx_')) {
+    const idx = parseInt(data.replace('chan_del_idx_', ''));
+    const channels = db.getForceChannels();
+    if (!isNaN(idx) && channels[idx]) {
+      const channelToRemove = channels[idx];
+      db.removeForceChannel(channelToRemove);
+      await bot.answerCallbackQuery(query.id, { text: `✅ ${channelToRemove} o'chirildi!` });
+    } else {
+      await bot.answerCallbackQuery(query.id, { text: '⚠️ Kanal topilmadi.' });
+    }
+    return renderChannelListMenu(chatId, query.message?.message_id);
+  }
+
   if (data.startsWith('chan_delete_')) {
     const channelToRemove = data.replace('chan_delete_', '');
     db.removeForceChannel(channelToRemove);
     await bot.answerCallbackQuery(query.id, { text: `✅ ${channelToRemove} o'chirildi!` });
-    await bot.deleteMessage(chatId, query.message.message_id).catch(() => {});
-    return bot.sendMessage(chatId, `✅ **${channelToRemove}** majburiy obuna kanallari ro'yxatidan olib tashlandi!`, getAdminKeyboard(userId));
+    return renderChannelListMenu(chatId, query.message?.message_id);
   }
 
   if (data === 'chan_toggle_sub') {
@@ -1702,9 +1739,11 @@ class DB {
 
   // Get Detailed Statistics
   async getStats() {
-    const allUsersList = await this.getAllUsers();
-    const elements = await supabaseQuery('elements?select=id');
-    const custom = await supabaseQuery('elements?is_new=eq.true&select=id');
+    const [allUsersList, elements, custom] = await Promise.all([
+      this.getAllUsers(),
+      supabaseQuery('elements?select=id'),
+      supabaseQuery('elements?is_new=eq.true&select=id')
+    ]);
 
     const totalUsers = allUsersList.length;
 
@@ -1729,13 +1768,13 @@ class DB {
     });
 
     return {
-      totalElements: elements.length || 407,
+      totalElements: Array.isArray(elements) && elements.length > 0 ? elements.length : 407,
       totalUsers: totalUsers,
       activeToday: Math.max(active24h, 1),
       femaleCount: femaleCount,
       maleCount: maleCount,
       unknownCount: unknownCount,
-      customCount: custom.length || 0,
+      customCount: Array.isArray(custom) ? custom.length : 0,
       adminCount: this.adminsList.length,
       forceChannelsCount: this.forceChannels.length,
       forceChannels: this.forceChannels.join(', ') || 'Sozlanmagan',

@@ -481,9 +481,11 @@ class DB {
 
   // Get Detailed Statistics
   async getStats() {
-    const allUsersList = await this.getAllUsers();
-    const elements = await supabaseQuery('elements?select=id');
-    const custom = await supabaseQuery('elements?is_new=eq.true&select=id');
+    const [allUsersList, elements, custom] = await Promise.all([
+      this.getAllUsers(),
+      supabaseQuery('elements?select=id'),
+      supabaseQuery('elements?is_new=eq.true&select=id')
+    ]);
 
     const totalUsers = allUsersList.length;
 
@@ -508,13 +510,13 @@ class DB {
     });
 
     return {
-      totalElements: elements.length || 407,
+      totalElements: Array.isArray(elements) && elements.length > 0 ? elements.length : 407,
       totalUsers: totalUsers,
       activeToday: Math.max(active24h, 1),
       femaleCount: femaleCount,
       maleCount: maleCount,
       unknownCount: unknownCount,
-      customCount: custom.length || 0,
+      customCount: Array.isArray(custom) ? custom.length : 0,
       adminCount: this.adminsList.length,
       forceChannelsCount: this.forceChannels.length,
       forceChannels: this.forceChannels.join(', ') || 'Sozlanmagan',
