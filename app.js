@@ -1259,10 +1259,114 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modal-backup-download')?.classList.add('hidden');
   });
 
+  // Check mandatory subscription gate on Mini App startup
+  async function checkUserSubscriptionOnStartup() {
+    const currentUserId = tg?.initDataUnsafe?.user?.id || new URLSearchParams(window.location.search).get('user_id');
+    if (!currentUserId) return;
+
+    try {
+      const checkUrl = window.location.origin.includes('vercel.app')
+        ? `https://canva-element-bot.onrender.com/api/check-sub?user_id=${currentUserId}`
+        : `/api/check-sub?user_id=${currentUserId}`;
+
+      const res = await fetch(checkUrl);
+      if (!res.ok) return;
+
+      const data = await res.json();
+      if (data.success && data.forceSubActive && !data.isSubscribed) {
+        showSubscriptionGateOverlay(data.missing || []);
+      }
+    } catch (e) {
+      console.log('Sub check error:', e);
+    }
+  }
+
+  function showSubscriptionGateOverlay(missingChannels) {
+    let overlay = document.getElementById('sub-gate-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'sub-gate-overlay';
+      overlay.style.position = 'fixed';
+      overlay.style.top = '0';
+      overlay.style.left = '0';
+      overlay.style.width = '100vw';
+      overlay.style.height = '100vh';
+      overlay.style.zIndex = '99999';
+      overlay.style.background = 'rgba(15, 12, 29, 0.94)';
+      overlay.style.backdropFilter = 'blur(16px)';
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      overlay.style.padding = '20px';
+
+      document.body.appendChild(overlay);
+    }
+
+    const chButtonsHTML = missingChannels.map(ch => {
+      const chClean = ch.replace('@', '');
+      const url = ch.startsWith('-100') ? 'https://t.me' : `https://t.me/${chClean}`;
+      return `
+        <a href="${url}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; background: linear-gradient(135deg, #ff4e50, #f9d423); color: #fff; text-decoration: none; border-radius: 16px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 15px rgba(255, 78, 80, 0.3);">
+          <i class="fa-brands fa-telegram"></i> ${ch} kanaliga obuna bo'lish
+        </a>
+      `;
+    }).join('');
+
+    overlay.innerHTML = `
+      <div style="background: rgba(255, 255, 255, 0.95); width: 100%; max-width: 380px; padding: 24px; border-radius: 24px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); font-family: 'Plus Jakarta Sans', sans-serif;">
+        <div style="width: 60px; height: 60px; background: #FFF0F5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #ff4e50; font-size: 24px;">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h2 style="font-size: 20px; font-weight: 800; color: #1a1a2e; margin-bottom: 8px;">Obuna bo'lish talab etiladi</h2>
+        <p style="font-size: 14px; color: #666; margin-bottom: 20px; line-height: 1.5;">
+          Mini App'dan foydalanish uchun quyidagi rasmiy kanalimizga a'zo bo'ling:
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+          ${chButtonsHTML}
+        </div>
+
+        <button id="btn-recheck-sub-overlay" style="width: 100%; padding: 14px; background: #0088cc; color: #fff; border: none; border-radius: 16px; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <i class="fa-solid fa-rotate-right"></i> Obunani tekshirish
+        </button>
+      </div>
+    `;
+
+    document.getElementById('btn-recheck-sub-overlay')?.addEventListener('click', async () => {
+      const btn = document.getElementById('btn-recheck-sub-overlay');
+      if (btn) btn.textContent = 'Tekshirilmoqda...';
+
+      const currentUserId = tg?.initDataUnsafe?.user?.id || new URLSearchParams(window.location.search).get('user_id');
+      if (!currentUserId) return;
+
+      try {
+        const checkUrl = window.location.origin.includes('vercel.app')
+          ? `https://canva-element-bot.onrender.com/api/check-sub?user_id=${currentUserId}`
+          : `/api/check-sub?user_id=${currentUserId}`;
+
+        const res = await fetch(checkUrl);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.isSubscribed) {
+            overlay.remove();
+            showToast('✅ Obuna tasdiqlandi!');
+          } else {
+            showToast("❌ Siz hali kanalga obuna bo'lmadingiz!");
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Qayta tekshirish';
+          }
+        }
+      } catch (e) {
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Obunani tekshirish';
+      }
+    });
+  }
+
   // Initial Safe Execution
   try { checkAdminPermissions(); } catch (e) { console.error('Admin check error:', e); }
   try { updateStats(); } catch (e) { console.error('Stats error:', e); }
   try { renderElements(); } catch (e) { console.error('Render elements error:', e); }
   try { renderCategoriesGrid(); } catch (e) { console.error('Categories error:', e); }
   try { fetchSupabaseElements(); } catch (e) { console.error('Supabase fetch error:', e); }
+  try { checkUserSubscriptionOnStartup(); } catch (e) { console.error('Sub check startup error:', e); }
 });
+

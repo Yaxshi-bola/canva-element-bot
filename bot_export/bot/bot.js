@@ -196,10 +196,18 @@ bot.onText(/\/start/, async (msg) => {
   const subStatus = await checkUserSubscription(userId);
 
   if (!subStatus.isSubscribed) {
+    // Hide BotFather Chat Menu Button for unsubscribed user
+    try {
+      await bot.setChatMenuButton({
+        chat_id: chatId,
+        menu_button: JSON.stringify({ type: 'default' })
+      });
+    } catch (e) {}
+
     const inlineButtons = subStatus.missing.map(ch => [
       {
-        text: `📢 ${ch} kanaliga obuna bo'lish`,
-        url: `https://t.me/${ch.replace('@', '')}`,
+        text: `${ch} kanaliga obuna bo'lish`,
+        url: ch.startsWith('-100') ? 'https://t.me' : `https://t.me/${ch.replace('@', '')}`,
         style: 'danger',
         icon_custom_emoji_id: PREMIUM_EMOJIS.TELEGRAM
       }
@@ -207,7 +215,7 @@ bot.onText(/\/start/, async (msg) => {
 
     inlineButtons.push([
       {
-        text: '🔄 Obunani tekshirish',
+        text: 'Obunani tekshirish',
         callback_data: 'check_sub',
         style: 'success',
         icon_custom_emoji_id: PREMIUM_EMOJIS.SUCCESS_CHECK
@@ -216,13 +224,32 @@ bot.onText(/\/start/, async (msg) => {
 
     return bot.sendMessage(
       chatId,
-      `<b>Botdan foydalanish uchun quyidagi kanal(lar)imizga obuna bo'ling!</b>\n\nBarcha kanallarga a'zo bo'lgach, <b>"Obunani tekshirish"</b> tugmasini bosing:`,
+      `<tg-emoji emoji-id="${PREMIUM_EMOJIS.DANGER_STOP}">🛑</tg-emoji> <b>Botdan foydalanish uchun quyidagi kanal(lar)imizga obuna bo'ling!</b>\n\n` +
+      `Barcha kanallarga a'zo bo'lgach, <b>"Obunani tekshirish"</b> tugmasini bosing:`,
       {
         parse_mode: 'HTML',
         reply_markup: { inline_keyboard: inlineButtons }
       }
     );
   }
+
+  // Activate Mini App Chat Menu Button for Subscribed User
+  try {
+    const settings = db.getSettings();
+    const webAppUrl = settings.webAppUrl || 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+    const isAdm = db.isAdmin(userId);
+    const ts = Date.now();
+    const targetUrl = isAdm ? `${webAppUrl}?admin=1&user_id=${userId}&v=${ts}` : `${webAppUrl}?user_id=${userId}&v=${ts}`;
+
+    await bot.setChatMenuButton({
+      chat_id: chatId,
+      menu_button: JSON.stringify({
+        type: 'web_app',
+        text: 'Canva Element Kodlari',
+        web_app: { url: targetUrl }
+      })
+    });
+  } catch (e) {}
 
   sendWelcomeMessage(chatId, userId);
 });
@@ -334,11 +361,30 @@ bot.on('callback_query', async (query) => {
   if (data === 'check_sub') {
     const subStatus = await checkUserSubscription(userId);
     if (subStatus.isSubscribed) {
-      await bot.answerCallbackQuery(query.id, { text: '✅ Rahmat! Obuna tasdiqlandi.' });
+      await bot.answerCallbackQuery(query.id, { text: 'Rahmat! Obuna tasdiqlandi.' });
       await bot.deleteMessage(chatId, query.message.message_id).catch(() => {});
+
+      // Activate Mini App Chat Menu Button for Subscribed User
+      try {
+        const settings = db.getSettings();
+        const webAppUrl = settings.webAppUrl || 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+        const isAdm = db.isAdmin(userId);
+        const ts = Date.now();
+        const targetUrl = isAdm ? `${webAppUrl}?admin=1&user_id=${userId}&v=${ts}` : `${webAppUrl}?user_id=${userId}&v=${ts}`;
+
+        await bot.setChatMenuButton({
+          chat_id: chatId,
+          menu_button: JSON.stringify({
+            type: 'web_app',
+            text: 'Canva Element Kodlari',
+            web_app: { url: targetUrl }
+          })
+        });
+      } catch (e) {}
+
       sendWelcomeMessage(chatId, userId);
     } else {
-      await bot.answerCallbackQuery(query.id, { text: "❌ Siz hali barcha majburiy kanallarga obuna bo'lmadingiz!", show_alert: true });
+      await bot.answerCallbackQuery(query.id, { text: "Siz hali barcha majburiy kanallarga obuna bo'lmadingiz!", show_alert: true });
     }
     return;
   }
