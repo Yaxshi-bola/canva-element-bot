@@ -1259,26 +1259,72 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modal-backup-download')?.classList.add('hidden');
   });
 
+  // Extract Telegram User ID from multiple SDK/URL sources
+  function getTelegramUserId() {
+    try {
+      if (tg?.initDataUnsafe?.user?.id) return tg.initDataUnsafe.user.id;
+      if (tg?.initData) {
+        const uStr = new URLSearchParams(tg.initData).get('user');
+        if (uStr) {
+          const parsed = JSON.parse(uStr);
+          if (parsed && parsed.id) return parsed.id;
+        }
+      }
+    } catch (e) {}
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const uParam = urlParams.get('user_id');
+    if (uParam) return Number(uParam);
+
+    return null;
+  }
+
   // Check mandatory subscription gate on Mini App startup
   async function checkUserSubscriptionOnStartup() {
-    const currentUserId = tg?.initDataUnsafe?.user?.id || new URLSearchParams(window.location.search).get('user_id');
-    if (!currentUserId) return;
+    const userId = getTelegramUserId();
+    const API_HOST = window.location.origin.includes('vercel.app') 
+      ? 'https://canva-element-bot.onrender.com' 
+      : '';
 
     try {
-      const checkUrl = window.location.origin.includes('vercel.app')
-        ? `https://canva-element-bot.onrender.com/api/check-sub?user_id=${currentUserId}`
-        : `/api/check-sub?user_id=${currentUserId}`;
+      const checkUrl = userId 
+        ? `${API_HOST}/api/check-sub?user_id=${userId}`
+        : `${API_HOST}/api/settings`;
 
       const res = await fetch(checkUrl);
       if (!res.ok) return;
 
       const data = await res.json();
-      if (data.success && data.forceSubActive && !data.isSubscribed) {
+
+      if (data.forceSubActive && data.isSubscribed === false) {
+        hideMainAppContent();
         showSubscriptionGateOverlay(data.missing || []);
+      } else if (!userId && (data.settings?.forceSubActive || data.forceSubActive)) {
+        const missingCh = data.settings?.forceChannels || data.forceChannels || [];
+        hideMainAppContent();
+        showSubscriptionGateOverlay(missingCh);
       }
     } catch (e) {
       console.log('Sub check error:', e);
     }
+  }
+
+  function hideMainAppContent() {
+    const mainContent = document.getElementById('main-content');
+    const searchSection = document.getElementById('sticky-search-section');
+    const bottomNav = document.getElementById('bottom-nav');
+    if (mainContent) mainContent.style.display = 'none';
+    if (searchSection) searchSection.style.display = 'none';
+    if (bottomNav) bottomNav.style.display = 'none';
+  }
+
+  function revealMainAppContent() {
+    const mainContent = document.getElementById('main-content');
+    const searchSection = document.getElementById('sticky-search-section');
+    const bottomNav = document.getElementById('bottom-nav');
+    if (mainContent) mainContent.style.display = 'block';
+    if (searchSection) searchSection.style.display = 'block';
+    if (bottomNav) bottomNav.style.display = 'flex';
   }
 
   function showSubscriptionGateOverlay(missingChannels) {
@@ -1292,8 +1338,8 @@ document.addEventListener('DOMContentLoaded', () => {
       overlay.style.width = '100vw';
       overlay.style.height = '100vh';
       overlay.style.zIndex = '99999';
-      overlay.style.background = 'rgba(15, 12, 29, 0.94)';
-      overlay.style.backdropFilter = 'blur(16px)';
+      overlay.style.background = 'rgba(15, 12, 29, 0.96)';
+      overlay.style.backdropFilter = 'blur(20px)';
       overlay.style.display = 'flex';
       overlay.style.alignItems = 'center';
       overlay.style.justifyContent = 'center';
@@ -1302,9 +1348,11 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.appendChild(overlay);
     }
 
-    const chButtonsHTML = missingChannels.map(ch => {
-      const chClean = ch.replace('@', '');
-      const url = ch.startsWith('-100') ? 'https://t.me' : `https://t.me/${chClean}`;
+    const chList = Array.isArray(missingChannels) && missingChannels.length > 0 ? missingChannels : ['@zuhracanva_official'];
+
+    const chButtonsHTML = chList.map(ch => {
+      const chClean = String(ch).replace('@', '');
+      const url = String(ch).startsWith('-100') ? 'https://t.me' : `https://t.me/${chClean}`;
       return `
         <a href="${url}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; background: linear-gradient(135deg, #ff4e50, #f9d423); color: #fff; text-decoration: none; border-radius: 16px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 15px rgba(255, 78, 80, 0.3);">
           <i class="fa-brands fa-telegram"></i> ${ch} kanaliga obuna bo'lish
@@ -1313,8 +1361,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
 
     overlay.innerHTML = `
-      <div style="background: rgba(255, 255, 255, 0.95); width: 100%; max-width: 380px; padding: 24px; border-radius: 24px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); font-family: 'Plus Jakarta Sans', sans-serif;">
-        <div style="width: 60px; height: 60px; background: #FFF0F5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #ff4e50; font-size: 24px;">
+      <div style="background: rgba(255, 255, 255, 0.96); width: 100%; max-width: 380px; padding: 26px; border-radius: 24px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); font-family: 'Plus Jakarta Sans', sans-serif;">
+        <div style="width: 64px; height: 64px; background: #FFF0F5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #ff4e50; font-size: 26px;">
           <i class="fa-solid fa-lock"></i>
         </div>
         <h2 style="font-size: 20px; font-weight: 800; color: #1a1a2e; margin-bottom: 8px;">Obuna bo'lish talab etiladi</h2>
@@ -1326,7 +1374,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ${chButtonsHTML}
         </div>
 
-        <button id="btn-recheck-sub-overlay" style="width: 100%; padding: 14px; background: #0088cc; color: #fff; border: none; border-radius: 16px; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <button id="btn-recheck-sub-overlay" style="width: 100%; padding: 14px; background: #0088cc; color: #fff; border: none; border-radius: 16px; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);">
           <i class="fa-solid fa-rotate-right"></i> Obunani tekshirish
         </button>
       </div>
@@ -1336,19 +1384,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('btn-recheck-sub-overlay');
       if (btn) btn.textContent = 'Tekshirilmoqda...';
 
-      const currentUserId = tg?.initDataUnsafe?.user?.id || new URLSearchParams(window.location.search).get('user_id');
-      if (!currentUserId) return;
+      const userId = getTelegramUserId();
+      const API_HOST = window.location.origin.includes('vercel.app') 
+        ? 'https://canva-element-bot.onrender.com' 
+        : '';
+
+      if (!userId) {
+        showToast("⚠️ Iltimos, Mini App'ni Telegram boti orqali oching!");
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Obunani tekshirish';
+        return;
+      }
 
       try {
-        const checkUrl = window.location.origin.includes('vercel.app')
-          ? `https://canva-element-bot.onrender.com/api/check-sub?user_id=${currentUserId}`
-          : `/api/check-sub?user_id=${currentUserId}`;
-
+        const checkUrl = `${API_HOST}/api/check-sub?user_id=${userId}`;
         const res = await fetch(checkUrl);
         if (res.ok) {
           const data = await res.json();
           if (data.isSubscribed) {
             overlay.remove();
+            revealMainAppContent();
             showToast('✅ Obuna tasdiqlandi!');
           } else {
             showToast("❌ Siz hali kanalga obuna bo'lmadingiz!");
