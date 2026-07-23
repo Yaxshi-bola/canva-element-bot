@@ -1282,9 +1282,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Check mandatory subscription gate on Mini App startup
   async function checkUserSubscriptionOnStartup() {
     const userId = getTelegramUserId();
-    const API_HOST = window.location.origin.includes('vercel.app') 
-      ? 'https://canva-element-bot.onrender.com' 
-      : '';
+    const API_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? ''
+      : 'https://canva-element-bot.onrender.com';
 
     try {
       const checkUrl = userId 
@@ -1295,14 +1295,19 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!res.ok) return;
 
       const data = await res.json();
+      const isForceSubActive = data.forceSubActive !== undefined 
+        ? data.forceSubActive 
+        : (data.settings?.forceSubActive || false);
 
-      if (data.forceSubActive && data.isSubscribed === false) {
-        hideMainAppContent();
-        showSubscriptionGateOverlay(data.missing || []);
-      } else if (!userId && (data.settings?.forceSubActive || data.forceSubActive)) {
-        const missingCh = data.settings?.forceChannels || data.forceChannels || [];
-        hideMainAppContent();
-        showSubscriptionGateOverlay(missingCh);
+      if (isForceSubActive) {
+        if (userId && data.isSubscribed === false) {
+          hideMainAppContent();
+          showSubscriptionGateOverlay(data.missing || []);
+        } else if (!userId) {
+          const missingCh = data.missing || data.settings?.forceChannels || data.forceChannels || [];
+          hideMainAppContent();
+          showSubscriptionGateOverlay(missingCh);
+        }
       }
     } catch (e) {
       console.log('Sub check error:', e);
@@ -1385,9 +1390,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (btn) btn.textContent = 'Tekshirilmoqda...';
 
       const userId = getTelegramUserId();
-      const API_HOST = window.location.origin.includes('vercel.app') 
-        ? 'https://canva-element-bot.onrender.com' 
-        : '';
+      const API_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? ''
+        : 'https://canva-element-bot.onrender.com';
 
       if (!userId) {
         showToast("⚠️ Iltimos, Mini App'ni Telegram boti orqali oching!");
@@ -1415,12 +1420,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Initial Safe Execution
+  // Initial Safe Execution (Run sub check FIRST!)
+  try { checkUserSubscriptionOnStartup(); } catch (e) { console.error('Sub check startup error:', e); }
   try { checkAdminPermissions(); } catch (e) { console.error('Admin check error:', e); }
   try { updateStats(); } catch (e) { console.error('Stats error:', e); }
   try { renderElements(); } catch (e) { console.error('Render elements error:', e); }
   try { renderCategoriesGrid(); } catch (e) { console.error('Categories error:', e); }
   try { fetchSupabaseElements(); } catch (e) { console.error('Supabase fetch error:', e); }
-  try { checkUserSubscriptionOnStartup(); } catch (e) { console.error('Sub check startup error:', e); }
 });
 
