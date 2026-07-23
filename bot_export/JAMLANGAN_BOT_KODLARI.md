@@ -234,17 +234,19 @@ app.post('/api/settings/force-sub', (req, res) => {
 // API: Check User Channel Subscription
 app.get('/api/check-sub', async (req, res) => {
   const userId = req.query.user_id;
-  if (!userId) {
-    return res.status(400).json({ success: false, error: 'user_id required' });
-  }
-
-  const botInstance = require('./bot');
   const settings = db.getSettings();
   const channels = db.getForceChannels();
 
   if (!settings.forceSubActive || !channels || channels.length === 0) {
-    return res.json({ success: true, isSubscribed: true, missing: [], forceSubActive: false });
+    return res.json({ success: true, isSubscribed: true, missing: [], forceSubActive: Boolean(settings.forceSubActive), channels });
   }
+
+  // If no user_id is provided, enforce lock screen overlay
+  if (!userId) {
+    return res.json({ success: true, isSubscribed: false, missing: channels, forceSubActive: true, channels });
+  }
+
+  const botInstance = require('./bot');
 
   const missing = [];
   for (const channel of channels) {
@@ -1408,6 +1410,7 @@ class DB {
 
     this.loadAdminsFromFile();
     this.loadDbFile();
+    this.initSettingsFromSupabase().catch(() => {});
   }
 
   loadDbFile() {
@@ -1469,6 +1472,46 @@ class DB {
       fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
     } catch (e) {
       console.error('db.json save error:', e.message);
+    }
+  }
+
+  async initSettingsFromSupabase() {
+    try {
+      const res = await supabaseQuery('bot_settings?id=eq.global', 'GET');
+      if (Array.isArray(res) && res.length > 0 && res[0].config) {
+        const cfg = res[0].config;
+        if (Array.isArray(cfg.forceChannels)) {
+          this.forceChannels = cfg.forceChannels;
+        }
+        if (typeof cfg.forceSubActive === 'boolean') {
+          this.forceSubActive = cfg.forceSubActive;
+        }
+        if (cfg.joinRequestMode) {
+          this.joinRequestMode = cfg.joinRequestMode;
+        }
+        console.log('✅ Settings loaded permanently from Supabase:', this.forceChannels);
+        this.saveDbFile();
+      }
+    } catch (e) {
+      console.warn('⚠️ Supabase settings sync warning:', e.message);
+    }
+  }
+
+  async saveSettingsToSupabase() {
+    try {
+      const payload = {
+        id: 'global',
+        config: {
+          forceChannels: this.forceChannels,
+          forceSubActive: this.forceSubActive,
+          joinRequestMode: this.joinRequestMode,
+          webAppUrl: this.webAppUrl
+        },
+        updated_at: new Date().toISOString()
+      };
+      await supabaseQuery('bot_settings?on_conflict=id', 'POST', payload);
+    } catch (e) {
+      console.warn('⚠️ Supabase settings save error:', e.message);
     }
   }
 
@@ -1593,6 +1636,7 @@ class DB {
     if (validModes.includes(mode)) {
       this.joinRequestMode = mode;
       this.saveDbFile();
+      this.saveSettingsToSupabase().catch(() => {});
       return true;
     }
     return false;
@@ -1620,6 +1664,7 @@ class DB {
       if (!this.forceChannels.includes(clean)) {
         this.forceChannels.push(clean);
         this.saveDbFile();
+        this.saveSettingsToSupabase().catch(() => {});
         return clean;
       }
       return false;
@@ -1633,6 +1678,7 @@ class DB {
     if (!this.forceChannels.includes(clean)) {
       this.forceChannels.push(clean);
       this.saveDbFile();
+      this.saveSettingsToSupabase().catch(() => {});
       return clean;
     }
     return false;
@@ -1648,9 +1694,31 @@ class DB {
     this.forceChannels = this.forceChannels.filter(ch => ch.toLowerCase() !== clean.toLowerCase());
     if (this.forceChannels.length < beforeLen) {
       this.saveDbFile();
+      this.saveSettingsToSupabase().catch(() => {});
       return true;
     }
     return false;
+  }
+
+  setForceChannel(channelInput) {
+    if (this.addForceChannel(channelInput)) {
+      this.forceSubActive = true;
+      this.saveDbFile();
+      this.saveSettingsToSupabase().catch(() => {});
+      return true;
+    }
+    return false;
+  }
+
+  toggleForceSub(status = null) {
+    if (status !== null) {
+      this.forceSubActive = Boolean(status);
+    } else {
+      this.forceSubActive = !this.forceSubActive;
+    }
+    this.saveDbFile();
+    this.saveSettingsToSupabase().catch(() => {});
+    return this.forceSubActive;
   }
 
   // Register or Update User

@@ -1289,25 +1289,16 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const checkUrl = userId 
         ? `${API_HOST}/api/check-sub?user_id=${userId}`
-        : `${API_HOST}/api/settings`;
+        : `${API_HOST}/api/check-sub`;
 
       const res = await fetch(checkUrl);
       if (!res.ok) return;
 
       const data = await res.json();
-      const isForceSubActive = data.forceSubActive !== undefined 
-        ? data.forceSubActive 
-        : (data.settings?.forceSubActive || false);
 
-      if (isForceSubActive) {
-        if (userId && data.isSubscribed === false) {
-          hideMainAppContent();
-          showSubscriptionGateOverlay(data.missing || []);
-        } else if (!userId) {
-          const missingCh = data.missing || data.settings?.forceChannels || data.forceChannels || [];
-          hideMainAppContent();
-          showSubscriptionGateOverlay(missingCh);
-        }
+      if (data.forceSubActive && (data.isSubscribed === false || !userId)) {
+        hideMainAppContent();
+        showSubscriptionGateOverlay(data.missing || []);
       }
     } catch (e) {
       console.log('Sub check error:', e);

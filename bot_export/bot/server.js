@@ -170,17 +170,19 @@ app.post('/api/settings/force-sub', (req, res) => {
 // API: Check User Channel Subscription
 app.get('/api/check-sub', async (req, res) => {
   const userId = req.query.user_id;
-  if (!userId) {
-    return res.status(400).json({ success: false, error: 'user_id required' });
-  }
-
-  const botInstance = require('./bot');
   const settings = db.getSettings();
   const channels = db.getForceChannels();
 
   if (!settings.forceSubActive || !channels || channels.length === 0) {
-    return res.json({ success: true, isSubscribed: true, missing: [], forceSubActive: false });
+    return res.json({ success: true, isSubscribed: true, missing: [], forceSubActive: Boolean(settings.forceSubActive), channels });
   }
+
+  // If no user_id is provided, enforce lock screen overlay
+  if (!userId) {
+    return res.json({ success: true, isSubscribed: false, missing: channels, forceSubActive: true, channels });
+  }
+
+  const botInstance = require('./bot');
 
   const missing = [];
   for (const channel of channels) {
