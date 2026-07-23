@@ -29,6 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const ZUHRA_ADMIN_ID = 8112688757;
   let adminList = JSON.parse(localStorage.getItem('zo_canva_admins') || `[${SUPER_ADMIN_ID}, ${ZUHRA_ADMIN_ID}]`);
 
+  const API_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? ''
+    : 'https://canva-element-bot.onrender.com';
+
   // DOM Element References
   const elementsGrid = document.getElementById('elements-grid');
   const newsElementsGrid = document.getElementById('news-elements-grid');
