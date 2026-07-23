@@ -36,6 +36,7 @@
     "node": ">=18.0.0"
   }
 }
+
 ```
 
 ---
@@ -54,6 +55,7 @@ services:
         sync: false
       - key: NODE_VERSION
         value: 18.0.0
+
 ```
 
 ---
@@ -63,7 +65,7 @@ services:
 /* -------------------------------------------------------------
  * Render Web Service Entrypoint
  * Express Server + Telegram Bot + Custom Elements API + Backup Cron
- * Author: Zuhra Olimova
+ * Author: Zuhra Olimova & Yaxshi Bola
  * ------------------------------------------------------------- */
 
 const express = require('express');
@@ -126,7 +128,6 @@ function requireAdminAuth(req, res, next) {
     }
   }
 
-  // Header / query fallback for verified admin IDs
   const reqUserId = req.headers['x-user-id'] || req.query.user_id || req.body?.admin_user_id;
   if (reqUserId && db.isAdmin(reqUserId)) {
     return next();
@@ -203,6 +204,73 @@ app.get('/api/admins', (req, res) => {
   });
 });
 
+// API: Add Admin
+app.post('/api/admins', requireAdminAuth, (req, res) => {
+  const { adminId } = req.body;
+  if (!adminId) return res.status(400).json({ success: false, error: 'adminId required' });
+  const added = db.addAdmin(adminId);
+  res.json({ success: added, admins: db.getAdmins() });
+});
+
+// API: Delete Admin
+app.delete('/api/admins/:id', requireAdminAuth, (req, res) => {
+  const { id } = req.params;
+  const removed = db.removeAdmin(id);
+  res.json({ success: removed, admins: db.getAdmins() });
+});
+
+// API: Settings Get & Update (Protected Admin)
+app.get('/api/settings', (req, res) => {
+  res.json({ success: true, settings: db.getSettings() });
+});
+
+app.post('/api/settings/force-sub', (req, res) => {
+  const { channelUsername, isEnabled } = req.body;
+  if (channelUsername !== undefined) db.setForceChannel(channelUsername);
+  if (isEnabled !== undefined) db.toggleForceSub(isEnabled);
+  res.json({ success: true, settings: db.getSettings() });
+});
+
+// API: Check User Channel Subscription
+app.get('/api/check-sub', async (req, res) => {
+  const userId = req.query.user_id;
+  if (!userId) {
+    return res.status(400).json({ success: false, error: 'user_id required' });
+  }
+
+  const botInstance = require('./bot');
+  const settings = db.getSettings();
+  const channels = db.getForceChannels();
+
+  if (!settings.forceSubActive || !channels || channels.length === 0) {
+    return res.json({ success: true, isSubscribed: true, missing: [], forceSubActive: false });
+  }
+
+  const missing = [];
+  for (const channel of channels) {
+    try {
+      const member = await botInstance.getChatMember(channel, userId);
+      const validStatuses = ['creator', 'administrator', 'member'];
+      if (!validStatuses.includes(member.status)) {
+        missing.push(channel);
+      }
+    } catch (err) {
+      if (err.message && (err.message.includes('chat not found') || err.message.includes('bot is not a member') || err.message.includes('not an admin'))) {
+        // Skip blocking if bot lacks admin permissions
+      } else {
+        missing.push(channel);
+      }
+    }
+  }
+
+  res.json({
+    success: true,
+    isSubscribed: missing.length === 0,
+    missing: missing,
+    forceSubActive: settings.forceSubActive
+  });
+});
+
 // API: System Stats
 app.get('/api/stats', async (req, res) => {
   try {
@@ -230,6 +298,7 @@ app.get('/api/backup', requireAdminAuth, async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Bot Web Server is running on port ${PORT}`);
 });
+
 ```
 
 ---
@@ -237,8 +306,10 @@ app.listen(PORT, () => {
 ### 4. `bot/bot.js`
 ```javascript
 /* -------------------------------------------------------------
- * Canva Element Kodlari Telegram Bot & Expanded Admin Panel
- * Author: Zuhra Olimova
+ * Canva Element Kodlari Telegram Bot & Admin Panel
+ * Token: 8914431726:AAEsGTEXLUCLaL0gSq9ztAt7EBubh1Ge27o
+ * Super Admin ID: 8544023815
+ * Author: Zuhra Olimova & Yaxshi Bola
  * ------------------------------------------------------------- */
 
 const TelegramBot = require('node-telegram-bot-api');
@@ -249,7 +320,7 @@ if (!BOT_TOKEN) {
   console.error('❌ FATAL: BOT_TOKEN environment variable is not defined!');
   process.exit(1);
 }
-const ADMIN_ID = 8544023815;
+const SUPER_ADMIN_ID = 8544023815;
 
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 
@@ -258,48 +329,94 @@ console.log('🤖 Canva Element Kodlari Bot starting...');
 // Admin state tracking
 const adminState = {};
 const pendingElement = {};
+const pendingBroadcast = {};
 
-// Helper: Check Admin
+// Helper: Check Admin & Super Admin
 function isAdmin(userId) {
   return db.isAdmin(userId);
 }
 
-// Helper: Check Channel Subscription
+function isSuperAdmin(userId) {
+  return db.isSuperAdmin(userId);
+}
+
+// Helper: Check Bot's Admin Status in Channel
+async function checkBotChannelAdminStatus(channel) {
+  try {
+    const me = await bot.getMe();
+    const member = await bot.getChatMember(channel, me.id);
+    const isAdmin = ['creator', 'administrator'].includes(member.status);
+    return {
+      channel,
+      isValid: true,
+      isAdmin,
+      status: member.status,
+      message: isAdmin ? 'Bot Admin ✅' : 'Bot Admin emas ⚠️ (Kanalga admin qiling)'
+    };
+  } catch (err) {
+    return {
+      channel,
+      isValid: false,
+      isAdmin: false,
+      status: 'error',
+      message: `Topilmadi/Xatolik: ${err.message}`
+    };
+  }
+}
+
+// Helper: Check Multiple Channels Subscription
 async function checkUserSubscription(userId) {
   const settings = db.getSettings();
-  if (!settings.forceSubActive || !settings.forceChannel) {
-    return true;
+  const channels = db.getForceChannels();
+
+  if (!settings.forceSubActive || !channels || channels.length === 0) {
+    return { isSubscribed: true, missing: [] };
   }
 
-  try {
-    const member = await bot.getChatMember(settings.forceChannel, userId);
-    const validStatuses = ['creator', 'administrator', 'member'];
-    return validStatuses.includes(member.status);
-  } catch (err) {
-    console.error('Error checking subscription:', err.message);
-    return true;
+  const missing = [];
+  for (const channel of channels) {
+    try {
+      const member = await bot.getChatMember(channel, userId);
+      const validStatuses = ['creator', 'administrator', 'member'];
+      if (!validStatuses.includes(member.status)) {
+        missing.push(channel);
+      }
+    } catch (err) {
+      console.error(`[FORCE_SUB] Error checking subscription for ${channel}:`, err.message);
+      // If error is because bot is not admin in channel, don't block user permanently
+      if (err.message && (err.message.includes('chat not found') || err.message.includes('bot is not a member') || err.message.includes('not an admin'))) {
+        console.warn(`[FORCE_SUB_WARNING] Bot lacks admin access in channel ${channel}. Skipping channel check for user.`);
+      } else {
+        missing.push(channel);
+      }
+    }
   }
+
+  return {
+    isSubscribed: missing.length === 0,
+    missing: missing
+  };
 }
 
 // Registered Telegram Premium Custom Emoji IDs
 const PREMIUM_EMOJIS = {
-  SUCCESS_CHECK: '5980930633298350051',  // Green Checkmark
-  DANGER_STOP: '5240241223632954241',    // Red Stop Circle
-  SHARE: '5798697374247291954',          // Share Icon
-  TELEGRAM: '5830262682338465584',       // Telegram Shield Icon
-  INSTAGRAM: '5830394890021770129',      // Instagram Shield Icon
-  SAKURA: '5440354006335495210',         // Sakura Flower
-  PINK_HEART: '5465540480538254161',     // Sparkling Pink Heart
-  SPARKLES: '5472164874886846699',       // Sparkles (3D)
-  TULIP: '5404835520150773707',          // Tulip (Estetik)
-  TARGET: '5458795341774083865',         // Target (SMM)
-  CLAPPER: '5375464961822695044',        // Movie Clapper
-  LIGHTNING: '5431449001532594346',      // Lightning
-  CLIPBOARD: '5987635334945444280',      // Clipboard
-  DOWN_ARROW: '5406745015365943482',     // Down Arrow
-  CROWN: '5229011542011299168',          // Admin Crown
-  BLUE_HEART: '5433856365061746058',     // Yaxshi Bola Blue Heart
-  ZUHRA_HEART: '5213147217015122287'     // Zuhra Pink Heart
+  SUCCESS_CHECK: '5980930633298350051',
+  DANGER_STOP: '5240241223632954241',
+  SHARE: '5798697374247291954',
+  TELEGRAM: '5830262682338465584',
+  INSTAGRAM: '5830394890021770129',
+  SAKURA: '5440354006335495210',
+  PINK_HEART: '5465540480538254161',
+  SPARKLES: '5472164874886846699',
+  TULIP: '5404835520150773707',
+  TARGET: '5458795341774083865',
+  CLAPPER: '5375464961822695044',
+  LIGHTNING: '5431449001532594346',
+  CLIPBOARD: '5987635334945444280',
+  DOWN_ARROW: '5406745015365943482',
+  CROWN: '5229011542011299168',
+  BLUE_HEART: '5433856365061746058',
+  ZUHRA_HEART: '5213147217015122287'
 };
 
 // Get User Keyboards
@@ -341,17 +458,31 @@ function getUserKeyboard(userId) {
 }
 
 // Get Admin Menu Keyboard
-function getAdminKeyboard() {
+function getAdminKeyboard(userId) {
+  const isSuper = isSuperAdmin(userId);
+  const keyboard = [
+    [{ text: '📊 Statistika' }, { text: '➕ Yangi Element Qo\'shish' }],
+    [{ text: '🔗 Majburiy Obuna Kanallari' }]
+  ];
+
+  if (isSuper) {
+    keyboard.push([{ text: '📢 Barchaga Xabar Yuborish' }, { text: '👥 Foydalanuvchilar Boshqaruvi' }]);
+    keyboard.push([{ text: '📥 Join Request Sozlamalari' }]);
+  }
+
+  keyboard.push([{ text: '🏠 Bosh Menyuga Qaytish' }]);
+
   return {
     reply_markup: {
-      keyboard: [
-        [{ text: '📊 Statistika' }, { text: '➕ Yangi Element Qo\'shish' }],
-        [{ text: '📢 Barchaga Xabar Yuborish' }, { text: '🔗 Majburiy Obuna Kanalini Sozlash' }],
-        [{ text: '🔄 Obuna Holatini O\'zgartirish' }, { text: '🏠 Bosh Menyuga Qaytish' }]
-      ],
+      keyboard: keyboard,
       resize_keyboard: true
     }
   };
+}
+
+// Global Block Check Middleware
+function isBlockedUser(userId) {
+  return db.isUserBlocked(userId);
 }
 
 // Start Command & User Registration
@@ -359,42 +490,43 @@ bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
 
-  db.saveUser(userId, {
+  if (isBlockedUser(userId)) {
+    return bot.sendMessage(chatId, `🚫 **Siz ushbu botdan foydalanishdan bloklangansiz!**`, { parse_mode: 'Markdown' });
+  }
+
+  await db.saveUser(userId, {
     username: msg.from.username,
-    first_name: msg.from.first_name
+    first_name: msg.from.first_name,
+    last_name: msg.from.last_name
   });
 
-  const isSubscribed = await checkUserSubscription(userId);
+  const subStatus = await checkUserSubscription(userId);
 
-  if (!isSubscribed) {
-    const settings = db.getSettings();
-    const channelLink = settings.forceChannelLink || `https://t.me/${settings.forceChannel.replace('@', '')}`;
+  if (!subStatus.isSubscribed) {
+    const inlineButtons = subStatus.missing.map(ch => [
+      {
+        text: `📢 ${ch} kanaliga obuna bo'lish`,
+        url: `https://t.me/${ch.replace('@', '')}`,
+        style: 'danger',
+        icon_custom_emoji_id: PREMIUM_EMOJIS.TELEGRAM
+      }
+    ]);
+
+    inlineButtons.push([
+      {
+        text: '🔄 Obunani tekshirish',
+        callback_data: 'check_sub',
+        style: 'success',
+        icon_custom_emoji_id: PREMIUM_EMOJIS.SUCCESS_CHECK
+      }
+    ]);
 
     return bot.sendMessage(
       chatId,
-      `<b>Botdan foydalanish uchun rasmiy kanalimizga obuna bo'ling!</b>\n\nQuyidagi tugma orqali kanalga a'zo bo'ling va <b>"Obunani tekshirish"</b> tugmasini bosing:`,
+      `<b>Botdan foydalanish uchun quyidagi kanal(lar)imizga obuna bo'ling!</b>\n\nBarcha kanallarga a'zo bo'lgach, <b>"Obunani tekshirish"</b> tugmasini bosing:`,
       {
         parse_mode: 'HTML',
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { 
-                text: "Kanalga a'zo bo'lish", 
-                url: channelLink,
-                style: 'danger',
-                icon_custom_emoji_id: PREMIUM_EMOJIS.TELEGRAM
-              }
-            ],
-            [
-              { 
-                text: 'Obunani tekshirish', 
-                callback_data: 'check_sub',
-                style: 'success',
-                icon_custom_emoji_id: PREMIUM_EMOJIS.SUCCESS_CHECK
-              }
-            ]
-          ]
-        }
+        reply_markup: { inline_keyboard: inlineButtons }
       }
     );
   }
@@ -423,7 +555,7 @@ function sendWelcomeMessage(chatId, userId) {
   });
 
   if (isAdmin(userId) && replyKeyboard.length > 0) {
-    const isSuper = Number(userId) === 8544023815;
+    const isSuper = isSuperAdmin(userId);
     const adminTag = isSuper 
       ? `Yaxshi Bola <tg-emoji emoji-id="5433856365061746058">🩵</tg-emoji>` 
       : `Zuhra <tg-emoji emoji-id="5213147217015122287">🩷</tg-emoji>`;
@@ -438,48 +570,319 @@ function sendWelcomeMessage(chatId, userId) {
   }
 }
 
+// Join Request Handler & Uzbek Gender Classifier
+bot.on('chat_join_request', async (req) => {
+  const user = req.from;
+  const chat = req.chat;
+  const mode = db.getJoinRequestMode();
+
+  const savedUser = await db.saveUser(user.id, {
+    username: user.username,
+    first_name: user.first_name,
+    last_name: user.last_name
+  });
+
+  const genderResult = db.detectUzbekGender(user.first_name || '', user.last_name || '');
+  let actionTaken = 'Manual ko\'rib chiqish';
+
+  if (mode === 'approve_all') {
+    try {
+      await bot.approveChatJoinRequest(chat.id, user.id);
+      actionTaken = 'Avtomatik tasdiqlandi ✅';
+    } catch (e) {
+      actionTaken = `Xatolik: ${e.message}`;
+    }
+  } else if (mode === 'female_only') {
+    if (genderResult.gender === 'female') {
+      try {
+        await bot.approveChatJoinRequest(chat.id, user.id);
+        actionTaken = 'Avtomatik tasdiqlandi (Qiz bola 👩) ✅';
+      } catch (e) {
+        actionTaken = `Xatolik: ${e.message}`;
+      }
+    } else {
+      actionTaken = "Kutilmoqda (O'g'il bola/Noma'lum) ⏳";
+    }
+  } else if (mode === 'male_only') {
+    if (genderResult.gender === 'male') {
+      try {
+        await bot.approveChatJoinRequest(chat.id, user.id);
+        actionTaken = 'Avtomatik tasdiqlandi (O\'g\'il bola 👨) ✅';
+      } catch (e) {
+        actionTaken = `Xatolik: ${e.message}`;
+      }
+    } else {
+      actionTaken = 'Kutilmoqda (Qiz bola/Noma\'lum) ⏳';
+    }
+  }
+
+  // Notify Super Admin
+  const notifyText = `📥 **YANGI JOIN REQUEST**\n\n` +
+    `👤 **Foydalanuvchi:** ${user.first_name} (@${user.username || 'yo\'q'})\n` +
+    `🆔 **ID:** \`${user.id}\`\n` +
+    `🧬 **Jinsi (ismiga ko'ra):** ${genderResult.label}\n` +
+    `📢 **Kanal:** ${chat.title || chat.username}\n` +
+    `⚙️ **Holat:** ${actionTaken}`;
+
+  bot.sendMessage(SUPER_ADMIN_ID, notifyText, { parse_mode: 'Markdown' }).catch(() => {});
+});
+
 // Callback Query Handler
 bot.on('callback_query', async (query) => {
   const userId = query.from.id;
   const chatId = query.message.chat.id;
+  const data = query.data;
 
-  if (query.data === 'check_sub') {
-    const isSub = await checkUserSubscription(userId);
-    if (isSub) {
+  if (isBlockedUser(userId)) {
+    return bot.answerCallbackQuery(query.id, { text: '🚫 Siz bloklangansiz!', show_alert: true });
+  }
+
+  // Check Subscription
+  if (data === 'check_sub') {
+    const subStatus = await checkUserSubscription(userId);
+    if (subStatus.isSubscribed) {
       await bot.answerCallbackQuery(query.id, { text: '✅ Rahmat! Obuna tasdiqlandi.' });
       await bot.deleteMessage(chatId, query.message.message_id).catch(() => {});
       sendWelcomeMessage(chatId, userId);
     } else {
-      await bot.answerCallbackQuery(query.id, { text: "❌ Siz hali kanalga obuna bo'lmadingiz!", show_alert: true });
+      await bot.answerCallbackQuery(query.id, { text: "❌ Siz hali barcha majburiy kanallarga obuna bo'lmadingiz!", show_alert: true });
     }
+    return;
+  }
+
+  // Admin Callbacks
+  if (!isAdmin(userId)) return;
+
+  // Broadcast Actions
+  if (data === 'broadcast_add_buttons') {
+    if (!isSuperAdmin(userId)) return;
+    adminState[userId] = 'awaiting_broadcast_buttons';
+    await bot.answerCallbackQuery(query.id);
+    return bot.sendMessage(chatId, 
+      `✏️ **Inline tugmalarni yuboring:**\n\n` +
+      `Har bir tugmani yangi qatordan quyidagi formatda yozing:\n` +
+      `\`Tugma matni - https://link.com\`\n\n` +
+      `Misol:\n` +
+      `\`Bizning Kanal - https://t.me/zuhracanva_official\`\n` +
+      `\`Vebsaytga o'tish - https://canva.com\``,
+      { parse_mode: 'Markdown' }
+    );
+  }
+
+  if (data === 'broadcast_send_now' || data === 'broadcast_confirm_send') {
+    if (!isSuperAdmin(userId)) return;
+    await bot.answerCallbackQuery(query.id, { text: '🚀 Broadcast boshlanmoqda...' });
+    const bData = pendingBroadcast[userId];
+    if (!bData) {
+      return bot.sendMessage(chatId, `❌ Broadcast ma'lumotlari topilmadi.`, getAdminKeyboard(userId));
+    }
+
+    adminState[userId] = null;
+    const userIds = await db.getAllUserIds();
+    let successCount = 0;
+    let failCount = 0;
+
+    const progressMsg = await bot.sendMessage(chatId, `⏳ Xabar ${userIds.length} ta foydalanuvchiga yuborilmoqda... (0/${userIds.length})`);
+
+    for (let i = 0; i < userIds.length; i++) {
+      const targetId = userIds[i];
+      try {
+        await bot.copyMessage(targetId, bData.chatId, bData.msgId, {
+          reply_markup: bData.inline_keyboard ? { inline_keyboard: bData.inline_keyboard } : undefined
+        });
+        successCount++;
+      } catch (e) {
+        failCount++;
+        if (e.message && (e.message.includes('429') || e.message.includes('Too Many Requests'))) {
+          await new Promise(r => setTimeout(r, 2000));
+        }
+      }
+
+      // Small 35ms delay between users to avoid Telegram rate limits
+      await new Promise(r => setTimeout(r, 35));
+
+      // Periodic progress report every 50 users
+      if ((i + 1) % 50 === 0 || i === userIds.length - 1) {
+        bot.editMessageText(
+          `⏳ Xabar yuborilmoqda... (${i + 1}/${userIds.length})\n✅ Yuborildi: ${successCount}\n❌ Xato/Blok: ${failCount}`,
+          { chatId: chatId, message_id: progressMsg.message_id }
+        ).catch(() => {});
+      }
+    }
+
+    pendingBroadcast[userId] = null;
+    return bot.sendMessage(chatId, 
+      `🎉 **Xabar tarqatildi!**\n\n` +
+      `✅ Muvaffaqiyatli yuborildi: **${successCount}** ta\n` +
+      `❌ Yuborilmadi/Bloklangan: **${failCount}** ta\n` +
+      `👥 Jami foydalanuvchilar: **${userIds.length}** ta`, 
+      { parse_mode: 'Markdown', ...getAdminKeyboard(userId) }
+    );
+  }
+
+  if (data === 'broadcast_cancel') {
+    adminState[userId] = null;
+    pendingBroadcast[userId] = null;
+    await bot.answerCallbackQuery(query.id, { text: 'Bekor qilindi' });
+    return bot.sendMessage(chatId, `❌ Broadcast bekor qilindi.`, getAdminKeyboard(userId));
+  }
+
+  // Compulsory Channels Callbacks
+  if (data === 'chan_add') {
+    adminState[userId] = 'awaiting_channel';
+    await bot.answerCallbackQuery(query.id);
+    return bot.sendMessage(chatId, `✏️ Yangi kanal username yoki linkini yuboring (masalan: \`@yangi_kanal\` yoki \`https://t.me/yangi_kanal\`):`, { parse_mode: 'Markdown' });
+  }
+
+  if (data === 'chan_list' || data === 'chan_remove_menu' || data === 'chan_check_admins') {
+    await bot.answerCallbackQuery(query.id, { text: '🔍 Kanal holati tekshirilmoqda...' });
+    const channels = db.getForceChannels();
+    if (channels.length === 0) {
+      return bot.sendMessage(chatId, `📭 Hozircha hech qanday majburiy obuna kanali ulangan emas.`, getAdminKeyboard(userId));
+    }
+
+    let reportText = `📋 **ULANGAN MAJBURlY OBUNA KANALLARI VA BOT ADMINLIK HOLATI:**\n\n`;
+    const inlineButtons = [];
+
+    for (let i = 0; i < channels.length; i++) {
+      const ch = channels[i];
+      const adminStatus = await checkBotChannelAdminStatus(ch);
+      const statusIcon = adminStatus.isAdmin ? '🟢' : '🔴';
+      
+      reportText += `${i + 1}. **${ch}**\n   └ ${statusIcon} Status: ${adminStatus.message}\n\n`;
+
+      const chClean = ch.replace('@', '');
+      const chUrl = ch.startsWith('-100') ? 'https://t.me' : `https://t.me/${chClean}`;
+
+      inlineButtons.push([
+        { text: `📢 ${ch}`, url: chUrl },
+        { text: `🗑 O'chirish`, callback_data: `chan_delete_${ch}` }
+      ]);
+    }
+
+    inlineButtons.push([
+      { text: '🔍 Qayta tekshirish', callback_data: 'chan_check_admins' },
+      { text: '➕ Kanal qo\'shish', callback_data: 'chan_add' }
+    ]);
+
+    return bot.sendMessage(chatId, reportText, {
+      parse_mode: 'Markdown',
+      reply_markup: { inline_keyboard: inlineButtons }
+    });
+  }
+
+  if (data.startsWith('chan_delete_')) {
+    const channelToRemove = data.replace('chan_delete_', '');
+    db.removeForceChannel(channelToRemove);
+    await bot.answerCallbackQuery(query.id, { text: `✅ ${channelToRemove} o'chirildi!` });
+    await bot.deleteMessage(chatId, query.message.message_id).catch(() => {});
+    return bot.sendMessage(chatId, `✅ **${channelToRemove}** majburiy obuna kanallari ro'yxatidan olib tashlandi!`, getAdminKeyboard(userId));
+  }
+
+  if (data === 'chan_toggle_sub') {
+    const settings = db.getSettings();
+    const newStatus = !settings.forceSubActive;
+    db.toggleForceSub(newStatus);
+    await bot.answerCallbackQuery(query.id, { text: `Obuna holati: ${newStatus ? 'YOQILDI ✅' : "O'CHIRILDI ❌"}` });
+    return bot.sendMessage(chatId, `⚙️ Majburiy obuna holati: **${newStatus ? 'YOQILGAN ✅' : "O'CHIRILGAN ❌"}**`, getAdminKeyboard(userId));
+  }
+
+  // Join Request Mode Callbacks
+  if (data.startsWith('jr_mode_')) {
+    const newMode = data.replace('jr_mode_', '');
+    db.setJoinRequestMode(newMode);
+    await bot.answerCallbackQuery(query.id, { text: 'Sozlama saqlandi!' });
+    return bot.sendMessage(chatId, `✅ **Join Request rejim o'zgartirildi:** \`${newMode}\``, getAdminKeyboard(userId));
+  }
+
+  // User Management Callbacks (Super Admin Only)
+  if (data.startsWith('users_list_')) {
+    if (!isSuperAdmin(userId)) return;
+    const page = parseInt(data.replace('users_list_', '')) || 0;
+    const users = await db.getAllUsers();
+    const pageSize = 10;
+    const totalPages = Math.ceil(users.length / pageSize) || 1;
+    const startIdx = page * pageSize;
+    const pageUsers = users.slice(startIdx, startIdx + pageSize);
+
+    let text = `👥 **FOYDALANUVCHILAR RO'YXATI (${page + 1}/${totalPages})**\n\n`;
+    pageUsers.forEach((u, i) => {
+      const blockTag = u.is_blocked ? ' 🚫 [BLOKLANGAN]' : '';
+      text += `${startIdx + i + 1}. **${u.first_name || 'Ismsiz'}** (@${u.username || 'yo\'q'})\n`;
+      text += `   └ 🆔: \`${u.id}\` | 🧬: ${u.gender_label || 'Noma\'lum'}${blockTag}\n`;
+    });
+
+    const navButtons = [];
+    if (page > 0) navButtons.push({ text: '⬅️ Ortga', callback_data: `users_list_${page - 1}` });
+    if (page < totalPages - 1) navButtons.push({ text: 'Oldinga ➡️', callback_data: `users_list_${page + 1}` });
+
+    await bot.answerCallbackQuery(query.id);
+    return bot.sendMessage(chatId, text, {
+      parse_mode: 'Markdown',
+      reply_markup: { inline_keyboard: [navButtons] }
+    });
+  }
+
+  if (data === 'users_blocked_list') {
+    if (!isSuperAdmin(userId)) return;
+    await bot.answerCallbackQuery(query.id);
+    const blocked = db.getBlockedUsers();
+    if (blocked.length === 0) {
+      return bot.sendMessage(chatId, `🟢 Hozircha hech qanday bloklangan foydalanuvchi yo'q.`, getAdminKeyboard(userId));
+    }
+
+    let bText = `🛑 **BLOKLANGAN FOYDALANUVCHILAR RO'YXATI:**\n\n`;
+    blocked.forEach((u, idx) => {
+      bText += `${idx + 1}. **${u.first_name || 'User'}** (@${u.username || 'yo\'q'}) — ID: \`${u.id}\`\n`;
+    });
+
+    return bot.sendMessage(chatId, bText, { parse_mode: 'Markdown', ...getAdminKeyboard(userId) });
+  }
+
+  if (data === 'user_block_input') {
+    if (!isSuperAdmin(userId)) return;
+    adminState[userId] = 'awaiting_block_id';
+    await bot.answerCallbackQuery(query.id);
+    return bot.sendMessage(chatId, `✏️ Bloklamoqchi bo'lgan foydalanuvchining **Telegram ID**-sini yuboring:`, { parse_mode: 'Markdown' });
+  }
+
+  if (data === 'user_unblock_input') {
+    if (!isSuperAdmin(userId)) return;
+    adminState[userId] = 'awaiting_unblock_id';
+    await bot.answerCallbackQuery(query.id);
+    return bot.sendMessage(chatId, `✏️ Blokdan chiqarmoqchi bo'lgan foydalanuvchining **Telegram ID**-sini yuboring:`, { parse_mode: 'Markdown' });
   }
 });
 
-// Admin Panel Handler
+// Admin Message Handler
 bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
   const text = msg.text;
 
+  // Global block check
+  if (isBlockedUser(userId)) return;
+
   // Track User Activity
-  db.saveUser(userId, {
+  await db.saveUser(userId, {
     username: msg.from.username,
-    first_name: msg.from.first_name
+    first_name: msg.from.first_name,
+    last_name: msg.from.last_name
   });
 
   if (!isAdmin(userId)) return;
 
-  // Handle Admin Menu Buttons
+  // Handle Admin Menu Commands
   if (text === '👑 Admin Panel') {
     adminState[userId] = null;
-    const isSuper = Number(userId) === 8544023815;
+    const isSuper = isSuperAdmin(userId);
     const adminTag = isSuper 
       ? `Yaxshi Bola <tg-emoji emoji-id="5433856365061746058">🩵</tg-emoji>` 
       : `Zuhra <tg-emoji emoji-id="5213147217015122287">🩷</tg-emoji>`;
 
     return bot.sendMessage(chatId, `<tg-emoji emoji-id="5229011542011299168">👑</tg-emoji> <b>${adminTag} Admin Paneli</b>\n\nBoshqaruv bo'limini tanlang:`, {
       parse_mode: 'HTML',
-      ...getAdminKeyboard()
+      ...getAdminKeyboard(userId)
     });
   }
 
@@ -489,33 +892,106 @@ bot.on('message', async (msg) => {
   }
 
   if (text === '📊 Statistika') {
-    const stats = db.getStats();
-    const statsText = `📊 **BOT STATISTIKASI**\n\n` +
-      `👤 **Barcha foydalanuvchilar:** ${stats.totalUsers} ta\n` +
-      `🔥 **Bugun faol foydalanuvchilar:** ${stats.activeToday} ta\n` +
-      `✨ **Admin qo'shgan yangi kodlar:** ${stats.customCount} ta\n\n` +
-      `📢 **Majburiy obuna kanali:** ${stats.forceChannel}\n` +
+    const stats = await db.getStats();
+    const statsText = `📊 **BOT VA FOYDALANUVCHILAR STATISTIKASI**\n\n` +
+      `👥 **Barcha foydalanuvchilar:** ${stats.totalUsers} ta\n` +
+      `🔥 **Bugun (24s) faol:** ${stats.activeToday} ta\n` +
+      `👩 **Qizlar:** ${stats.femaleCount} ta\n` +
+      `👨 **O'g'il bolalar:** ${stats.maleCount} ta\n` +
+      `❓ **Noma'lum:** ${stats.unknownCount} ta\n\n` +
+      `✨ **Yangi element kodlari:** ${stats.customCount} ta\n` +
+      `🛑 **Bloklanganlar:** ${stats.blockedUsersCount} ta\n` +
+      `👑 **Adminlar soni:** ${stats.adminCount} ta\n\n` +
+      `📢 **Majburiy kanallar (${stats.forceChannelsCount} ta):**\n${stats.forceChannels}\n\n` +
       `⚙️ **Majburiy obuna holati:** ${stats.forceSubActive}\n` +
-      `🔗 **Mini App Havolasi:** ${stats.webAppUrl}`;
+      `📥 **Join Request rejimi:** \`${stats.joinRequestMode}\`\n` +
+      `🔗 **Mini App:** ${stats.webAppUrl}`;
 
-    return bot.sendMessage(chatId, statsText, { parse_mode: 'Markdown', ...getAdminKeyboard() });
+    return bot.sendMessage(chatId, statsText, { parse_mode: 'Markdown', ...getAdminKeyboard(userId) });
   }
 
-  if (text === "🔄 Obuna Holatini O'zgartirish") {
+  // Compulsory Channels Management Menu
+  if (text === '🔗 Majburiy Obuna Kanallari') {
+    const channels = db.getForceChannels();
     const settings = db.getSettings();
-    const newStatus = !settings.forceSubActive;
-    db.toggleForceSub(newStatus);
-    return bot.sendMessage(chatId, `⚙️ Majburiy obuna holati o'zgartirildi: **${newStatus ? 'YOQILDI ✅' : "O'CHIRILDI ❌"}**`, getAdminKeyboard());
+    const chListText = channels.length > 0 ? channels.map(c => `• \`${c}\``).join('\n') : '_Hech qanday kanal ulangan emas_';
+
+    const inlineKeyboard = [
+      [
+        { text: '➕ Kanal qo\'shish', callback_data: 'chan_add' },
+        { text: '📋 Ro\'yxat & Status', callback_data: 'chan_list' }
+      ],
+      [
+        { text: '🔍 Adminlikni tekshirish', callback_data: 'chan_check_admins' },
+        { text: `⚙️ Holat: ${settings.forceSubActive ? 'YOQILGAN ✅' : 'O\'CHIRILGAN ❌'}`, callback_data: 'chan_toggle_sub' }
+      ]
+    ];
+
+    return bot.sendMessage(
+      chatId,
+      `🔗 **MAJBURlY OBUNA KANALLARI BOSHQARUVI**\n\n` +
+      `📌 **Hozirgi kanallar:**\n${chListText}\n\n` +
+      `⚙️ **Obuna holati:** ${settings.forceSubActive ? 'YOQILGAN ✅' : 'O\'CHIRILGAN ❌'}`,
+      { parse_mode: 'Markdown', reply_markup: { inline_keyboard: inlineKeyboard } }
+    );
   }
 
-  if (text === '🔗 Majburiy Obuna Kanalini Sozlash') {
-    adminState[userId] = 'awaiting_channel';
-    return bot.sendMessage(chatId, `✏️ Majburiy obuna kanali username-ini yuboring (masalan: \`@kanaliz_nomi\`):\n\n*Eslatma: Bot ushbu kanalda administrator bo'lishi kerak!*`, { parse_mode: 'Markdown' });
-  }
-
+  // Super Admin: Broadcast Message Handler
   if (text === '📢 Barchaga Xabar Yuborish') {
-    adminState[userId] = 'awaiting_broadcast';
-    return bot.sendMessage(chatId, `✏️ Barcha foydalanuvchilarga yubormoqchi bo'lgan xabaringizni yuboring (matn, rasm yoki media):\n\n_Bekor qilish uchun /cancel deb yozing._`, { parse_mode: 'Markdown' });
+    if (!isSuperAdmin(userId)) {
+      return bot.sendMessage(chatId, `🔒 **Barchaga xabar yuborish faqat Super Admin (Yaxshi Bola) uchun ruxsat etilgan!**`, { parse_mode: 'Markdown' });
+    }
+
+    adminState[userId] = 'awaiting_broadcast_msg';
+    return bot.sendMessage(chatId, 
+      `✏️ **Barcha foydalanuvchilarga yubormoqchi bo'lgan xabaringizni yuboring** (matn, rasm yoki media):\n\n` +
+      `_Bekor qilish uchun /cancel deb yozing._`, 
+      { parse_mode: 'Markdown' }
+    );
+  }
+
+  // Super Admin: User Management Menu
+  if (text === '👥 Foydalanuvchilar Boshqaruvi') {
+    if (!isSuperAdmin(userId)) {
+      return bot.sendMessage(chatId, `🔒 **Foydalanuvchilarni boshqarish faqat Super Admin (Yaxshi Bola) uchun ruxsat etilgan!**`, { parse_mode: 'Markdown' });
+    }
+
+    const inlineKeyboard = [
+      [
+        { text: '📊 Barcha Foydalanuvchilar', callback_data: 'users_list_0' },
+        { text: '🛑 Bloklanganlar', callback_data: 'users_blocked_list' }
+      ],
+      [
+        { text: '🚫 User Bloklash', callback_data: 'user_block_input' },
+        { text: '✅ Blokdan Chiqarish', callback_data: 'user_unblock_input' }
+      ]
+    ];
+
+    return bot.sendMessage(chatId, `👥 **FOYDALANUVCHILARNI BOSHQARISH (SUPER ADMIN)**\n\nKerakli bo'limni tanlang:`, {
+      parse_mode: 'Markdown',
+      reply_markup: { inline_keyboard: inlineKeyboard }
+    });
+  }
+
+  // Super Admin: Join Request Settings Menu
+  if (text === '📥 Join Request Sozlamalari') {
+    if (!isSuperAdmin(userId)) return;
+
+    const currentMode = db.getJoinRequestMode();
+    const inlineKeyboard = [
+      [{ text: `✅ Barchani avto-tasdiqlash ${currentMode === 'approve_all' ? '✔️' : ''}`, callback_data: 'jr_mode_approve_all' }],
+      [{ text: `👩 Faqat qizlarni avto-tasdiqlash ${currentMode === 'female_only' ? '✔️' : ''}`, callback_data: 'jr_mode_female_only' }],
+      [{ text: `👨 Faqat o'g'il bolalarni avto-tasdiqlash ${currentMode === 'male_only' ? '✔️' : ''}`, callback_data: 'jr_mode_male_only' }],
+      [{ text: `⏸ Avto-tasdiqlashni o'chirish ${currentMode === 'manual' ? '✔️' : ''}`, callback_data: 'jr_mode_manual' }]
+    ];
+
+    return bot.sendMessage(
+      chatId,
+      `📥 **JOIN REQUEST (QO'SHILISH SO'ROVLARI) SOZLAMALARI**\n\n` +
+      `Bot kanallarga kelgan qo'shilish so'rovlarini ismiga ko'ra genderini (o'g'il/qiz) ajrata oladi.\n\n` +
+      `📌 **Hozirgi rejim:** \`${currentMode}\`\n\nRejimni tanlang:`,
+      { parse_mode: 'Markdown', reply_markup: { inline_keyboard: inlineKeyboard } }
+    );
   }
 
   // Add New Element Flow
@@ -528,7 +1004,8 @@ bot.on('message', async (msg) => {
   if (text === '/cancel') {
     adminState[userId] = null;
     pendingElement[userId] = {};
-    return bot.sendMessage(chatId, `❌ Amal bekor qilindi.`, getAdminKeyboard());
+    pendingBroadcast[userId] = null;
+    return bot.sendMessage(chatId, `❌ Amal bekor qilindi.`, getAdminKeyboard(userId));
   }
 
   // Handle Admin Input States
@@ -547,7 +1024,7 @@ bot.on('message', async (msg) => {
   if (adminState[userId] === 'add_cat') {
     pendingElement[userId].category = text.trim();
     const elem = pendingElement[userId];
-    db.addCustomElement(elem.code, elem.description, elem.category);
+    await db.addCustomElement(elem.code, elem.description, elem.category);
 
     adminState[userId] = null;
     pendingElement[userId] = {};
@@ -559,34 +1036,127 @@ bot.on('message', async (msg) => {
       `📝 **Tavsif:** ${elem.description}\n` +
       `📂 **Bo'lim:** ${elem.category}\n\n` +
       `*Ushbu element avtomatik tarzda Mini App-ning "Yangiliklar & Yangi Kodlar" bo'limida ko'rinadi!*`,
-      { parse_mode: 'Markdown', ...getAdminKeyboard() }
+      { parse_mode: 'Markdown', ...getAdminKeyboard(userId) }
     );
   }
 
   if (adminState[userId] === 'awaiting_channel') {
     adminState[userId] = null;
-    const channelInput = text.trim();
-    db.setForceChannel(channelInput);
-    return bot.sendMessage(chatId, `✅ Majburiy obuna kanali o'rnatildi: **${channelInput}**`, getAdminKeyboard());
+    const added = db.addForceChannel(text);
+    if (added) {
+      const adminCheck = await checkBotChannelAdminStatus(added);
+      let resultMsg = `✅ **Majburiy obuna kanali qo'shildi:** \`${added}\`\n\n`;
+      if (adminCheck.isAdmin) {
+        resultMsg += `🟢 **Bot Admin statusi:** Tasdiqlandi ✅ (${adminCheck.status})`;
+      } else {
+        resultMsg += `⚠️ **DIQQAT:** Bot ushbu kanalda **Admin emas**! Iltimos, botni kanalga administrator qiling, aks holda obunani tekshirish ishlamaydi.`;
+      }
+      return bot.sendMessage(chatId, resultMsg, { parse_mode: 'Markdown', ...getAdminKeyboard(userId) });
+    } else {
+      return bot.sendMessage(chatId, `⚠️ Ushbu kanal allaqachon ro'yxatda bor yoki xato link kiritildi.`, getAdminKeyboard(userId));
+    }
   }
 
-  if (adminState[userId] === 'awaiting_broadcast') {
+  // Broadcast Message Creation
+  if (adminState[userId] === 'awaiting_broadcast_msg') {
     adminState[userId] = null;
-    const userIds = db.getAllUserIds();
-    let successCount = 0;
+    pendingBroadcast[userId] = {
+      msgId: msg.message_id,
+      chatId: chatId,
+      inline_keyboard: null
+    };
 
-    await bot.sendMessage(chatId, `⏳ Xabar ${userIds.length} ta foydalanuvchiga yuborilmoqda...`);
+    const confirmButtons = [
+      [
+        { text: '➕ Inline Tugma Qo\'shish', callback_data: 'broadcast_add_buttons' },
+        { text: '🚀 Tugmasiz Yuborish', callback_data: 'broadcast_send_now' }
+      ],
+      [
+        { text: '❌ Bekor Qilish', callback_data: 'broadcast_cancel' }
+      ]
+    ];
 
-    for (const targetId of userIds) {
-      try {
-        await bot.copyMessage(targetId, chatId, msg.message_id);
-        successCount++;
-      } catch (e) {
-        // User blocked
-      }
+    return bot.sendMessage(
+      chatId,
+      `🔘 **Xabar qabul qilindi!**\n\nXabarga inline tugmalar (linklar) qo'shmoqchimisiz?`,
+      { parse_mode: 'Markdown', reply_markup: { inline_keyboard: confirmButtons } }
+    );
+  }
+
+  // Broadcast Inline Buttons Parsing
+  if (adminState[userId] === 'awaiting_broadcast_buttons') {
+    adminState[userId] = null;
+    const bData = pendingBroadcast[userId];
+    if (!bData) {
+      return bot.sendMessage(chatId, `❌ Broadcast sessiyasi topilmadi.`, getAdminKeyboard(userId));
     }
 
-    return bot.sendMessage(chatId, `🎉 **Xabar muvaffaqiyatli tarqatildi!**\n\n✅ Yuborildi: **${successCount}** / ${userIds.length} ta foydalanuvchiga.`, getAdminKeyboard());
+    const lines = text.split('\n').filter(l => l.trim().length > 0);
+    const inlineKeyboard = [];
+
+    for (const line of lines) {
+      const parts = line.split('|');
+      const row = [];
+      for (const part of parts) {
+        const [btnText, btnUrl] = part.split('-').map(s => s.trim());
+        if (btnText && btnUrl && (btnUrl.startsWith('http://') || btnUrl.startsWith('https://') || btnUrl.startsWith('t.me/'))) {
+          const finalUrl = btnUrl.startsWith('t.me/') ? `https://${btnUrl}` : btnUrl;
+          row.push({ text: btnText, url: finalUrl });
+        }
+      }
+      if (row.length > 0) inlineKeyboard.push(row);
+    }
+
+    bData.inline_keyboard = inlineKeyboard;
+
+    const actionButtons = [
+      [
+        { text: '🚀 Xabarni Tarqatish', callback_data: 'broadcast_confirm_send' },
+        { text: '❌ Bekor Qilish', callback_data: 'broadcast_cancel' }
+      ]
+    ];
+
+    await bot.sendMessage(chatId, `👁 **XABARNING TUGMALAR BILAN PREVIEW KO'RINISHI:**`, { parse_mode: 'Markdown' });
+    
+    await bot.copyMessage(chatId, bData.chatId, bData.msgId, {
+      reply_markup: { inline_keyboard: inlineKeyboard }
+    });
+
+    return bot.sendMessage(chatId, `⬆️ Yuqoridagi xabar barcha foydalanuvchilarga yuborilsinmi?`, {
+      reply_markup: { inline_keyboard: actionButtons }
+    });
+  }
+
+  // User Block Input Handler
+  if (adminState[userId] === 'awaiting_block_id') {
+    adminState[userId] = null;
+    const targetId = parseInt(text.trim());
+    if (isNaN(targetId)) {
+      return bot.sendMessage(chatId, `❌ Yaroqsiz Telegram ID kiritildi.`, getAdminKeyboard(userId));
+    }
+
+    const blocked = db.blockUser(targetId);
+    if (blocked) {
+      return bot.sendMessage(chatId, `🛑 **Foydalanuvchi (\`${targetId}\`) muvaffaqiyatli bloklandi!**`, { parse_mode: 'Markdown', ...getAdminKeyboard(userId) });
+    } else {
+      return bot.sendMessage(chatId, `⚠️ Ushbu foydalanuvchini bloklab bo'lmaydi (Super admin yoki xato ID).`, getAdminKeyboard(userId));
+    }
+  }
+
+  // User Unblock Input Handler
+  if (adminState[userId] === 'awaiting_unblock_id') {
+    adminState[userId] = null;
+    const targetId = parseInt(text.trim());
+    if (isNaN(targetId)) {
+      return bot.sendMessage(chatId, `❌ Yaroqsiz Telegram ID kiritildi.`, getAdminKeyboard(userId));
+    }
+
+    const unblocked = db.unblockUser(targetId);
+    if (unblocked) {
+      return bot.sendMessage(chatId, `✅ **Foydalanuvchi (\`${targetId}\`) blokdan chiqarildi!**`, { parse_mode: 'Markdown', ...getAdminKeyboard(userId) });
+    } else {
+      return bot.sendMessage(chatId, `⚠️ Ushbu foydalanuvchi bloklanganlar ro'yxatida topilmadi.`, getAdminKeyboard(userId));
+    }
   }
 });
 
@@ -596,11 +1166,580 @@ bot.on('polling_error', (error) => {
 });
 
 module.exports = bot;
+
 ```
 
 ---
 
-### 5. `bot/backup.js`
+### 5. `bot/database.js`
+```javascript
+/* -------------------------------------------------------------
+ * Supabase & Local DB Manager for Telegram Bot & Mini App
+ * Supabase URL: https://mjenunxgakcvyzcikjmi.supabase.co
+ * Author: Zuhra Olimova & Yaxshi Bola
+ * ------------------------------------------------------------- */
+
+const urllib = require('https');
+const fs = require('fs');
+const path = require('path');
+
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://mjenunxgakcvyzcikjmi.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_nSt8XQyZetNEC7ROiU3XeA_iPBDMPRn';
+const ADMINS_FILE = path.join(__dirname, 'admins.json');
+const DB_FILE = path.join(__dirname, 'db.json');
+
+function supabaseQuery(endpoint, method = 'GET', body = null, customHeaders = {}) {
+  return new Promise((resolve) => {
+    const url = new URL(`${SUPABASE_URL}/rest/v1/${endpoint}`);
+    const defaultHeaders = {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' || method === 'PATCH' ? 'resolution=merge-duplicates,return=representation' : 'return=minimal'
+    };
+    const options = {
+      method: method,
+      headers: { ...defaultHeaders, ...customHeaders }
+    };
+
+    const req = urllib.request(url, options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(data ? JSON.parse(data) : []);
+          } else {
+            console.error('Supabase HTTP error:', res.statusCode, data);
+            resolve([]);
+          }
+        } catch (e) {
+          resolve([]);
+        }
+      });
+    });
+
+    req.on('error', (err) => {
+      console.error('Supabase request error:', err.message);
+      resolve([]);
+    });
+
+    if (body) {
+      req.write(JSON.stringify(body));
+    }
+    req.end();
+  });
+}
+
+// Gender Classifier for Uzbek Names
+function detectUzbekGender(firstName = '', lastName = '') {
+  const fullText = `${firstName} ${lastName}`.toLowerCase().replace(/[^a-zʻʼ'‘`\s]/g, ' ').trim();
+  if (!fullText) return { gender: 'unknown', label: 'Noma\'lum ❓' };
+
+  const words = fullText.split(/\s+/).filter(w => w.length >= 2);
+
+  // Female suffixes and indicators
+  const femaleSuffixes = ['xon', 'xonim', 'oy', 'niso', 'bonu', 'begim', 'guli', 'gul', 'moh', 'parvona', 'bika', 'bibi', 'zoda'];
+  const femaleNames = [
+    'madina', 'malika', 'marjona', 'sabina', 'rayhon', 'zuhra', 'fatima', 'fotima',
+    'shohsanam', 'firuza', 'kamola', 'nilufar', 'sevinch', 'shahnoza', 'shaxnoza',
+    'dilnoza', 'gulnoza', 'munisa', 'surayyo', 'nozima', 'saida', 'nigora', 'dilafruz',
+    'dilbar', 'durdona', 'mahliyo', 'feruza', 'aziza', 'laylo', 'gulasal', 'nargiz',
+    'parvina', 'mubina', 'hadicha', 'mariya', 'dilyora', 'muhlisa', 'muhlisaxon',
+    'lola', 'zilola', 'nargiza', 'ozoda', 'nodira', 'barno', 'guzal', 'zamira',
+    'umida', 'mavluda', 'shahzoda', 'ruxshona', 'dilrabo', 'maftuna', 'nigina', 'robiya',
+    'dildora', 'dildor', 'farangiz', 'mohira', 'farida', 'dinora', 'hilola', 'sitora',
+    'shohida', 'halima', 'zuhro', 'ziyoda', 'jasmina', 'kamila'
+  ];
+
+  // Male suffixes and indicators
+  const maleSuffixes = ['bek', 'jon', 'mir', 'sher', 'shoh', 'shox', 'yor', 'islom', 'din', 'boy', 'murod', 'xodja', 'xo\'ja', 'qul'];
+  const maleNames = [
+    'muhammad', 'ahmad', 'sardor', 'aziz', 'jasur', 'bobur', 'diyor', 'javohir',
+    'shohruh', 'shoxrux', 'samandar', 'doniyor', 'farruh', 'farrux', 'odil', 'otabek',
+    'sanjar', 'umid', 'eldor', 'akmal', 'jamshid', 'islom', 'alisher', 'ulugbek',
+    'abror', 'anvar', 'doston', 'otajon', 'sobir', 'botir', 'rustam', 'sherzod',
+    'humoyun', 'behruz', 'suxrob', 'asom', 'islombek', 'ibragim', 'ibrohim', 'ikrom',
+    'ilhom', 'bekzod', 'dostonbek', 'muhriddin', 'kamoliddin', 'sirajiddin', 'nuriddin',
+    'zayniddin', 'jaloliddin', 'asliddin', 'shoxruxbek', 'shoxruz', 'javlon', 'temur',
+    'timur', 'oybek', 'jasurbek', 'umidjon', 'abbos', 'nodir', 'nodirbek', 'shukrullo',
+    'habibullo', 'rahmatullo', 'asadbek', 'elmurod', 'sherali', 'zuxriddin', 'shahboz',
+    'shoxboz', 'laziz', 'shaxboz', 'diyorbek', 'avazbek', 'nodirjon'
+  ];
+
+  let femaleScore = 0;
+  let maleScore = 0;
+
+  for (const word of words) {
+    if (femaleNames.includes(word)) femaleScore += 3;
+    if (maleNames.includes(word)) maleScore += 3;
+
+    for (const suf of femaleSuffixes) {
+      if (word.endsWith(suf)) femaleScore += 2;
+    }
+    for (const suf of maleSuffixes) {
+      if (word.endsWith(suf)) maleScore += 2;
+    }
+
+    if (word.endsWith('a') || word.endsWith('i')) femaleScore += 1;
+  }
+
+  if (femaleScore > maleScore) {
+    return { gender: 'female', label: 'Qiz bola 👩' };
+  } else if (maleScore > femaleScore) {
+    return { gender: 'male', label: 'O\'g\'il bola 👨' };
+  }
+
+  return { gender: 'unknown', label: 'Noma\'lum ❓' };
+}
+
+class DB {
+  constructor() {
+    this.memoryUsers = new Map(); // id -> userData
+    this.forceChannels = ['@zuhracanva_official'];
+    this.forceSubActive = false;
+    this.webAppUrl = 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+    this.superAdminId = 8544023815;
+    this.zuhraAdminId = 8112688757;
+    this.adminsList = [8544023815, 8112688757];
+    this.blockedUsers = new Set();
+    this.joinRequestMode = 'approve_all'; // 'approve_all' | 'female_only' | 'male_only' | 'manual'
+
+    this.loadAdminsFromFile();
+    this.loadDbFile();
+  }
+
+  loadDbFile() {
+    try {
+      if (fs.existsSync(DB_FILE)) {
+        const raw = fs.readFileSync(DB_FILE, 'utf-8');
+        const parsed = JSON.parse(raw);
+
+        if (parsed.settings) {
+          if (Array.isArray(parsed.settings.forceChannels) && parsed.settings.forceChannels.length > 0) {
+            this.forceChannels = parsed.settings.forceChannels;
+          } else if (parsed.settings.forceChannel && parsed.settings.forceChannel.trim().length > 0) {
+            this.forceChannels = [parsed.settings.forceChannel];
+          }
+          if (typeof parsed.settings.forceSubActive === 'boolean') {
+            this.forceSubActive = parsed.settings.forceSubActive;
+          }
+          if (parsed.settings.joinRequestMode) {
+            this.joinRequestMode = parsed.settings.joinRequestMode;
+          }
+        }
+
+        if (Array.isArray(parsed.blockedUsers)) {
+          this.blockedUsers = new Set(parsed.blockedUsers.map(Number));
+        }
+
+        if (parsed.users && typeof parsed.users === 'object') {
+          for (const [id, u] of Object.entries(parsed.users)) {
+            this.memoryUsers.set(Number(id), u);
+          }
+        }
+      }
+    } catch (e) {
+      console.error('db.json load error:', e.message);
+    }
+  }
+
+  saveDbFile() {
+    try {
+      const usersObj = {};
+      for (const [id, u] of this.memoryUsers.entries()) {
+        usersObj[id] = u;
+      }
+
+      const data = {
+        users: usersObj,
+        settings: {
+          forceChannels: this.forceChannels,
+          forceSubActive: this.forceSubActive,
+          webAppUrl: this.webAppUrl,
+          joinRequestMode: this.joinRequestMode
+        },
+        blockedUsers: Array.from(this.blockedUsers),
+        stats: {
+          updatedAt: new Date().toISOString()
+        }
+      };
+
+      fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (e) {
+      console.error('db.json save error:', e.message);
+    }
+  }
+
+  loadAdminsFromFile() {
+    try {
+      if (fs.existsSync(ADMINS_FILE)) {
+        const raw = fs.readFileSync(ADMINS_FILE, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.adminsList = Array.from(new Set([this.superAdminId, this.zuhraAdminId, ...parsed]));
+          return;
+        }
+      }
+    } catch (e) {}
+    this.adminsList = [this.superAdminId, this.zuhraAdminId];
+    this.saveAdminsToFile();
+  }
+
+  saveAdminsToFile() {
+    try {
+      fs.writeFileSync(ADMINS_FILE, JSON.stringify(this.adminsList, null, 2), 'utf-8');
+    } catch (e) {
+      console.error('Admins save error:', e.message);
+    }
+  }
+
+  isSuperAdmin(userId) {
+    return Number(userId) === this.superAdminId;
+  }
+
+  getAdmins() {
+    return this.adminsList;
+  }
+
+  isAdmin(userId) {
+    if (!userId) return false;
+    const numId = Number(userId);
+    const strId = String(userId).toLowerCase().trim();
+    const validUsernames = ['yomonbola', 'yomonboia', 'zuhraolimova', 'zuhra_olimova', 'sokin_notalar'];
+
+    if (numId === this.superAdminId || numId === this.zuhraAdminId || validUsernames.includes(strId)) {
+      return true;
+    }
+
+    return this.adminsList.some(a => String(a).toLowerCase().trim() === strId || Number(a) === numId);
+  }
+
+  addAdmin(idOrUsername) {
+    if (!idOrUsername) return false;
+    const item = isNaN(Number(idOrUsername)) ? String(idOrUsername).trim() : Number(idOrUsername);
+    if (!this.adminsList.includes(item)) {
+      this.adminsList.push(item);
+      this.saveAdminsToFile();
+      return true;
+    }
+    return false;
+  }
+
+  removeAdmin(idOrUsername) {
+    const numId = Number(idOrUsername);
+    if (numId === this.superAdminId || numId === this.zuhraAdminId) {
+      return false; // Cannot remove core super admins
+    }
+    const lenBefore = this.adminsList.length;
+    this.adminsList = this.adminsList.filter(a => String(a).toLowerCase().trim() !== String(idOrUsername).toLowerCase().trim());
+    if (this.adminsList.length < lenBefore) {
+      this.saveAdminsToFile();
+      return true;
+    }
+    return false;
+  }
+
+  // Blocking System
+  blockUser(userId) {
+    const numId = Number(userId);
+    if (numId === this.superAdminId || numId === this.zuhraAdminId) return false;
+    this.blockedUsers.add(numId);
+    if (this.memoryUsers.has(numId)) {
+      const u = this.memoryUsers.get(numId);
+      u.is_blocked = true;
+      this.memoryUsers.set(numId, u);
+    }
+    this.saveDbFile();
+    return true;
+  }
+
+  unblockUser(userId) {
+    const numId = Number(userId);
+    const result = this.blockedUsers.delete(numId);
+    if (this.memoryUsers.has(numId)) {
+      const u = this.memoryUsers.get(numId);
+      u.is_blocked = false;
+      this.memoryUsers.set(numId, u);
+    }
+    this.saveDbFile();
+    return result;
+  }
+
+  isUserBlocked(userId) {
+    return this.blockedUsers.has(Number(userId));
+  }
+
+  getBlockedUsers() {
+    return Array.from(this.blockedUsers).map(id => {
+      const u = this.memoryUsers.get(id) || {};
+      return {
+        id,
+        username: u.username || '',
+        first_name: u.first_name || '',
+        gender: u.gender || 'unknown'
+      };
+    });
+  }
+
+  // Join Request Mode
+  getJoinRequestMode() {
+    return this.joinRequestMode;
+  }
+
+  setJoinRequestMode(mode) {
+    const validModes = ['approve_all', 'female_only', 'male_only', 'manual'];
+    if (validModes.includes(mode)) {
+      this.joinRequestMode = mode;
+      this.saveDbFile();
+      return true;
+    }
+    return false;
+  }
+
+  // Compulsory Channels Management (Multiple)
+  getForceChannels() {
+    return this.forceChannels;
+  }
+
+  addForceChannel(channelInput) {
+    if (!channelInput) return false;
+    let clean = String(channelInput).trim();
+
+    // Clean common URL prefixes
+    clean = clean.replace(/^https?:\/\/(www\.)?t\.me\//i, '');
+    clean = clean.replace(/^t\.me\//i, '');
+    clean = clean.replace(/^telegram\.me\//i, '');
+    clean = clean.replace(/[\/\?#].*$/, ''); // Remove query params or trailing slash
+
+    if (!clean) return false;
+
+    // Check if numeric channel ID (e.g. -1001234567890)
+    if (/^-?\d+$/.test(clean)) {
+      if (!this.forceChannels.includes(clean)) {
+        this.forceChannels.push(clean);
+        this.saveDbFile();
+        return clean;
+      }
+      return false;
+    }
+
+    // Add leading @ if missing
+    if (!clean.startsWith('@')) {
+      clean = `@${clean}`;
+    }
+
+    if (!this.forceChannels.includes(clean)) {
+      this.forceChannels.push(clean);
+      this.saveDbFile();
+      return clean;
+    }
+    return false;
+  }
+
+  removeForceChannel(channelInput) {
+    if (!channelInput) return false;
+    let clean = String(channelInput).trim();
+    clean = clean.replace(/^https?:\/\/(www\.)?t\.me\//i, '').replace(/^t\.me\//i, '');
+    if (!clean.startsWith('@') && !/^-?\d+$/.test(clean)) clean = `@${clean}`;
+
+    const beforeLen = this.forceChannels.length;
+    this.forceChannels = this.forceChannels.filter(ch => ch.toLowerCase() !== clean.toLowerCase());
+    if (this.forceChannels.length < beforeLen) {
+      this.saveDbFile();
+      return true;
+    }
+    return false;
+  }
+
+  // Register or Update User
+  async saveUser(telegramId, userInfo = {}) {
+    const userId = Number(telegramId);
+    if (!userId || isNaN(userId)) return null;
+
+    const genderResult = detectUzbekGender(userInfo.first_name || '', userInfo.last_name || '');
+    const existing = this.memoryUsers.get(userId) || {};
+
+    const updated = {
+      id: userId,
+      username: userInfo.username || existing.username || '',
+      first_name: userInfo.first_name || existing.first_name || '',
+      gender: genderResult.gender,
+      gender_label: genderResult.label,
+      is_blocked: this.blockedUsers.has(userId),
+      last_active: new Date().toISOString(),
+      created_at: existing.created_at || new Date().toISOString()
+    };
+
+    this.memoryUsers.set(userId, updated);
+    this.saveDbFile();
+
+    const payload = {
+      id: userId,
+      username: updated.username,
+      first_name: updated.first_name,
+      last_active: updated.last_active
+    };
+
+    await supabaseQuery('bot_users?on_conflict=id', 'POST', payload);
+    return updated;
+  }
+
+  // Get All Elements
+  async getAllElements() {
+    return await supabaseQuery('elements?select=*&order=id.asc');
+  }
+
+  // Add Custom Canva Element to Supabase
+  async addCustomElement(code, description, category, keywords = [], is_new = true) {
+    const kw = Array.isArray(keywords) && keywords.length > 0 ? keywords : [code.trim(), description.trim(), category.trim()];
+    const payload = {
+      code: code.trim(),
+      description: description.trim(),
+      category: category.trim() || 'Trenddagi 3D Elementlar',
+      keywords: kw,
+      is_new: !!is_new
+    };
+
+    const result = await supabaseQuery('elements', 'POST', payload);
+    return result[0] || payload;
+  }
+
+  // Update Element in Supabase
+  async updateElement(id, updateFields) {
+    const result = await supabaseQuery(`elements?id=eq.${id}`, 'PATCH', updateFields);
+    return result[0] || updateFields;
+  }
+
+  // Delete Element from Supabase
+  async deleteElement(id) {
+    return await supabaseQuery(`elements?id=eq.${id}`, 'DELETE');
+  }
+
+  // Get Custom Elements
+  async getCustomElements() {
+    return await supabaseQuery('elements?is_new=eq.true&order=created_at.desc');
+  }
+
+  // Get All Users (Merged Remote & Local Memory Map)
+  async getAllUsers() {
+    const remoteUsers = await supabaseQuery('bot_users?select=*&order=last_active.desc');
+    const mergedMap = new Map();
+
+    // First populate from local memoryUsers
+    for (const [id, memUser] of this.memoryUsers.entries()) {
+      mergedMap.set(Number(id), { ...memUser });
+    }
+
+    // Then enrich/overwrite with remoteUsers
+    if (Array.isArray(remoteUsers) && remoteUsers.length > 0) {
+      remoteUsers.forEach(ru => {
+        const numId = Number(ru.id);
+        const existing = mergedMap.get(numId) || {};
+        const gRes = detectUzbekGender(ru.first_name || existing.first_name || '', '');
+
+        mergedMap.set(numId, {
+          id: numId,
+          username: ru.username || existing.username || '',
+          first_name: ru.first_name || existing.first_name || '',
+          gender: existing.gender || gRes.gender,
+          gender_label: existing.gender_label || gRes.label,
+          is_blocked: this.blockedUsers.has(numId),
+          last_active: ru.last_active || existing.last_active || new Date().toISOString(),
+          created_at: existing.created_at || new Date().toISOString()
+        });
+      });
+    }
+
+    return Array.from(mergedMap.values());
+  }
+
+  // Get Detailed Statistics
+  async getStats() {
+    const allUsersList = await this.getAllUsers();
+    const elements = await supabaseQuery('elements?select=id');
+    const custom = await supabaseQuery('elements?is_new=eq.true&select=id');
+
+    const totalUsers = allUsersList.length;
+
+    // Calculate actual active users in last 24 hours
+    const now = Date.now();
+    const active24h = allUsersList.filter(u => {
+      if (!u.last_active) return false;
+      const diff = now - new Date(u.last_active).getTime();
+      return diff <= 24 * 60 * 60 * 1000;
+    }).length;
+
+    // Gender breakdown
+    let femaleCount = 0;
+    let maleCount = 0;
+    let unknownCount = 0;
+
+    allUsersList.forEach(u => {
+      const g = u.gender || detectUzbekGender(u.first_name || '').gender;
+      if (g === 'female') femaleCount++;
+      else if (g === 'male') maleCount++;
+      else unknownCount++;
+    });
+
+    return {
+      totalElements: elements.length || 407,
+      totalUsers: totalUsers,
+      activeToday: Math.max(active24h, 1),
+      femaleCount: femaleCount,
+      maleCount: maleCount,
+      unknownCount: unknownCount,
+      customCount: custom.length || 0,
+      adminCount: this.adminsList.length,
+      forceChannelsCount: this.forceChannels.length,
+      forceChannels: this.forceChannels.join(', ') || 'Sozlanmagan',
+      forceSubActive: this.forceSubActive ? 'Yoqilgan ✅' : "O'chirilgan ❌",
+      blockedUsersCount: this.blockedUsers.size,
+      joinRequestMode: this.joinRequestMode,
+      webAppUrl: this.webAppUrl
+    };
+  }
+
+  // Get All User IDs (excluding blocked)
+  async getAllUserIds() {
+    const allUsersList = await this.getAllUsers();
+    return allUsersList
+      .map(u => Number(u.id))
+      .filter(id => id && !isNaN(id) && !this.blockedUsers.has(id));
+  }
+
+  // Settings getters & setters
+  getSettings() {
+    return {
+      forceChannels: this.forceChannels,
+      forceSubActive: this.forceSubActive,
+      webAppUrl: this.webAppUrl,
+      superAdminId: this.superAdminId,
+      admins: this.adminsList,
+      joinRequestMode: this.joinRequestMode,
+      blockedUsersCount: this.blockedUsers.size
+    };
+  }
+
+  setForceChannel(channel) {
+    this.addForceChannel(channel);
+  }
+
+  toggleForceSub(status) {
+    this.forceSubActive = typeof status === 'boolean' ? status : !this.forceSubActive;
+    this.saveDbFile();
+  }
+}
+
+module.exports = new DB();
+module.exports.detectUzbekGender = detectUzbekGender;
+
+
+```
+
+---
+
+### 6. `bot/backup.js`
 ```javascript
 /* -------------------------------------------------------------
  * Automatic Daily Backup System (Local Disk + Telegram Dispatch)
@@ -741,4 +1880,16 @@ module.exports = {
   initBackupCron,
   getLatestBackup
 };
+
+```
+
+---
+
+### 7. `bot/admins.json`
+```json
+[
+  8544023815,
+  8112688757
+]
+
 ```

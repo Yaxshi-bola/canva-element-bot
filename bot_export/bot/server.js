@@ -167,6 +167,46 @@ app.post('/api/settings/force-sub', (req, res) => {
   res.json({ success: true, settings: db.getSettings() });
 });
 
+// API: Check User Channel Subscription
+app.get('/api/check-sub', async (req, res) => {
+  const userId = req.query.user_id;
+  if (!userId) {
+    return res.status(400).json({ success: false, error: 'user_id required' });
+  }
+
+  const botInstance = require('./bot');
+  const settings = db.getSettings();
+  const channels = db.getForceChannels();
+
+  if (!settings.forceSubActive || !channels || channels.length === 0) {
+    return res.json({ success: true, isSubscribed: true, missing: [], forceSubActive: false });
+  }
+
+  const missing = [];
+  for (const channel of channels) {
+    try {
+      const member = await botInstance.getChatMember(channel, userId);
+      const validStatuses = ['creator', 'administrator', 'member'];
+      if (!validStatuses.includes(member.status)) {
+        missing.push(channel);
+      }
+    } catch (err) {
+      if (err.message && (err.message.includes('chat not found') || err.message.includes('bot is not a member') || err.message.includes('not an admin'))) {
+        // Skip blocking if bot lacks admin permissions
+      } else {
+        missing.push(channel);
+      }
+    }
+  }
+
+  res.json({
+    success: true,
+    isSubscribed: missing.length === 0,
+    missing: missing,
+    forceSubActive: settings.forceSubActive
+  });
+});
+
 // API: System Stats
 app.get('/api/stats', async (req, res) => {
   try {
