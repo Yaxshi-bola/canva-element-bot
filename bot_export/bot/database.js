@@ -121,7 +121,7 @@ function detectUzbekGender(firstName = '', lastName = '') {
 class DB {
   constructor() {
     this.memoryUsers = new Map(); // id -> userData
-    this.forceChannels = ['@zuhracanva_official'];
+    this.forceChannels = [];
     this.forceSubActive = false;
     this.webAppUrl = 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
     this.superAdminId = 8544023815;
@@ -141,7 +141,7 @@ class DB {
         const parsed = JSON.parse(raw);
 
         if (parsed.settings) {
-          if (Array.isArray(parsed.settings.forceChannels) && parsed.settings.forceChannels.length > 0) {
+          if (Array.isArray(parsed.settings.forceChannels)) {
             this.forceChannels = parsed.settings.forceChannels;
           } else if (parsed.settings.forceChannel && parsed.settings.forceChannel.trim().length > 0) {
             this.forceChannels = [parsed.settings.forceChannel];

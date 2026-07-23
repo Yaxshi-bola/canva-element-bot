@@ -478,11 +478,21 @@ bot.on('callback_query', async (query) => {
 
   async function renderChannelListMenu(chatId, messageId = null) {
     const channels = db.getForceChannels();
+    const settings = db.getSettings();
+
     if (channels.length === 0) {
-      const msgText = `📭 **Hozircha hech qanday majburiy obuna kanali ulangan emas.**`;
-      const btnMarkup = { inline_keyboard: [[{ text: '➕ Kanal qo\'shish', callback_data: 'chan_add' }]] };
+      const msgText = `📭 **Hozircha hech qanday majburiy obuna kanali ulangan emas.**\n\n` +
+        `⚙️ **Majburiy obuna holati:** ${settings.forceSubActive ? 'YOQILGAN ✅' : 'O\'CHIRILGAN ❌'}`;
+
+      const btnMarkup = {
+        inline_keyboard: [
+          [{ text: '➕ Yangi kanal qo\'shish', callback_data: 'chan_add' }],
+          [{ text: `⚙️ Obunani ${settings.forceSubActive ? 'O\'CHIRISH ❌' : 'YOQISH ✅'}`, callback_data: 'chan_toggle_sub' }]
+        ]
+      };
+
       if (messageId) {
-        return bot.editMessageText(msgText, { chatId, message_id: messageId, parse_mode: 'Markdown', reply_markup: btnMarkup }).catch(() => {
+        return bot.editMessageText(msgText, { chat_id: chatId, message_id: messageId, parse_mode: 'Markdown', reply_markup: btnMarkup }).catch(() => {
           bot.sendMessage(chatId, msgText, { parse_mode: 'Markdown', reply_markup: btnMarkup });
         });
       }
@@ -493,6 +503,7 @@ bot.on('callback_query', async (query) => {
     const statusResults = await Promise.all(channels.map(ch => checkBotChannelAdminStatus(ch)));
 
     let reportText = `📋 **ULANGAN MAJBURlY OBUNA KANALLARI VA BOT ADMINLIK HOLATI:**\n\n`;
+    reportText += `⚙️ **Majburiy obuna holati:** ${settings.forceSubActive ? 'YOQILGAN ✅' : 'O\'CHIRILGAN ❌'}\n\n`;
     const inlineButtons = [];
 
     for (let i = 0; i < channels.length; i++) {
@@ -512,8 +523,12 @@ bot.on('callback_query', async (query) => {
     }
 
     inlineButtons.push([
+      { text: `⚙️ Obunani ${settings.forceSubActive ? 'O\'CHIRISH ❌' : 'YOQISH ✅'}`, callback_data: 'chan_toggle_sub' }
+    ]);
+
+    inlineButtons.push([
       { text: '🔍 Qayta tekshirish', callback_data: 'chan_check_admins' },
-      { text: '➕ Kanal qo\'shish', callback_data: 'chan_add' }
+      { text: '➕ Yangi kanal qo\'shish', callback_data: 'chan_add' }
     ]);
 
     if (messageId) {
@@ -563,7 +578,7 @@ bot.on('callback_query', async (query) => {
     const newStatus = !settings.forceSubActive;
     db.toggleForceSub(newStatus);
     await bot.answerCallbackQuery(query.id, { text: `Obuna holati: ${newStatus ? 'YOQILDI ✅' : "O'CHIRILDI ❌"}` });
-    return bot.sendMessage(chatId, `⚙️ Majburiy obuna holati: **${newStatus ? 'YOQILGAN ✅' : "O'CHIRILGAN ❌"}**`, getAdminKeyboard(userId));
+    return renderChannelListMenu(chatId, query.message?.message_id);
   }
 
   // Join Request Mode Callbacks

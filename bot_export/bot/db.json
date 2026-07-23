@@ -28,6 +28,7 @@
     }
   ],
   "settings": {
+    "forceChannels": [],
     "forceChannel": "",
     "forceChannelLink": "",
     "forceSubActive": false,
