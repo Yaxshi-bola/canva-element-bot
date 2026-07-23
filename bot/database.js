@@ -395,38 +395,43 @@ class DB {
     if (!clean) return false;
 
     // Check if numeric channel ID (e.g. -1001234567890)
-    if (/^-?\d+$/.test(clean)) {
-      if (!this.forceChannels.includes(clean)) {
-        this.forceChannels.push(clean);
-        this.saveDbFile();
-        this.saveSettingsToSupabase().catch(() => {});
-        return clean;
-      }
-      return false;
-    }
-
-    // Add leading @ if missing
-    if (!clean.startsWith('@')) {
+    if (!/^-?\d+$/.test(clean) && !clean.startsWith('@')) {
       clean = `@${clean}`;
     }
 
-    if (!this.forceChannels.includes(clean)) {
+    const cleanNorm = clean.replace(/^@/, '').toLowerCase();
+    const exists = this.forceChannels.some(ch => ch.replace(/^@/, '').toLowerCase() === cleanNorm);
+
+    if (!exists) {
       this.forceChannels.push(clean);
       this.saveDbFile();
       this.saveSettingsToSupabase().catch(() => {});
-      return clean;
     }
-    return false;
+    return clean;
   }
 
   removeForceChannel(channelInput) {
     if (!channelInput) return false;
-    let clean = String(channelInput).trim();
-    clean = clean.replace(/^https?:\/\/(www\.)?t\.me\//i, '').replace(/^t\.me\//i, '');
-    if (!clean.startsWith('@') && !/^-?\d+$/.test(clean)) clean = `@${clean}`;
+    const targetNorm = String(channelInput).trim()
+      .replace(/^https?:\/\/(www\.)?t\.me\//i, '')
+      .replace(/^t\.me\//i, '')
+      .replace(/^telegram\.me\//i, '')
+      .replace(/[\/\?#].*$/, '')
+      .replace(/^@/, '')
+      .toLowerCase();
 
     const beforeLen = this.forceChannels.length;
-    this.forceChannels = this.forceChannels.filter(ch => ch.toLowerCase() !== clean.toLowerCase());
+    this.forceChannels = this.forceChannels.filter(ch => {
+      const chNorm = String(ch).trim()
+        .replace(/^https?:\/\/(www\.)?t\.me\//i, '')
+        .replace(/^t\.me\//i, '')
+        .replace(/^telegram\.me\//i, '')
+        .replace(/[\/\?#].*$/, '')
+        .replace(/^@/, '')
+        .toLowerCase();
+      return chNorm !== targetNorm;
+    });
+
     if (this.forceChannels.length < beforeLen) {
       this.saveDbFile();
       this.saveSettingsToSupabase().catch(() => {});

@@ -1304,9 +1304,11 @@ document.addEventListener('DOMContentLoaded', () => {
       titleSpan.textContent = ch;
 
       const delBtn = document.createElement('button');
-      delBtn.className = 'btn-remove-admin';
+      delBtn.className = 'btn-remove-channel-action';
+      delBtn.style.cssText = 'background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); padding:6px 12px; border-radius:8px; font-weight:600; font-size:12px; cursor:pointer;';
       delBtn.innerHTML = '<i class="fa-solid fa-trash"></i> O\'chirish';
-      delBtn.addEventListener('click', async () => {
+      delBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
         if (confirm(`${ch} kanalini o'chirmoqchimisiz?`)) {
           await deleteChannel(ch);
         }
@@ -1318,6 +1320,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function getActiveAdminId() {
+    return getTelegramUserId() || (isUserAdmin ? SUPER_ADMIN_ID : '');
+  }
+
   async function addChannel() {
     const val = newChannelInput?.value.trim();
     if (!val) {
@@ -1325,6 +1331,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     const formattedCh = val.startsWith('@') || val.startsWith('http') ? val : `@${val}`;
+    const adminId = getActiveAdminId();
 
     try {
       const res = await fetch(`${API_HOST}/api/channels`, {
@@ -1332,13 +1339,13 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: {
           'Content-Type': 'application/json',
           'x-telegram-init-data': tg?.initData || '',
-          'x-user-id': String(getTelegramUserId() || '')
+          'x-user-id': String(adminId)
         },
-        body: JSON.stringify({ channel: formattedCh })
+        body: JSON.stringify({ channel: formattedCh, admin_user_id: adminId })
       });
       const data = await res.json();
       if (data.success) {
-        showToast('✅ Kanal qo\'shildi!');
+        showToast('✅ Kanal saqlandi!');
         if (newChannelInput) newChannelInput.value = '';
         renderChannelsList(data.channels || []);
       } else {
@@ -1350,12 +1357,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function deleteChannel(chName) {
+    const adminId = getActiveAdminId();
     try {
       const res = await fetch(`${API_HOST}/api/channels/${encodeURIComponent(chName)}`, {
         method: 'DELETE',
         headers: {
           'x-telegram-init-data': tg?.initData || '',
-          'x-user-id': String(getTelegramUserId() || '')
+          'x-user-id': String(adminId)
         }
       });
       const data = await res.json();
@@ -1371,15 +1379,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   channelsForceSubToggle?.addEventListener('change', async (e) => {
+    const adminId = getActiveAdminId();
     try {
       const res = await fetch(`${API_HOST}/api/channels/toggle`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-telegram-init-data': tg?.initData || '',
-          'x-user-id': String(getTelegramUserId() || '')
+          'x-user-id': String(adminId)
         },
-        body: JSON.stringify({ enabled: e.target.checked })
+        body: JSON.stringify({ enabled: e.target.checked, admin_user_id: adminId })
       });
       const data = await res.json();
       if (data.success) {
@@ -1424,15 +1433,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const imageUrl = imgInput?.value.trim() || '';
       const linkUrl = linkInput?.value.trim() || '';
 
+      const adminId = getActiveAdminId();
       try {
         const res = await fetch(`${API_HOST}/api/banners`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'x-telegram-init-data': tg?.initData || '',
-            'x-user-id': String(getTelegramUserId() || '')
+            'x-user-id': String(adminId)
           },
-          body: JSON.stringify({ slot: Number(slot), imageUrl, linkUrl })
+          body: JSON.stringify({ slot: Number(slot), imageUrl, linkUrl, admin_user_id: adminId })
         });
         const data = await res.json();
         if (data.success) {
