@@ -57,7 +57,7 @@ async function checkBotChannelAdminStatus(channel) {
   }
 }
 
-// Helper: Check Multiple Channels Subscription
+// Helper: Check Multiple Channels Subscription (Fast Parallel Execution)
 async function checkUserSubscription(userId) {
   const settings = db.getSettings();
   const channels = db.getForceChannels();
@@ -66,24 +66,27 @@ async function checkUserSubscription(userId) {
     return { isSubscribed: true, missing: [] };
   }
 
-  const missing = [];
-  for (const channel of channels) {
-    try {
-      const member = await bot.getChatMember(channel, userId);
-      const validStatuses = ['creator', 'administrator', 'member'];
-      if (!validStatuses.includes(member.status)) {
-        missing.push(channel);
+  const results = await Promise.all(
+    channels.map(async (channel) => {
+      try {
+        const member = await bot.getChatMember(channel, userId);
+        const validStatuses = ['creator', 'administrator', 'member'];
+        if (!validStatuses.includes(member.status)) {
+          return { channel, isSub: false };
+        }
+        return { channel, isSub: true };
+      } catch (err) {
+        console.error(`[FORCE_SUB] Error checking subscription for ${channel}:`, err.message);
+        if (err.message && (err.message.includes('chat not found') || err.message.includes('bot is not a member') || err.message.includes('not an admin'))) {
+          console.warn(`[FORCE_SUB_WARNING] Bot lacks admin access in channel ${channel}. Skipping channel check for user.`);
+          return { channel, isSub: true }; // don't block user if bot lacks permission
+        }
+        return { channel, isSub: false };
       }
-    } catch (err) {
-      console.error(`[FORCE_SUB] Error checking subscription for ${channel}:`, err.message);
-      // If error is because bot is not admin in channel, don't block user permanently
-      if (err.message && (err.message.includes('chat not found') || err.message.includes('bot is not a member') || err.message.includes('not an admin'))) {
-        console.warn(`[FORCE_SUB_WARNING] Bot lacks admin access in channel ${channel}. Skipping channel check for user.`);
-      } else {
-        missing.push(channel);
-      }
-    }
-  }
+    })
+  );
+
+  const missing = results.filter(r => !r.isSub).map(r => r.channel);
 
   return {
     isSubscribed: missing.length === 0,
@@ -639,12 +642,12 @@ bot.on('message', async (msg) => {
   // Global block check
   if (isBlockedUser(userId)) return;
 
-  // Track User Activity
-  await db.saveUser(userId, {
+  // Track User Activity asynchronously without blocking response
+  db.saveUser(userId, {
     username: msg.from.username,
     first_name: msg.from.first_name,
     last_name: msg.from.last_name
-  });
+  }).catch(() => {});
 
   if (!isAdmin(userId)) return;
 

@@ -71,14 +71,18 @@ async function sendBackupToTelegram(filePath, fileName) {
   }
 }
 
-async function createDailyBackup() {
+async function createDailyBackup(forceTelegramSend = false) {
   try {
     const dateStr = new Date().toISOString().split('T')[0];
     const fileName = `daily_backup_${dateStr}.json`;
     const filePath = path.join(BACKUP_DIR, fileName);
 
-    const elements = await db.getAllElements();
-    const users = await db.getAllUsers();
+    const alreadyExists = fs.existsSync(filePath);
+
+    const [elements, users] = await Promise.all([
+      db.getAllElements(),
+      db.getAllUsers()
+    ]);
     const admins = db.getAdmins();
 
     const backupData = {
@@ -99,8 +103,10 @@ async function createDailyBackup() {
     fs.writeFileSync(filePath, JSON.stringify(backupData, null, 2), 'utf-8');
     console.log(`✅ [Daily Backup] Automated backup saved successfully: ${fileName}`);
 
-    // Send backup to Admin Telegram chat for permanent offsite persistence
-    await sendBackupToTelegram(filePath, fileName);
+    // Send to Telegram ONLY if it hasn't been sent today or explicitly requested
+    if (forceTelegramSend || !alreadyExists) {
+      await sendBackupToTelegram(filePath, fileName);
+    }
 
     return backupData;
   } catch (err) {
@@ -109,14 +115,13 @@ async function createDailyBackup() {
   }
 }
 
-// Start daily scheduler
+// Start daily scheduler (runs once every 24 hours, no boot-up spam)
 function initBackupCron() {
-  setTimeout(() => {
-    createDailyBackup();
-  }, 5000);
+  // Run once on initial boot silently without sending telegram message if already backed up today
+  createDailyBackup(false);
 
   setInterval(() => {
-    createDailyBackup();
+    createDailyBackup(false);
   }, 24 * 60 * 60 * 1000);
 }
 

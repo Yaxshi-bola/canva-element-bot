@@ -364,7 +364,7 @@ async function checkBotChannelAdminStatus(channel) {
   }
 }
 
-// Helper: Check Multiple Channels Subscription
+// Helper: Check Multiple Channels Subscription (Fast Parallel Execution)
 async function checkUserSubscription(userId) {
   const settings = db.getSettings();
   const channels = db.getForceChannels();
@@ -373,24 +373,27 @@ async function checkUserSubscription(userId) {
     return { isSubscribed: true, missing: [] };
   }
 
-  const missing = [];
-  for (const channel of channels) {
-    try {
-      const member = await bot.getChatMember(channel, userId);
-      const validStatuses = ['creator', 'administrator', 'member'];
-      if (!validStatuses.includes(member.status)) {
-        missing.push(channel);
+  const results = await Promise.all(
+    channels.map(async (channel) => {
+      try {
+        const member = await bot.getChatMember(channel, userId);
+        const validStatuses = ['creator', 'administrator', 'member'];
+        if (!validStatuses.includes(member.status)) {
+          return { channel, isSub: false };
+        }
+        return { channel, isSub: true };
+      } catch (err) {
+        console.error(`[FORCE_SUB] Error checking subscription for ${channel}:`, err.message);
+        if (err.message && (err.message.includes('chat not found') || err.message.includes('bot is not a member') || err.message.includes('not an admin'))) {
+          console.warn(`[FORCE_SUB_WARNING] Bot lacks admin access in channel ${channel}. Skipping channel check for user.`);
+          return { channel, isSub: true }; // don't block user if bot lacks permission
+        }
+        return { channel, isSub: false };
       }
-    } catch (err) {
-      console.error(`[FORCE_SUB] Error checking subscription for ${channel}:`, err.message);
-      // If error is because bot is not admin in channel, don't block user permanently
-      if (err.message && (err.message.includes('chat not found') || err.message.includes('bot is not a member') || err.message.includes('not an admin'))) {
-        console.warn(`[FORCE_SUB_WARNING] Bot lacks admin access in channel ${channel}. Skipping channel check for user.`);
-      } else {
-        missing.push(channel);
-      }
-    }
-  }
+    })
+  );
+
+  const missing = results.filter(r => !r.isSub).map(r => r.channel);
 
   return {
     isSubscribed: missing.length === 0,
@@ -946,12 +949,12 @@ bot.on('message', async (msg) => {
   // Global block check
   if (isBlockedUser(userId)) return;
 
-  // Track User Activity
-  await db.saveUser(userId, {
+  // Track User Activity asynchronously without blocking response
+  db.saveUser(userId, {
     username: msg.from.username,
     first_name: msg.from.first_name,
     last_name: msg.from.last_name
-  });
+  }).catch(() => {});
 
   if (!isAdmin(userId)) return;
 
@@ -1899,14 +1902,18 @@ async function sendBackupToTelegram(filePath, fileName) {
   }
 }
 
-async function createDailyBackup() {
+async function createDailyBackup(forceTelegramSend = false) {
   try {
     const dateStr = new Date().toISOString().split('T')[0];
     const fileName = `daily_backup_${dateStr}.json`;
     const filePath = path.join(BACKUP_DIR, fileName);
 
-    const elements = await db.getAllElements();
-    const users = await db.getAllUsers();
+    const alreadyExists = fs.existsSync(filePath);
+
+    const [elements, users] = await Promise.all([
+      db.getAllElements(),
+      db.getAllUsers()
+    ]);
     const admins = db.getAdmins();
 
     const backupData = {
@@ -1927,8 +1934,10 @@ async function createDailyBackup() {
     fs.writeFileSync(filePath, JSON.stringify(backupData, null, 2), 'utf-8');
     console.log(`✅ [Daily Backup] Automated backup saved successfully: ${fileName}`);
 
-    // Send backup to Admin Telegram chat for permanent offsite persistence
-    await sendBackupToTelegram(filePath, fileName);
+    // Send to Telegram ONLY if it hasn't been sent today or explicitly requested
+    if (forceTelegramSend || !alreadyExists) {
+      await sendBackupToTelegram(filePath, fileName);
+    }
 
     return backupData;
   } catch (err) {
@@ -1937,14 +1946,13 @@ async function createDailyBackup() {
   }
 }
 
-// Start daily scheduler
+// Start daily scheduler (runs once every 24 hours, no boot-up spam)
 function initBackupCron() {
-  setTimeout(() => {
-    createDailyBackup();
-  }, 5000);
+  // Run once on initial boot silently without sending telegram message if already backed up today
+  createDailyBackup(false);
 
   setInterval(() => {
-    createDailyBackup();
+    createDailyBackup(false);
   }, 24 * 60 * 60 * 1000);
 }
 
