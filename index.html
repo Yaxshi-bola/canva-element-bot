@@ -101,26 +101,13 @@
     <!-- VIEW 1: HOME TAB -->
     <div class="tab-view active" id="view-home">
       
-      <!-- Auto-Sliding Featured Banner Carousel (User Uploaded Banners) -->
+      <!-- Auto-Sliding Featured Banner Carousel (Dynamic from Server) -->
       <div class="featured-carousel-card" id="featured-carousel-card">
         <div class="carousel-track" id="carousel-track">
-          <!-- Slide 1 (3-banner o'rniga keldi) -->
-          <div class="carousel-slide active">
-            <img src="assets/user_banner3.jpg" class="banner-full-img" alt="Canva Banner 3" loading="lazy" />
-          </div>
-          <!-- Slide 2 -->
-          <div class="carousel-slide">
-            <img src="assets/user_banner2.jpg" class="banner-full-img" alt="Canva Banner 2" loading="lazy" />
-          </div>
-          <!-- Slide 3 (1-banner o'rniga keldi) -->
-          <div class="carousel-slide">
-            <img src="assets/user_banner1.jpg" class="banner-full-img" alt="Canva Banner 1" loading="lazy" />
-          </div>
+          <!-- Banners loaded dynamically from /api/banners -->
         </div>
         <div class="carousel-dots" id="carousel-dots">
-          <span class="dot active" data-slide="0"></span>
-          <span class="dot" data-slide="1"></span>
-          <span class="dot" data-slide="2"></span>
+          <!-- Dots loaded dynamically -->
         </div>
       </div>
 
@@ -220,6 +207,22 @@
           <div class="action-left">
             <span class="action-icon refresh-icon"><i class="fa-solid fa-arrows-rotate"></i></span>
             <span class="action-title">Yangilash</span>
+          </div>
+          <i class="fa-solid fa-chevron-right action-arrow"></i>
+        </button>
+
+        <button class="admin-action-row" id="admin-btn-channels">
+          <div class="action-left">
+            <span class="action-icon" style="background:linear-gradient(135deg,#0088cc,#00c6ff);"><i class="fa-solid fa-tower-broadcast"></i></span>
+            <span class="action-title">Majburiy kanallar</span>
+          </div>
+          <i class="fa-solid fa-chevron-right action-arrow"></i>
+        </button>
+
+        <button class="admin-action-row" id="admin-btn-banners">
+          <div class="action-left">
+            <span class="action-icon" style="background:linear-gradient(135deg,#f9d423,#ff4e50);"><i class="fa-solid fa-image"></i></span>
+            <span class="action-title">Bannerlar</span>
           </div>
           <i class="fa-solid fa-chevron-right action-arrow"></i>
         </button>
@@ -415,6 +418,111 @@
     </div>
   </div>
 
+  <!-- Manage Channels Modal -->
+  <div class="modal-overlay hidden" id="modal-manage-channels">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-tower-broadcast"></i> Majburiy kanallarni boshqarish</h3>
+        <button class="modal-close-btn" id="modal-channels-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-checkbox-group" style="margin-bottom: 16px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px;">
+          <label class="checkbox-container" style="font-weight: 600;">
+            <input type="checkbox" id="channels-force-sub-toggle" />
+            <span class="checkmark"></span>
+            Majburiy obuna faol (Yoqilgan)
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>Yangi kanal username yoki link</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="new-channel-input" placeholder="masalan: @kanal_username" style="flex:1;" />
+            <button class="btn-modal-save" id="btn-add-channel" style="white-space:nowrap;"><i class="fa-solid fa-plus"></i> Qo'shish</button>
+          </div>
+          <small class="form-help">Bot ushbu kanalda administrator bo'lishi shart!</small>
+        </div>
+
+        <div class="form-group" style="margin-top: 14px;">
+          <label>Ulangan kanallar ro'yxati:</label>
+          <div id="channels-list-container" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" id="btn-close-channels-modal">Yopish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manage Banners Modal -->
+  <div class="modal-overlay hidden" id="modal-manage-banners">
+    <div class="modal-card" style="max-width: 480px; max-height: 85vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-image"></i> Bannerlarni boshqarish</h3>
+        <button class="modal-close-btn" id="modal-banners-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="form-help" style="margin-bottom: 12px;">Xohlagan banner slotiga rasm URL va bosilganda o'tiladigan havola (link) kiriting:</p>
+        
+        <div id="banners-slots-container" style="display: flex; flex-direction: column; gap: 16px;">
+          <!-- Slot 1 -->
+          <div class="banner-slot-card" style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="font-weight:700; font-size:14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+              <span>🖼 Banner 1</span>
+              <span id="banner-slot-1-preview" style="font-size:12px; opacity:0.7;"></span>
+            </div>
+            <div class="form-group" style="margin-bottom:8px;">
+              <label style="font-size:12px;">Rasm URL</label>
+              <input type="text" id="banner-img-1" placeholder="assets/user_banner3.jpg yoki https://..." />
+            </div>
+            <div class="form-group" style="margin-bottom:8px;">
+              <label style="font-size:12px;">Bosilganda o'tish havolasi (Link)</label>
+              <input type="text" id="banner-link-1" placeholder="https://t.me/... yoki https://..." />
+            </div>
+            <button class="btn-modal-save btn-save-banner-slot" data-slot="1" style="width:100%; justify-content:center; padding:8px;"><i class="fa-solid fa-floppy-disk"></i> Banner 1 Saqlash</button>
+          </div>
+
+          <!-- Slot 2 -->
+          <div class="banner-slot-card" style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="font-weight:700; font-size:14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+              <span>🖼 Banner 2</span>
+              <span id="banner-slot-2-preview" style="font-size:12px; opacity:0.7;"></span>
+            </div>
+            <div class="form-group" style="margin-bottom:8px;">
+              <label style="font-size:12px;">Rasm URL</label>
+              <input type="text" id="banner-img-2" placeholder="assets/user_banner2.jpg yoki https://..." />
+            </div>
+            <div class="form-group" style="margin-bottom:8px;">
+              <label style="font-size:12px;">Bosilganda o'tish havolasi (Link)</label>
+              <input type="text" id="banner-link-2" placeholder="https://t.me/... yoki https://..." />
+            </div>
+            <button class="btn-modal-save btn-save-banner-slot" data-slot="2" style="width:100%; justify-content:center; padding:8px;"><i class="fa-solid fa-floppy-disk"></i> Banner 2 Saqlash</button>
+          </div>
+
+          <!-- Slot 3 -->
+          <div class="banner-slot-card" style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="font-weight:700; font-size:14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+              <span>🖼 Banner 3</span>
+              <span id="banner-slot-3-preview" style="font-size:12px; opacity:0.7;"></span>
+            </div>
+            <div class="form-group" style="margin-bottom:8px;">
+              <label style="font-size:12px;">Rasm URL</label>
+              <input type="text" id="banner-img-3" placeholder="assets/user_banner1.jpg yoki https://..." />
+            </div>
+            <div class="form-group" style="margin-bottom:8px;">
+              <label style="font-size:12px;">Bosilganda o'tish havolasi (Link)</label>
+              <input type="text" id="banner-link-3" placeholder="https://t.me/... yoki https://..." />
+            </div>
+            <button class="btn-modal-save btn-save-banner-slot" data-slot="3" style="width:100%; justify-content:center; padding:8px;"><i class="fa-solid fa-floppy-disk"></i> Banner 3 Saqlash</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" id="btn-close-banners-modal">Yopish</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Download JSON Backup Modal -->
   <div class="modal-overlay hidden" id="modal-backup-download">
     <div class="modal-card">
@@ -474,7 +582,7 @@
   </div>
 
   <!-- Include Data and Main Logic Scripts -->
-  <script src="data.js?v=8.0"></script>
-  <script src="app.js?v=8.0"></script>
+  <script src="data.js?v=9.0"></script>
+  <script src="app.js?v=9.0"></script>
 </body>
 </html>

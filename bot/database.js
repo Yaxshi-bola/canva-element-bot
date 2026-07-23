@@ -129,6 +129,11 @@ class DB {
     this.adminsList = [8544023815, 8112688757];
     this.blockedUsers = new Set();
     this.joinRequestMode = 'approve_all'; // 'approve_all' | 'female_only' | 'male_only' | 'manual'
+    this.banners = [
+      { slot: 1, imageUrl: 'assets/user_banner3.jpg', linkUrl: '' },
+      { slot: 2, imageUrl: 'assets/user_banner2.jpg', linkUrl: '' },
+      { slot: 3, imageUrl: 'assets/user_banner1.jpg', linkUrl: '' }
+    ];
 
     this.loadAdminsFromFile();
     this.loadDbFile();
@@ -152,6 +157,9 @@ class DB {
           }
           if (parsed.settings.joinRequestMode) {
             this.joinRequestMode = parsed.settings.joinRequestMode;
+          }
+          if (Array.isArray(parsed.settings.banners) && parsed.settings.banners.length > 0) {
+            this.banners = parsed.settings.banners;
           }
         }
 
@@ -183,7 +191,8 @@ class DB {
           forceChannels: this.forceChannels,
           forceSubActive: this.forceSubActive,
           webAppUrl: this.webAppUrl,
-          joinRequestMode: this.joinRequestMode
+          joinRequestMode: this.joinRequestMode,
+          banners: this.banners
         },
         blockedUsers: Array.from(this.blockedUsers),
         stats: {
@@ -211,7 +220,10 @@ class DB {
         if (cfg.joinRequestMode) {
           this.joinRequestMode = cfg.joinRequestMode;
         }
-        console.log('✅ Settings loaded permanently from Supabase:', this.forceChannels);
+        if (Array.isArray(cfg.banners) && cfg.banners.length > 0) {
+          this.banners = cfg.banners;
+        }
+        console.log('✅ Settings loaded permanently from Supabase:', this.forceChannels, this.banners);
         this.saveDbFile();
       }
     } catch (e) {
@@ -227,7 +239,8 @@ class DB {
           forceChannels: this.forceChannels,
           forceSubActive: this.forceSubActive,
           joinRequestMode: this.joinRequestMode,
-          webAppUrl: this.webAppUrl
+          webAppUrl: this.webAppUrl,
+          banners: this.banners
         },
         updated_at: new Date().toISOString()
       };
@@ -610,7 +623,8 @@ class DB {
       superAdminId: this.superAdminId,
       admins: this.adminsList,
       joinRequestMode: this.joinRequestMode,
-      blockedUsersCount: this.blockedUsers.size
+      blockedUsersCount: this.blockedUsers.size,
+      banners: this.banners
     };
   }
 
@@ -621,6 +635,39 @@ class DB {
   toggleForceSub(status) {
     this.forceSubActive = typeof status === 'boolean' ? status : !this.forceSubActive;
     this.saveDbFile();
+  }
+
+  // Banner Management
+  getBanners() {
+    return this.banners;
+  }
+
+  setBanner(slot, imageUrl, linkUrl) {
+    const slotNum = Number(slot);
+    if (slotNum < 1 || slotNum > 10) return false;
+    const existing = this.banners.find(b => b.slot === slotNum);
+    if (existing) {
+      existing.imageUrl = imageUrl || existing.imageUrl;
+      existing.linkUrl = linkUrl !== undefined ? linkUrl : existing.linkUrl;
+    } else {
+      this.banners.push({ slot: slotNum, imageUrl: imageUrl || '', linkUrl: linkUrl || '' });
+    }
+    this.banners.sort((a, b) => a.slot - b.slot);
+    this.saveDbFile();
+    this.saveSettingsToSupabase().catch(() => {});
+    return true;
+  }
+
+  removeBanner(slot) {
+    const slotNum = Number(slot);
+    const beforeLen = this.banners.length;
+    this.banners = this.banners.filter(b => b.slot !== slotNum);
+    if (this.banners.length < beforeLen) {
+      this.saveDbFile();
+      this.saveSettingsToSupabase().catch(() => {});
+      return true;
+    }
+    return false;
   }
 }
 
