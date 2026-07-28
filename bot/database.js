@@ -1,6 +1,6 @@
 /* -------------------------------------------------------------
  * Supabase & Local DB Manager for Telegram Bot & Mini App
- * Supabase URL: https://mjenunxgakcvyzcikjmi.supabase.co
+ * Supabase URL: https://mybbihqsxrlfmmrvmmki.supabase.co
  * Author: Zuhra Olimova & Yaxshi Bola
  * ------------------------------------------------------------- */
 
@@ -8,8 +8,8 @@ const urllib = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://mjenunxgakcvyzcikjmi.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_nSt8XQyZetNEC7ROiU3XeA_iPBDMPRn';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://mybbihqsxrlfmmrvmmki.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_OLa43IPz8KtbppGPrexpUA_Rm4uoX0Z';
 const ADMINS_FILE = path.join(__dirname, 'admins.json');
 const DB_FILE = path.join(__dirname, 'db.json');
 
