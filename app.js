@@ -179,11 +179,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const shareText = `🎨 Canva Element Kodi: ${code}\n📌 Tavsif: ${description || 'Canva elementi'}\n\n✨ Top-canva bot: @zuhracanva_bot`;
     const shareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/zuhracanva_bot')}&text=${encodeURIComponent(shareText)}`;
 
-    if (tg && typeof tg.openTelegramLink === 'function') {
-      tg.openTelegramLink(shareUrl);
-    } else {
-      window.open(shareUrl, '_blank');
+    try {
+      if (tg && typeof tg.openTelegramLink === 'function') {
+        tg.openTelegramLink(shareUrl);
+        return;
+      }
+    } catch (e) {
+      console.warn('openTelegramLink failed:', e);
     }
+
+    try {
+      if (tg && typeof tg.openLink === 'function') {
+        tg.openLink(shareUrl, { try_instant_view: false });
+        return;
+      }
+    } catch (e2) {
+      console.warn('openLink failed:', e2);
+    }
+
+    window.open(shareUrl, '_blank');
   }
 
   // Admin Verification Logic (Hide Admin tab by default for non-admins)
