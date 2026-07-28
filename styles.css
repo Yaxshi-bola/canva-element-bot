@@ -37,7 +37,14 @@
   --radius-sm: 12px;
   --radius-pill: 99px;
 
-  --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Emil Kowalski Design Engineering Easing Curves */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --transition-fast: transform 160ms var(--ease-out), opacity 160ms var(--ease-out), background-color 160ms ease-out, box-shadow 160ms ease-out;
+  --transition-smooth: transform 220ms var(--ease-out), opacity 220ms var(--ease-out), background-color 220ms ease-out, box-shadow 220ms ease-out;
+  --transition: var(--transition-smooth);
 }
 
 /* Reset & Base Styles */
@@ -587,8 +594,9 @@ body.apple-vision-theme {
 }
 
 .btn-copy-action:active {
-  transform: scale(0.96);
-  opacity: 0.9;
+  transform: scale(0.97);
+  opacity: 0.92;
+  transition: transform 160ms var(--ease-out), opacity 160ms var(--ease-out);
 }
 
 .btn-share-icon {
@@ -605,12 +613,13 @@ body.apple-vision-theme {
   cursor: pointer;
   flex-shrink: 0;
   box-shadow: var(--shadow-card);
-  transition: var(--transition);
+  transition: var(--transition-smooth);
 }
 
 .btn-share-icon:active {
-  transform: scale(0.92);
+  transform: scale(0.95);
   background: var(--pink-soft-bg);
+  transition: transform 160ms var(--ease-out), background-color 160ms var(--ease-out);
 }
 
 /* CATEGORIES VIEW TAB */
@@ -1123,7 +1132,7 @@ body.apple-vision-theme {
   cursor: pointer;
 }
 
-/* MODALS & OVERLAYS */
+/* MODALS & OVERLAYS (Emil Kowalski Origin-Aware Scale Entry) */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -1134,7 +1143,7 @@ body.apple-vision-theme {
   align-items: center;
   justify-content: center;
   padding: 16px;
-  animation: fadeIn 0.2s ease-out;
+  animation: modalOverlayFadeIn 200ms var(--ease-out);
 }
 
 .modal-card {
@@ -1144,6 +1153,18 @@ body.apple-vision-theme {
   border-radius: var(--radius-xl);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   overflow: hidden;
+  transform-origin: center;
+  animation: modalCardScaleIn 220ms var(--ease-out);
+}
+
+@keyframes modalOverlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalCardScaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .modal-header {
@@ -1171,6 +1192,11 @@ body.apple-vision-theme {
   justify-content: center;
   color: var(--text-secondary);
   cursor: pointer;
+  transition: transform 160ms var(--ease-out);
+}
+
+.modal-close-btn:active {
+  transform: scale(0.92);
 }
 
 .modal-body {
@@ -1239,12 +1265,17 @@ body.apple-vision-theme {
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+  transition: transform 160ms var(--ease-out), opacity 160ms var(--ease-out);
+}
+
+.btn-modal-cancel:active, .btn-modal-save:active {
+  transform: scale(0.96);
 }
 
 .btn-modal-cancel { background: #F3F0F6; border: none; color: var(--text-secondary); }
 .btn-modal-save { background: var(--pink-gradient); border: none; color: #FFFFFF; }
 
-/* Toast Notification */
+/* Toast Notification (Emil Kowalski Hardware-Accelerated Smooth Entrance) */
 .toast-notification {
   position: fixed;
   bottom: 80px;
@@ -1256,6 +1287,19 @@ body.apple-vision-theme {
   border-radius: var(--radius-pill);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   z-index: 300;
+  transform-origin: center bottom;
+  animation: toastSlideUp 220ms var(--ease-out);
+}
+
+@keyframes toastSlideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 14px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
 }
 
 .toast-content {
