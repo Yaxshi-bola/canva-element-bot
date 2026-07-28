@@ -174,17 +174,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.removeChild(textArea);
   }
 
-  // Share Element Helper
+  // Share / Uzatish Element Helper
   function shareElement(code, description) {
-    const shareText = `🎨 Canva Element Kodi: ${code}\n📌 Tavsif: ${description}\n\n✨ Top-canva bot orqali izlang!`;
-    if (navigator.share) {
-      navigator.share({
-        title: 'Canva Element Kodi',
-        text: shareText,
-        url: window.location.href
-      }).catch(() => {});
+    const shareText = `🎨 Canva Element Kodi: ${code}\n📌 Tavsif: ${description || 'Canva elementi'}\n\n✨ Top-canva bot: @zuhracanva_bot`;
+    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/zuhracanva_bot')}&text=${encodeURIComponent(shareText)}`;
+
+    if (tg && typeof tg.openTelegramLink === 'function') {
+      tg.openTelegramLink(shareUrl);
     } else {
-      copyToClipboard(shareText, '🔗 Ulasish matni nusxalandi!');
+      window.open(shareUrl, '_blank');
     }
   }
 
