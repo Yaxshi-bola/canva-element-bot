@@ -120,21 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let toastTimer = null;
 
-  // Toast Notification (Compact, non-overflowing Apple VisionOS style)
-  function showToast(msg, codeStr = '') {
+  // Toast Notification (Micro-Pill Apple Dynamic Island Style)
+  function showToast(msg = 'Nusxalandi') {
     const toastTitle = document.getElementById('toast-title');
-    const toastCode = document.getElementById('toast-code');
-    
     if (toastTitle) toastTitle.textContent = msg;
-    if (toastCode) {
-      // Never show multiline or long text in toastCode pill
-      if (codeStr && codeStr.length <= 22 && !codeStr.includes('\n')) {
-        toastCode.textContent = codeStr;
-        toastCode.style.display = 'inline-block';
-      } else {
-        toastCode.style.display = 'none';
-      }
-    }
 
     if (toast) {
       toast.classList.remove('hidden');
@@ -147,11 +136,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (toastTimer) clearTimeout(toastTimer);
     toastTimer = setTimeout(() => {
       toast?.classList.add('hidden');
-    }, 2000);
+    }, 1200);
   }
 
   // Copy to Clipboard Helper with In-Place Feedback & Anti-Zoom Fallback
-  function copyToClipboard(text, customToastMsg = 'Nusxalandi!', triggerEl = null) {
+  function copyToClipboard(text, customToastMsg = 'Nusxalandi', triggerEl = null) {
     if (!text) return;
 
     // In-place button tactile visual feedback
@@ -166,12 +155,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (triggerEl.classList.contains('btn-copy') || triggerEl.classList.contains('btn-copy-action')) {
           triggerEl.innerHTML = originalHtml;
         }
-      }, 1400);
+      }, 1100);
     }
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(() => {
-        showToast(customToastMsg, text);
+        showToast(customToastMsg);
       }).catch(() => {
         fallbackCopyTextToClipboard(text, customToastMsg);
       });
@@ -201,14 +190,14 @@ document.addEventListener('DOMContentLoaded', () => {
     textArea.setSelectionRange(0, 99999);
     try {
       document.execCommand('copy');
-      showToast(customToastMsg, text);
+      showToast(customToastMsg);
     } catch (err) {
       showToast("❌ Nusxalab bo'lmadi");
     }
     document.body.removeChild(textArea);
   }
 
-  // Share / Uzatish Element Helper
+  // Share / Uzatish Element Helper (Opens Native Telegram Share, No Floating Popup)
   function shareElement(code, description, triggerEl = null) {
     if (triggerEl) {
       triggerEl.classList.add('copied-active');
@@ -217,13 +206,13 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         triggerEl.classList.remove('copied-active');
         triggerEl.innerHTML = origHtml;
-      }, 1400);
+      }, 1100);
     }
+
+    triggerHaptic('light');
 
     const shareText = `🎨 Canva Element Kodi: ${code}\n📌 Tavsif: ${description || 'Canva elementi'}\n\n✨ Bot: @zuhracanva_bot`;
     const shareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/zuhracanva_bot')}&text=${encodeURIComponent(shareText)}`;
-
-    showToast("Ulashish uchun ochildi");
 
     try {
       if (tg && typeof tg.openTelegramLink === 'function') {

@@ -1275,34 +1275,35 @@ body.apple-vision-theme {
 .btn-modal-cancel { background: #F3F0F6; border: none; color: var(--text-secondary); }
 .btn-modal-save { background: var(--pink-gradient); border: none; color: #FFFFFF; }
 
-/* Toast Notification (Compact Apple VisionOS Glassmorphism Pill) */
+/* Toast Notification (Micro-Pill Apple Dynamic Island Style) */
 .toast-notification {
   position: fixed;
-  bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(74px + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(29, 22, 43, 0.94);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(18, 14, 28, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: #FFFFFF;
-  padding: 8px 16px;
-  border-radius: var(--radius-pill);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+  padding: 5px 12px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.24);
   z-index: 9999;
-  max-width: min(88vw, 320px);
+  width: auto;
+  max-width: fit-content;
   pointer-events: none;
   transform-origin: center bottom;
 }
 
 .toast-notification.toast-anim {
-  animation: toastSlideUp 180ms var(--ease-out);
+  animation: toastSlideUp 160ms var(--ease-out);
 }
 
 @keyframes toastSlideUp {
   from {
     opacity: 0;
-    transform: translate(-50%, 12px) scale(0.96);
+    transform: translate(-50%, 8px) scale(0.94);
   }
   to {
     opacity: 1;
@@ -1311,37 +1312,28 @@ body.apple-vision-theme {
 }
 
 .toast-content {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 11.5px;
-  font-weight: 700;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
   white-space: nowrap;
 }
 
 .toast-icon {
-  color: #34D399;
-  font-size: 13px;
+  color: #10B981;
+  font-size: 11px;
   flex-shrink: 0;
 }
 
 .toast-title {
   color: #FFFFFF;
+  font-size: 11px;
+  letter-spacing: -0.1px;
 }
 
 .toast-code {
-  color: var(--primary-pink-light);
-  font-family: 'SFMono-Regular', Consolas, Menlo, monospace;
-  font-size: 10px;
-  background: rgba(255, 45, 141, 0.18);
-  padding: 2px 7px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 45, 141, 0.25);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 130px;
-  display: inline-block;
-  vertical-align: middle;
+  display: none !important;
 }
 
 /* Tactile in-place button copy feedback */
