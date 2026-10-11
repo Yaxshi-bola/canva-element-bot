@@ -2,6 +2,14 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8" />
+  <script>
+    if (window.location.hostname && window.location.hostname.includes('vercel.app')) {
+      window.location.replace('https://canva-elements.pages.dev' + window.location.search + window.location.hash);
+    }
+  </script>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Canva Element Kodlari — Zuhra Olimova</title>
   <meta name="description" content="Canva uchun 400+ saralangan 3D, Estetik, SMM va Animatsiyali element kodlari to'plami. Zuhra Olimova muallifligida." />
@@ -17,7 +25,7 @@
   <!-- FontAwesome Free Icons 6.5.1 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   
-  <link rel="stylesheet" href="styles.css?v=16.0" />
+  <link rel="stylesheet" href="styles.css?v=17.0" />
 </head>
 <body class="apple-vision-theme">
 
@@ -84,7 +92,7 @@
         <i class="fa-solid fa-bullhorn"></i> SMM
       </button>
       <button class="tag-chip" data-category="Aesthetic/Estetik Elementlar">
-        <i class="fa-solid fa-sparkles"></i> Estetik
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Estetik
       </button>
       <button class="tag-chip" data-category="Ramazon">
         <i class="fa-solid fa-moon"></i> Ramazon
@@ -152,7 +160,7 @@
     <div class="tab-view hidden" id="view-favorites">
       <div class="tab-page-header">
         <h2>Saqlanganlar</h2>
-        <button class="header-icon-btn"><i class="fa-solid fa-ellipsis"></i></button>
+        <button class="header-icon-btn" id="btn-favs-options" aria-label="Saqlanganlarni tozalash" title="Saqlanganlarni tozalash"><i class="fa-regular fa-trash-can"></i></button>
       </div>
       
       <!-- Empty State -->
@@ -607,7 +615,7 @@
   </div>
 
   <!-- Include Data and Main Logic Scripts -->
-  <script src="data.js?v=14.0"></script>
-  <script src="app.js?v=16.0"></script>
+  <script src="data.js?v=17.0"></script>
+  <script src="app.js?v=17.0"></script>
 </body>
 </html>

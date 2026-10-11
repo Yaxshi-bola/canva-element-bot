@@ -56,7 +56,8 @@ export default {
       }
 
       // 2. Admins always bypass lock
-      if (userId && (Number(userId) === superAdminId || Number(userId) === zuhraId)) {
+      const admins = Array.isArray(settings.admins) ? settings.admins.map(Number) : [];
+      if (userId && (Number(userId) === superAdminId || Number(userId) === zuhraId || admins.includes(Number(userId)))) {
         return new Response(JSON.stringify({
           ok: true,
           forceSubActive: settings.forceSubActive,
@@ -85,7 +86,11 @@ export default {
       // If user is verified, dynamically activate their chat menu button
       if (checkResult.subscribed) {
         try {
-          ctx.waitUntil(setChatMenuButton(env.BOT_TOKEN, Number(userId), env.WEB_APP_URL || 'https://canva-elements.pages.dev'));
+          const isUserAdm = userId && (Number(userId) === superAdminId || Number(userId) === zuhraId || admins.includes(Number(userId)));
+          const targetUrl = isUserAdm 
+            ? `${env.WEB_APP_URL || 'https://canva-elements.pages.dev'}?admin=1&user_id=${userId}`
+            : `${env.WEB_APP_URL || 'https://canva-elements.pages.dev'}?user_id=${userId}`;
+          ctx.waitUntil(setChatMenuButton(env.BOT_TOKEN, Number(userId), targetUrl));
         } catch (e) {}
       }
 
@@ -205,6 +210,55 @@ export default {
           });
         }
       }
+    }
+
+    // ==========================================
+    // API: ADMINS MANAGEMENT
+    // ==========================================
+    if (url.pathname === '/api/admins') {
+      const settings = await getSettingsFromR2(env);
+      const superAdminId = Number(env.SUPER_ADMIN_ID || 8544023815);
+      const zuhraId = 8112688757;
+      let admins = Array.isArray(settings.admins) ? settings.admins : [superAdminId, zuhraId];
+
+      if (request.method === 'GET') {
+        return new Response(JSON.stringify({ ok: true, admins }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      if (request.method === 'POST') {
+        try {
+          const body = await request.json();
+          const newAdmin = body.adminId || body.admin_id;
+          if (newAdmin) {
+            admins = Array.from(new Set([...admins, isNaN(Number(newAdmin)) ? newAdmin : Number(newAdmin)]));
+            settings.admins = admins;
+            await saveSettingsToR2(env, settings);
+          }
+          return new Response(JSON.stringify({ ok: true, admins }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        } catch (e) {
+          return new Response(JSON.stringify({ ok: false, error: e.message }), {
+            status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      }
+    }
+
+    if (url.pathname.startsWith('/api/admins/') && request.method === 'DELETE') {
+      const delAdmin = decodeURIComponent(url.pathname.replace('/api/admins/', '')).trim();
+      const settings = await getSettingsFromR2(env);
+      const superAdminId = Number(env.SUPER_ADMIN_ID || 8544023815);
+      const zuhraId = 8112688757;
+      let admins = Array.isArray(settings.admins) ? settings.admins : [superAdminId, zuhraId];
+      admins = admins.filter(a => String(a) !== String(delAdmin) && Number(a) !== Number(delAdmin));
+      settings.admins = admins;
+      await saveSettingsToR2(env, settings);
+      return new Response(JSON.stringify({ ok: true, admins }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
     }
 
     // ==========================================
@@ -702,14 +756,14 @@ async function renderChannelsMenu(botToken, chatId, env, messageId = null) {
  * Send Welcome Message with Mini App Button
  */
 async function sendWelcome(botToken, chatId, userId, firstName, webAppUrl, isAdmin = false) {
-  try {
-    await setChatMenuButton(botToken, chatId, webAppUrl);
-  } catch (e) {}
-
   const ts = Date.now();
   const appUrl = isAdmin 
     ? `${webAppUrl}?admin=1&user_id=${userId}&v=${ts}` 
     : `${webAppUrl}?user_id=${userId}&v=${ts}`;
+
+  try {
+    await setChatMenuButton(botToken, chatId, appUrl);
+  } catch (e) {}
 
   const welcomeText = `🌸 <b>Canva Element Kodlari — Zuhra Olimova</b>\n\n` +
     `Assalomu alaykum, <b>${escapeHtml(firstName)}</b>! 💖\n\n` +
@@ -910,7 +964,7 @@ async function setChatMenuButton(token, chatId, webAppUrl) {
         chat_id: chatId,
         menu_button: {
           type: 'web_app',
-          text: '🎨 Elementlar Katalogi',
+          text: 'Canva Element Kodlari',
           web_app: { url: webAppUrl }
         }
       })

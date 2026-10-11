@@ -237,20 +237,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Admin Verification Logic (Hide Admin tab by default for non-admins)
   function checkAdminPermissions() {
-    const currentUserId = tg?.initDataUnsafe?.user?.id;
+    const currentUserId = getTelegramUserId() || tg?.initDataUnsafe?.user?.id;
     const currentUsername = tg?.initDataUnsafe?.user?.username?.toLowerCase();
     const navItemAdmin = document.getElementById('nav-item-admin');
+    const urlParams = new URLSearchParams(window.location.search);
+    const adminParam = urlParams.get('admin');
 
     let adminUnlocked = false;
     try {
       adminUnlocked = localStorage.getItem('zo_admin_unlocked') === 'true';
     } catch(e) {}
 
-    if (currentUserId && (Number(currentUserId) === SUPER_ADMIN_ID || Number(currentUserId) === ZUHRA_ADMIN_ID || adminList.includes(Number(currentUserId)) || adminList.includes(String(currentUserId)))) {
-      isUserAdmin = true;
-    } else if (currentUsername && (currentUsername === 'yaxshibola' || currentUsername === 'zuhra_olimova' || adminList.includes(`@${currentUsername}`) || adminList.includes(currentUsername))) {
-      isUserAdmin = true;
-    } else if (adminUnlocked) {
+    const uId = currentUserId ? Number(currentUserId) : null;
+    const isIdAdmin = uId && (uId === SUPER_ADMIN_ID || uId === ZUHRA_ADMIN_ID || adminList.includes(uId) || adminList.includes(String(uId)));
+    const isNameAdmin = currentUsername && (currentUsername === 'yaxshibola' || currentUsername === 'zuhra_olimova' || adminList.includes(`@${currentUsername}`) || adminList.includes(currentUsername));
+    const isExplicitAdminUrl = adminParam === '1' && (uId === SUPER_ADMIN_ID || uId === ZUHRA_ADMIN_ID || isIdAdmin);
+
+    if (isIdAdmin || isNameAdmin || isExplicitAdminUrl || adminUnlocked) {
       isUserAdmin = true;
     } else {
       isUserAdmin = false;
@@ -358,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'Trenddagi 3D Elementlar': 'fa-box-open',
     'SMM, Target, Dizayn va Infografika': 'fa-bullhorn',
     'Abstrakt Elementlar va Shakllar': 'fa-shapes',
-    'Aesthetic/Estetik Elementlar': 'fa-sparkles',
+    'Aesthetic/Estetik Elementlar': 'fa-wand-magic-sparkles',
     'Kosmik Elementlar': 'fa-rocket',
     'Ajoyib va Qiziqarli Elementlar': 'fa-face-smile-beam',
     'Bog\' va Gullar': 'fa-seedling',
@@ -406,33 +409,46 @@ document.addEventListener('DOMContentLoaded', () => {
     renderFavoritesElements();
   }
 
+  function escapeAttr(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
   // Render Single Card HTML
   function renderCardHTML(item) {
     if (!item) return '';
     const isFav = favorites.includes(item.id) || favorites.includes(String(item.id));
+    const safeCode = escapeAttr(item.code || '');
+    const safeDesc = escapeAttr(item.description || 'Canva elementi');
+    const safeCat = escapeAttr(item.category || "Bo'lim");
 
     return `
       <div class="element-card" data-id="${item.id}">
         <div class="card-header-row">
-          <span class="category-tag-badge">${item.category || 'Bo\'lim'}</span>
+          <span class="category-tag-badge">${safeCat}</span>
           <button class="fav-star-btn ${isFav ? 'active' : ''} fav-btn" data-id="${item.id}" aria-label="Saqlash">
             <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
           </button>
         </div>
 
-        <div class="element-card-title">${item.description || 'Element kodi'}</div>
+        <div class="element-card-title">${safeDesc}</div>
 
-        <div class="code-block-container code-box" data-code="${item.code}">
-          <span class="code-text">${item.code}</span>
+        <div class="code-block-container code-box" data-code="${safeCode}">
+          <span class="code-text">${safeCode}</span>
           <i class="fa-regular fa-copy code-copy-icon"></i>
         </div>
 
         <div class="card-bottom-row">
-          <button class="btn-copy-action btn-copy" data-code="${item.code}">
+          <button class="btn-copy-action btn-copy" data-code="${safeCode}">
             <i class="fa-regular fa-copy"></i> Nusxalash
           </button>
-          <button class="btn-share-icon btn-share" data-code="${item.code}" data-desc="${item.description}">
-            <i class="fa-solid fa-arrow-turn-up"></i>
+          <button class="btn-share-icon btn-share" data-code="${safeCode}" data-desc="${safeDesc}" aria-label="Ulashish">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i>
           </button>
         </div>
       </div>
@@ -577,7 +593,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const q = filterText.toLowerCase().trim();
     let html = '';
 
-    if (pickerTarget === 'admin') {
+    if (pickerTarget === 'admin' || pickerTarget === 'filter') {
       html += `
         <div class="custom-cat-item ${currentCategory === 'all' ? 'selected' : ''}" data-cat="all">
           <div class="cat-item-info">
@@ -651,6 +667,14 @@ document.addEventListener('DOMContentLoaded', () => {
       currentCategory = cat;
       if (adminFilterCatLabel) adminFilterCatLabel.textContent = cat === 'all' ? "Barcha Bo'limlar" : cat;
       renderAdminElements();
+    } else if (pickerTarget === 'filter') {
+      currentCategory = cat;
+      currentTag = '';
+      document.querySelectorAll('.tag-chip').forEach(t => {
+        t.classList.toggle('active', t.dataset.category === cat || (cat === 'all' && t.dataset.category === 'all'));
+      });
+      if (activeTab !== 'home') switchTab('home');
+      renderElements();
     }
 
     document.getElementById('modal-category-picker')?.classList.add('hidden');
@@ -1243,6 +1267,35 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-news-back')?.addEventListener('click', () => switchTab('home'));
   document.getElementById('btn-admin-back')?.addEventListener('click', () => switchTab('home'));
   
+  // Header Notification & Search & Filter Buttons
+  document.getElementById('btn-header-notif')?.addEventListener('click', () => {
+    switchTab('news');
+    showToast('🔔 Yangi qo\'shilgan elementlar');
+  });
+
+  document.getElementById('btn-cat-search')?.addEventListener('click', () => {
+    switchTab('home');
+    if (searchInput) searchInput.focus();
+  });
+
+  document.getElementById('btn-news-filter')?.addEventListener('click', () => {
+    openCategoryPicker('filter');
+  });
+
+  document.getElementById('btn-favs-options')?.addEventListener('click', () => {
+    if (!favorites || favorites.length === 0) {
+      showToast('⭐ Saqlanganlar hozircha bo\'sh');
+      return;
+    }
+    if (confirm('Barcha saqlangan elementlarni o\'chirmoqchimisiz?')) {
+      favorites = [];
+      try { localStorage.removeItem('zo_canva_favs'); } catch (e) {}
+      renderFavoritesElements();
+      renderElements();
+      showToast('🗑️ Saqlanganlar tozalandi');
+    }
+  });
+  
   // Settings & Backup Modals Click Handlers
   document.getElementById('admin-btn-settings')?.addEventListener('click', openAdminSettingsModal);
   document.getElementById('btn-cancel-settings')?.addEventListener('click', () => document.getElementById('modal-admin-settings')?.classList.add('hidden'));
@@ -1645,7 +1698,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function hideMainAppContent() {
     const mainContent = document.getElementById('main-content');
     const searchSection = document.getElementById('sticky-search-section');
-    const bottomNav = document.getElementById('bottom-nav');
+    const bottomNav = document.getElementById('bottom-nav-bar') || document.getElementById('bottom-nav');
     const appHeader = document.getElementById('app-header');
     if (mainContent) mainContent.style.display = 'none';
     if (searchSection) searchSection.style.display = 'none';
@@ -1656,7 +1709,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function revealMainAppContent() {
     const mainContent = document.getElementById('main-content');
     const searchSection = document.getElementById('sticky-search-section');
-    const bottomNav = document.getElementById('bottom-nav');
+    const bottomNav = document.getElementById('bottom-nav-bar') || document.getElementById('bottom-nav');
     const appHeader = document.getElementById('app-header');
     if (mainContent) mainContent.style.display = 'block';
     if (searchSection) searchSection.style.display = 'block';

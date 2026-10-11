@@ -84,7 +84,6 @@ async function deploy() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       url: `${workerUrl}/webhook`,
-      ip_address: '104.21.35.63',
       drop_pending_updates: true,
       allowed_updates: ['message', 'callback_query', 'chat_join_request']
     })
