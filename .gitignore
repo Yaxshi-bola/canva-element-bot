@@ -3,3 +3,8 @@ node_modules/
 *.log
 bot/node_modules/
 bot/db.json
+.env
+*.env
+bot/.env
+bot/backups/
+

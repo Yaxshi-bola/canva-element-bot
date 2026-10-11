@@ -4,6 +4,17 @@
  * Author: Zuhra Olimova & Yaxshi Bola
  * ------------------------------------------------------------- */
 
+const path = require('path');
+const fs = require('fs');
+
+// Auto load .env if present
+const envPath = path.join(__dirname, '.env');
+if (fs.existsSync(envPath) && typeof process.loadEnvFile === 'function') {
+  try {
+    process.loadEnvFile(envPath);
+  } catch (e) {}
+}
+
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');

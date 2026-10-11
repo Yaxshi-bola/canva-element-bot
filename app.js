@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const API_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? ''
-    : 'https://canva-element-bot.onrender.com';
+    : 'https://canva-bot.canva-bot.workers.dev';
 
   // DOM Element References
   const elementsGrid = document.getElementById('elements-grid');
@@ -118,32 +118,57 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {}
   }
 
-  // Toast Notification
+  let toastTimer = null;
+
+  // Toast Notification (Compact, non-overflowing Apple VisionOS style)
   function showToast(msg, codeStr = '') {
     const toastTitle = document.getElementById('toast-title');
     const toastCode = document.getElementById('toast-code');
     
     if (toastTitle) toastTitle.textContent = msg;
     if (toastCode) {
-      if (codeStr) {
+      // Never show multiline or long text in toastCode pill
+      if (codeStr && codeStr.length <= 22 && !codeStr.includes('\n')) {
         toastCode.textContent = codeStr;
-        toastCode.style.display = 'inline';
+        toastCode.style.display = 'inline-block';
       } else {
         toastCode.style.display = 'none';
       }
     }
 
-    toast?.classList.remove('hidden');
+    if (toast) {
+      toast.classList.remove('hidden');
+      toast.classList.remove('toast-anim');
+      void toast.offsetWidth; // re-trigger animation
+      toast.classList.add('toast-anim');
+    }
     triggerHaptic('success');
     
-    setTimeout(() => {
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
       toast?.classList.add('hidden');
-    }, 2400);
+    }, 2000);
   }
 
-  // Copy to Clipboard Helper
-  function copyToClipboard(text, customToastMsg = 'Nusxalandi!') {
+  // Copy to Clipboard Helper with In-Place Feedback & Anti-Zoom Fallback
+  function copyToClipboard(text, customToastMsg = 'Nusxalandi!', triggerEl = null) {
     if (!text) return;
+
+    // In-place button tactile visual feedback
+    if (triggerEl) {
+      triggerEl.classList.add('copied-active');
+      const originalHtml = triggerEl.innerHTML;
+      if (triggerEl.classList.contains('btn-copy') || triggerEl.classList.contains('btn-copy-action')) {
+        triggerEl.innerHTML = '<i class="fa-solid fa-check"></i> <span>Nusxalandi</span>';
+      }
+      setTimeout(() => {
+        triggerEl.classList.remove('copied-active');
+        if (triggerEl.classList.contains('btn-copy') || triggerEl.classList.contains('btn-copy-action')) {
+          triggerEl.innerHTML = originalHtml;
+        }
+      }, 1400);
+    }
+
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(() => {
         showToast(customToastMsg, text);
@@ -158,13 +183,22 @@ document.addEventListener('DOMContentLoaded', () => {
   function fallbackCopyTextToClipboard(text, customToastMsg) {
     const textArea = document.createElement('textarea');
     textArea.value = text;
+    textArea.setAttribute('readonly', ''); // Prevents mobile keyboard & viewport shifts
     textArea.style.position = 'fixed';
-    textArea.style.top = '0';
-    textArea.style.left = '0';
-    textArea.style.opacity = '0';
+    textArea.style.left = '-9999px';
+    textArea.style.top = '-9999px';
+    textArea.style.width = '2em';
+    textArea.style.height = '2em';
+    textArea.style.padding = '0';
+    textArea.style.border = 'none';
+    textArea.style.outline = 'none';
+    textArea.style.boxShadow = 'none';
+    textArea.style.background = 'transparent';
+    textArea.style.fontSize = '16px'; // Prevents iOS Safari & Chrome from auto-zooming 300%
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
+    textArea.setSelectionRange(0, 99999);
     try {
       document.execCommand('copy');
       showToast(customToastMsg, text);
@@ -175,9 +209,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Share / Uzatish Element Helper
-  function shareElement(code, description) {
-    const shareText = `🎨 Canva Element Kodi: ${code}\n📌 Tavsif: ${description || 'Canva elementi'}\n\n✨ Top-canva bot: @zuhracanva_bot`;
+  function shareElement(code, description, triggerEl = null) {
+    if (triggerEl) {
+      triggerEl.classList.add('copied-active');
+      const origHtml = triggerEl.innerHTML;
+      triggerEl.innerHTML = '<i class="fa-solid fa-check"></i>';
+      setTimeout(() => {
+        triggerEl.classList.remove('copied-active');
+        triggerEl.innerHTML = origHtml;
+      }, 1400);
+    }
+
+    const shareText = `🎨 Canva Element Kodi: ${code}\n📌 Tavsif: ${description || 'Canva elementi'}\n\n✨ Bot: @zuhracanva_bot`;
     const shareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/zuhracanva_bot')}&text=${encodeURIComponent(shareText)}`;
+
+    showToast("Ulashish uchun ochildi");
 
     try {
       if (tg && typeof tg.openTelegramLink === 'function') {
@@ -1242,12 +1288,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const removeAdminBtn = e.target.closest('.btn-remove-admin');
 
     if (copyBtn || codeBox) {
-      const code = (copyBtn || codeBox).dataset.code;
-      copyToClipboard(code);
+      const targetEl = copyBtn || codeBox;
+      const code = targetEl.dataset.code;
+      copyToClipboard(code, 'Nusxalandi!', targetEl);
     } else if (shareBtn) {
       const code = shareBtn.dataset.code;
       const desc = shareBtn.dataset.desc;
-      shareElement(code, desc);
+      shareElement(code, desc, shareBtn);
     } else if (favBtn) {
       const id = parseInt(favBtn.dataset.id, 10) || favBtn.dataset.id;
       toggleFavorite(id);

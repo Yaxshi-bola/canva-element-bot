@@ -5,6 +5,17 @@
  * Author: Zuhra Olimova & Yaxshi Bola
  * ------------------------------------------------------------- */
 
+const path = require('path');
+const fs = require('fs');
+
+// Auto load .env if present
+const envPath = path.join(__dirname, '.env');
+if (fs.existsSync(envPath) && typeof process.loadEnvFile === 'function') {
+  try {
+    process.loadEnvFile(envPath);
+  } catch (e) {}
+}
+
 const TelegramBot = require('node-telegram-bot-api');
 const db = require('./database');
 

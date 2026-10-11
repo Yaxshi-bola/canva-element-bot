@@ -29,6 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const ZUHRA_ADMIN_ID = 8112688757;
   let adminList = JSON.parse(localStorage.getItem('zo_canva_admins') || `[${SUPER_ADMIN_ID}, ${ZUHRA_ADMIN_ID}]`);
 
+  const API_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? ''
+    : 'https://canva-bot.canva-bot.workers.dev';
+
   // DOM Element References
   const elementsGrid = document.getElementById('elements-grid');
   const newsElementsGrid = document.getElementById('news-elements-grid');
@@ -79,12 +83,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const adminBtnManageAdmins = document.getElementById('admin-btn-manage-admins');
   const adminBtnDownloadBackup = document.getElementById('admin-btn-download-backup');
   const adminBtnRefresh = document.getElementById('admin-btn-refresh');
+  const adminBtnChannels = document.getElementById('admin-btn-channels');
+  const adminBtnBanners = document.getElementById('admin-btn-banners');
   const adminBtnSettings = document.getElementById('admin-btn-settings');
   const adminLockBtn = document.getElementById('admin-lock-btn');
 
   const adminSearchInput = document.getElementById('admin-search-input');
   const adminFilterCatTrigger = document.getElementById('admin-filter-cat-trigger');
   const adminFilterCatLabel = document.getElementById('admin-filter-cat-label');
+
+  // Channel & Banner Modals DOM Elements
+  const modalManageChannels = document.getElementById('modal-manage-channels');
+  const modalChannelsClose = document.getElementById('modal-channels-close');
+  const btnCloseChannelsModal = document.getElementById('btn-close-channels-modal');
+  const channelsForceSubToggle = document.getElementById('channels-force-sub-toggle');
+  const newChannelInput = document.getElementById('new-channel-input');
+  const btnAddChannel = document.getElementById('btn-add-channel');
+  const channelsListContainer = document.getElementById('channels-list-container');
+
+  const modalManageBanners = document.getElementById('modal-manage-banners');
+  const modalBannersClose = document.getElementById('modal-banners-close');
+  const btnCloseBannersModal = document.getElementById('btn-close-banners-modal');
 
   // Haptic Feedback Helper
   function triggerHaptic(type = 'light') {
@@ -99,32 +118,57 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {}
   }
 
-  // Toast Notification
+  let toastTimer = null;
+
+  // Toast Notification (Compact, non-overflowing Apple VisionOS style)
   function showToast(msg, codeStr = '') {
     const toastTitle = document.getElementById('toast-title');
     const toastCode = document.getElementById('toast-code');
     
     if (toastTitle) toastTitle.textContent = msg;
     if (toastCode) {
-      if (codeStr) {
+      // Never show multiline or long text in toastCode pill
+      if (codeStr && codeStr.length <= 22 && !codeStr.includes('\n')) {
         toastCode.textContent = codeStr;
-        toastCode.style.display = 'inline';
+        toastCode.style.display = 'inline-block';
       } else {
         toastCode.style.display = 'none';
       }
     }
 
-    toast?.classList.remove('hidden');
+    if (toast) {
+      toast.classList.remove('hidden');
+      toast.classList.remove('toast-anim');
+      void toast.offsetWidth; // re-trigger animation
+      toast.classList.add('toast-anim');
+    }
     triggerHaptic('success');
     
-    setTimeout(() => {
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
       toast?.classList.add('hidden');
-    }, 2400);
+    }, 2000);
   }
 
-  // Copy to Clipboard Helper
-  function copyToClipboard(text, customToastMsg = 'Nusxalandi!') {
+  // Copy to Clipboard Helper with In-Place Feedback & Anti-Zoom Fallback
+  function copyToClipboard(text, customToastMsg = 'Nusxalandi!', triggerEl = null) {
     if (!text) return;
+
+    // In-place button tactile visual feedback
+    if (triggerEl) {
+      triggerEl.classList.add('copied-active');
+      const originalHtml = triggerEl.innerHTML;
+      if (triggerEl.classList.contains('btn-copy') || triggerEl.classList.contains('btn-copy-action')) {
+        triggerEl.innerHTML = '<i class="fa-solid fa-check"></i> <span>Nusxalandi</span>';
+      }
+      setTimeout(() => {
+        triggerEl.classList.remove('copied-active');
+        if (triggerEl.classList.contains('btn-copy') || triggerEl.classList.contains('btn-copy-action')) {
+          triggerEl.innerHTML = originalHtml;
+        }
+      }, 1400);
+    }
+
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(() => {
         showToast(customToastMsg, text);
@@ -139,13 +183,22 @@ document.addEventListener('DOMContentLoaded', () => {
   function fallbackCopyTextToClipboard(text, customToastMsg) {
     const textArea = document.createElement('textarea');
     textArea.value = text;
+    textArea.setAttribute('readonly', ''); // Prevents mobile keyboard & viewport shifts
     textArea.style.position = 'fixed';
-    textArea.style.top = '0';
-    textArea.style.left = '0';
-    textArea.style.opacity = '0';
+    textArea.style.left = '-9999px';
+    textArea.style.top = '-9999px';
+    textArea.style.width = '2em';
+    textArea.style.height = '2em';
+    textArea.style.padding = '0';
+    textArea.style.border = 'none';
+    textArea.style.outline = 'none';
+    textArea.style.boxShadow = 'none';
+    textArea.style.background = 'transparent';
+    textArea.style.fontSize = '16px'; // Prevents iOS Safari & Chrome from auto-zooming 300%
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
+    textArea.setSelectionRange(0, 99999);
     try {
       document.execCommand('copy');
       showToast(customToastMsg, text);
@@ -156,15 +209,41 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Share / Uzatish Element Helper
-  function shareElement(code, description) {
-    const shareText = `🎨 Canva Element Kodi: ${code}\n📌 Tavsif: ${description || 'Canva elementi'}\n\n✨ Top-canva bot: @zuhracanva_bot`;
+  function shareElement(code, description, triggerEl = null) {
+    if (triggerEl) {
+      triggerEl.classList.add('copied-active');
+      const origHtml = triggerEl.innerHTML;
+      triggerEl.innerHTML = '<i class="fa-solid fa-check"></i>';
+      setTimeout(() => {
+        triggerEl.classList.remove('copied-active');
+        triggerEl.innerHTML = origHtml;
+      }, 1400);
+    }
+
+    const shareText = `🎨 Canva Element Kodi: ${code}\n📌 Tavsif: ${description || 'Canva elementi'}\n\n✨ Bot: @zuhracanva_bot`;
     const shareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/zuhracanva_bot')}&text=${encodeURIComponent(shareText)}`;
 
-    if (tg && typeof tg.openTelegramLink === 'function') {
-      tg.openTelegramLink(shareUrl);
-    } else {
-      window.open(shareUrl, '_blank');
+    showToast("Ulashish uchun ochildi");
+
+    try {
+      if (tg && typeof tg.openTelegramLink === 'function') {
+        tg.openTelegramLink(shareUrl);
+        return;
+      }
+    } catch (e) {
+      console.warn('openTelegramLink failed:', e);
     }
+
+    try {
+      if (tg && typeof tg.openLink === 'function') {
+        tg.openLink(shareUrl, { try_instant_view: false });
+        return;
+      }
+    } catch (e2) {
+      console.warn('openLink failed:', e2);
+    }
+
+    window.open(shareUrl, '_blank');
   }
 
   // Admin Verification Logic (Hide Admin tab by default for non-admins)
@@ -1016,36 +1095,109 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('⚙️ Bot sozlamalari saqlandi!');
   }
 
-  // Auto-sliding Featured Banner Carousel Logic
+  // Dynamic Auto-sliding Featured Banner Carousel Logic
   let currentSlideIndex = 0;
-  const carouselTrack = document.getElementById('carousel-track');
-  const carouselDots = document.querySelectorAll('#carousel-dots .dot');
+  let carouselTimer = null;
+  let activeBanners = [
+    { slot: 1, imageUrl: 'assets/user_banner3.jpg', linkUrl: '' },
+    { slot: 2, imageUrl: 'assets/user_banner2.jpg', linkUrl: '' },
+    { slot: 3, imageUrl: 'assets/user_banner1.jpg', linkUrl: '' }
+  ];
+
+  async function fetchBannersAndRenderCarousel() {
+    try {
+      const res = await fetch(`${API_HOST}/api/banners`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.banners && Array.isArray(data.banners) && data.banners.length > 0) {
+          activeBanners = data.banners;
+        }
+      }
+    } catch (e) {
+      console.warn('Banners fetch warning:', e);
+    }
+    renderCarouselDOM();
+  }
+
+  function renderCarouselDOM() {
+    const carouselTrack = document.getElementById('carousel-track');
+    const carouselDots = document.getElementById('carousel-dots');
+    if (!carouselTrack || !carouselDots) return;
+
+    carouselTrack.innerHTML = '';
+    carouselDots.innerHTML = '';
+    if (carouselTimer) clearInterval(carouselTimer);
+
+    const bannerCount = activeBanners.length;
+    const slideWidthPercent = 100 / Math.max(1, bannerCount);
+
+    activeBanners.forEach((b, index) => {
+      // Slide element
+      const slideDiv = document.createElement('div');
+      slideDiv.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
+      slideDiv.style.flex = `0 0 100%`;
+      slideDiv.style.cursor = b.linkUrl ? 'pointer' : 'default';
+
+      const img = document.createElement('img');
+      img.src = b.imageUrl || 'assets/user_banner1.jpg';
+      img.className = 'banner-full-img';
+      img.alt = `Canva Banner ${b.slot}`;
+      img.loading = 'lazy';
+      
+      // Link click handler
+      if (b.linkUrl && b.linkUrl.trim()) {
+        slideDiv.addEventListener('click', () => {
+          let targetUrl = b.linkUrl.trim();
+          if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+            targetUrl = 'https://' + targetUrl;
+          }
+          if (window.Telegram?.WebApp?.openLink) {
+            window.Telegram.WebApp.openLink(targetUrl);
+          } else {
+            window.open(targetUrl, '_blank');
+          }
+        });
+      }
+
+      slideDiv.appendChild(img);
+      carouselTrack.appendChild(slideDiv);
+
+      // Dot element
+      const dot = document.createElement('span');
+      dot.className = `dot ${index === 0 ? 'active' : ''}`;
+      dot.setAttribute('data-slide', index);
+      dot.addEventListener('click', () => {
+        goToSlide(index);
+        restartCarouselTimer();
+      });
+      carouselDots.appendChild(dot);
+    });
+
+    currentSlideIndex = 0;
+    goToSlide(0);
+    restartCarouselTimer();
+  }
 
   function goToSlide(index) {
-    if (!carouselTrack) return;
-    currentSlideIndex = index;
-    carouselTrack.style.transform = `translateX(-${currentSlideIndex * 33.333}%)`;
-    carouselDots.forEach((dot, i) => {
+    const carouselTrack = document.getElementById('carousel-track');
+    const dots = document.querySelectorAll('#carousel-dots .dot');
+    if (!carouselTrack || activeBanners.length === 0) return;
+
+    currentSlideIndex = index % activeBanners.length;
+    carouselTrack.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+    dots.forEach((dot, i) => {
       dot.classList.toggle('active', i === currentSlideIndex);
     });
   }
 
-  let carouselTimer = setInterval(() => {
-    currentSlideIndex = (currentSlideIndex + 1) % 3;
-    goToSlide(currentSlideIndex);
-  }, 4000);
-
-  carouselDots.forEach(dot => {
-    dot.addEventListener('click', (e) => {
-      const slideIdx = parseInt(e.target.getAttribute('data-slide') || '0', 10);
-      goToSlide(slideIdx);
-      clearInterval(carouselTimer);
-      carouselTimer = setInterval(() => {
-        currentSlideIndex = (currentSlideIndex + 1) % 3;
-        goToSlide(currentSlideIndex);
-      }, 4000);
-    });
-  });
+  function restartCarouselTimer() {
+    if (carouselTimer) clearInterval(carouselTimer);
+    if (activeBanners.length <= 1) return;
+    carouselTimer = setInterval(() => {
+      currentSlideIndex = (currentSlideIndex + 1) % activeBanners.length;
+      goToSlide(currentSlideIndex);
+    }, 4000);
+  }
 
   // Switch Bottom Navbar Tabs
   function switchTab(tabName) {
@@ -1136,12 +1288,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const removeAdminBtn = e.target.closest('.btn-remove-admin');
 
     if (copyBtn || codeBox) {
-      const code = (copyBtn || codeBox).dataset.code;
-      copyToClipboard(code);
+      const targetEl = copyBtn || codeBox;
+      const code = targetEl.dataset.code;
+      copyToClipboard(code, 'Nusxalandi!', targetEl);
     } else if (shareBtn) {
       const code = shareBtn.dataset.code;
       const desc = shareBtn.dataset.desc;
-      shareElement(code, desc);
+      shareElement(code, desc, shareBtn);
     } else if (favBtn) {
       const id = parseInt(favBtn.dataset.id, 10) || favBtn.dataset.id;
       toggleFavorite(id);
@@ -1167,8 +1320,208 @@ document.addEventListener('DOMContentLoaded', () => {
   adminBtnDownloadBackup?.addEventListener('click', downloadJSONBackup);
   adminBtnRefresh?.addEventListener('click', () => {
     fetchSupabaseElements();
+    fetchBannersAndRenderCarousel();
     showToast('🔄 Ma\'lumotlar yangilandi');
   });
+  adminBtnChannels?.addEventListener('click', openManageChannelsModal);
+  adminBtnBanners?.addEventListener('click', openManageBannersModal);
+
+  // Channel Management Logic
+  async function openManageChannelsModal() {
+    modalManageChannels?.classList.remove('hidden');
+    await loadAndRenderChannels();
+  }
+
+  async function loadAndRenderChannels() {
+    if (!channelsListContainer) return;
+    channelsListContainer.innerHTML = '<div style="opacity:0.6; font-size:13px;">Yuklanmoqda...</div>';
+    
+    try {
+      const res = await fetch(`${API_HOST}/api/channels`);
+      if (res.ok) {
+        const data = await res.json();
+        if (channelsForceSubToggle) {
+          channelsForceSubToggle.checked = Boolean(data.forceSubActive);
+        }
+        renderChannelsList(data.channels || []);
+      }
+    } catch (e) {
+      channelsListContainer.innerHTML = '<div style="color:var(--danger); font-size:13px;">Yuklashda xatolik yuz berdi.</div>';
+    }
+  }
+
+  function renderChannelsList(channels) {
+    if (!channelsListContainer) return;
+    if (!channels || channels.length === 0) {
+      channelsListContainer.innerHTML = '<div style="opacity:0.6; font-size:13px;">Ulangan majburiy kanal yo\'q.</div>';
+      return;
+    }
+
+    channelsListContainer.innerHTML = '';
+    channels.forEach(ch => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.06); padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.08);';
+      
+      const titleSpan = document.createElement('span');
+      titleSpan.style.cssText = 'font-weight:600; font-size:14px; color:var(--text-main);';
+      titleSpan.textContent = ch;
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn-remove-channel-action';
+      delBtn.style.cssText = 'background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); padding:6px 12px; border-radius:8px; font-weight:600; font-size:12px; cursor:pointer;';
+      delBtn.innerHTML = '<i class="fa-solid fa-trash"></i> O\'chirish';
+      delBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (confirm(`${ch} kanalini o'chirmoqchimisiz?`)) {
+          await deleteChannel(ch);
+        }
+      });
+
+      row.appendChild(titleSpan);
+      row.appendChild(delBtn);
+      channelsListContainer.appendChild(row);
+    });
+  }
+
+  function getActiveAdminId() {
+    return getTelegramUserId() || (isUserAdmin ? SUPER_ADMIN_ID : '');
+  }
+
+  async function addChannel() {
+    const val = newChannelInput?.value.trim();
+    if (!val) {
+      showToast('⚠️ Kanal nomini kiriting!');
+      return;
+    }
+    const formattedCh = val.startsWith('@') || val.startsWith('http') ? val : `@${val}`;
+    const adminId = getActiveAdminId();
+
+    try {
+      const res = await fetch(`${API_HOST}/api/channels`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-telegram-init-data': tg?.initData || '',
+          'x-user-id': String(adminId)
+        },
+        body: JSON.stringify({ channel: formattedCh, admin_user_id: adminId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('✅ Kanal saqlandi!');
+        if (newChannelInput) newChannelInput.value = '';
+        renderChannelsList(data.channels || []);
+      } else {
+        showToast(`❌ ${data.error || 'Xatolik'}`);
+      }
+    } catch (e) {
+      showToast('❌ Ulana olmadi');
+    }
+  }
+
+  async function deleteChannel(chName) {
+    const adminId = getActiveAdminId();
+    try {
+      const res = await fetch(`${API_HOST}/api/channels/${encodeURIComponent(chName)}`, {
+        method: 'DELETE',
+        headers: {
+          'x-telegram-init-data': tg?.initData || '',
+          'x-user-id': String(adminId)
+        }
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('🗑 Kanal o\'chirildi');
+        renderChannelsList(data.channels || []);
+      } else {
+        showToast('❌ O\'chirishda xatolik');
+      }
+    } catch (e) {
+      showToast('❌ Xatolik');
+    }
+  }
+
+  channelsForceSubToggle?.addEventListener('change', async (e) => {
+    const adminId = getActiveAdminId();
+    try {
+      const res = await fetch(`${API_HOST}/api/channels/toggle`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-telegram-init-data': tg?.initData || '',
+          'x-user-id': String(adminId)
+        },
+        body: JSON.stringify({ enabled: e.target.checked, admin_user_id: adminId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(e.target.checked ? '🔒 Majburiy obuna YOQILDI' : '🔓 Majburiy obuna O\'CHIRILDI');
+      }
+    } catch (err) {
+      showToast('❌ Holatni saqlashda xatolik');
+    }
+  });
+
+  btnAddChannel?.addEventListener('click', addChannel);
+  modalChannelsClose?.addEventListener('click', () => modalManageChannels?.classList.add('hidden'));
+  btnCloseChannelsModal?.addEventListener('click', () => modalManageChannels?.classList.add('hidden'));
+
+  // Banner Management Logic
+  async function openManageBannersModal() {
+    modalManageBanners?.classList.remove('hidden');
+    try {
+      const res = await fetch(`${API_HOST}/api/banners`);
+      if (res.ok) {
+        const data = await res.json();
+        const banners = data.banners || [];
+        for (let slot = 1; slot <= 3; slot++) {
+          const b = banners.find(item => item.slot === slot) || {};
+          const imgInput = document.getElementById(`banner-img-${slot}`);
+          const linkInput = document.getElementById(`banner-link-${slot}`);
+          if (imgInput) imgInput.value = b.imageUrl || '';
+          if (linkInput) linkInput.value = b.linkUrl || '';
+        }
+      }
+    } catch (e) {
+      showToast('⚠️ Bannerlarni yuklashda xatolik');
+    }
+  }
+
+  document.querySelectorAll('.btn-save-banner-slot').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const slot = e.currentTarget.getAttribute('data-slot');
+      const imgInput = document.getElementById(`banner-img-${slot}`);
+      const linkInput = document.getElementById(`banner-link-${slot}`);
+
+      const imageUrl = imgInput?.value.trim() || '';
+      const linkUrl = linkInput?.value.trim() || '';
+
+      const adminId = getActiveAdminId();
+      try {
+        const res = await fetch(`${API_HOST}/api/banners`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-telegram-init-data': tg?.initData || '',
+            'x-user-id': String(adminId)
+          },
+          body: JSON.stringify({ slot: Number(slot), imageUrl, linkUrl, admin_user_id: adminId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✅ Banner ${slot} saqlandi!`);
+          fetchBannersAndRenderCarousel();
+        } else {
+          showToast(`❌ Xatolik: ${data.error || 'Saqlanmadi'}`);
+        }
+      } catch (err) {
+        showToast('❌ Xatolik yuz berdi');
+      }
+    });
+  });
+
+  modalBannersClose?.addEventListener('click', () => modalManageBanners?.classList.add('hidden'));
+  btnCloseBannersModal?.addEventListener('click', () => modalManageBanners?.classList.add('hidden'));
 
   // Admin Form Events
   btnSaveElement?.addEventListener('click', saveElementForm);
@@ -1416,5 +1769,6 @@ document.addEventListener('DOMContentLoaded', () => {
   try { renderElements(); } catch (e) { console.error('Render elements error:', e); }
   try { renderCategoriesGrid(); } catch (e) { console.error('Categories error:', e); }
   try { fetchSupabaseElements(); } catch (e) { console.error('Supabase fetch error:', e); }
+  try { fetchBannersAndRenderCarousel(); } catch (e) { console.error('Banners fetch error:', e); }
 });
 
