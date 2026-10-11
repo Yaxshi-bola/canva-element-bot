@@ -303,6 +303,8 @@ document.addEventListener('DOMContentLoaded', () => {
       try { localStorage.setItem('zo_admin_unlocked', 'true'); } catch(e) {}
       checkAdminPermissions();
       modalAdminLogin?.classList.add('hidden');
+      document.getElementById('sub-gate-overlay')?.classList.add('hidden');
+      revealMainAppContent();
       switchTab('admin');
       showToast('🔑 Admin panelga xush kelibsiz!');
     } else {
@@ -407,6 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderElements();
     renderFavoritesElements();
+    renderNewsElements();
   }
 
   function escapeAttr(str) {
@@ -543,7 +546,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderNewsElements() {
     try {
       if (!newsElementsGrid) return;
-      const newsItems = allElements.filter(item => item && (item.isNew || item.id <= 50));
+      let newsItems = allElements.filter(item => item && (item.isNew || item.id <= 50));
+      if (currentCategory && currentCategory !== 'all') {
+        newsItems = allElements.filter(item => item && item.category === currentCategory);
+      }
       newsElementsGrid.innerHTML = newsItems.map(renderCardHTML).filter(Boolean).join('');
     } catch (e) {
       console.error('Render news error:', e);
@@ -673,8 +679,12 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.tag-chip').forEach(t => {
         t.classList.toggle('active', t.dataset.category === cat || (cat === 'all' && t.dataset.category === 'all'));
       });
-      if (activeTab !== 'home') switchTab('home');
-      renderElements();
+      if (activeTab === 'news') {
+        renderNewsElements();
+      } else {
+        if (activeTab !== 'home') switchTab('home');
+        renderElements();
+      }
     }
 
     document.getElementById('modal-category-picker')?.classList.add('hidden');
@@ -801,10 +811,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const initData = tg?.initData || '';
     const tgUser = tg?.initDataUnsafe?.user;
+    const adminId = getActiveAdminId();
     const authHeaders = {
       'Content-Type': 'application/json',
       'x-telegram-init-data': initData,
-      'x-user-id': String(tgUser?.id || '')
+      'x-user-id': String(adminId || tgUser?.id || '')
     };
 
     try {
@@ -876,10 +887,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const initData = tg?.initData || '';
     const tgUser = tg?.initDataUnsafe?.user;
+    const adminId = getActiveAdminId();
     const authHeaders = {
       'Content-Type': 'application/json',
       'x-telegram-init-data': initData,
-      'x-user-id': String(tgUser?.id || '')
+      'x-user-id': String(adminId || tgUser?.id || '')
     };
 
     try {
@@ -1053,7 +1065,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Admin Settings Modal Logic
-  function openAdminSettingsModal() {
+  async function openAdminSettingsModal() {
     const modalSettings = document.getElementById('modal-admin-settings');
     const channelInput = document.getElementById('settings-channel-input');
     const forceSubToggle = document.getElementById('settings-force-sub-toggle');
@@ -1068,6 +1080,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (forceSubToggle) forceSubToggle.checked = !!savedSettings.forceSub;
 
     modalSettings?.classList.remove('hidden');
+
+    try {
+      const res = await fetch(`${API_HOST}/api/settings`);
+      if (res.ok) {
+        const live = await res.json();
+        if (channelInput && Array.isArray(live.forceChannels) && live.forceChannels.length > 0) {
+          channelInput.value = live.forceChannels[0];
+        }
+        if (forceSubToggle && typeof live.forceSubActive === 'boolean') {
+          forceSubToggle.checked = live.forceSubActive;
+        }
+      }
+    } catch (e) {}
   }
 
   async function saveAdminSettings() {
@@ -1330,6 +1355,10 @@ document.addEventListener('DOMContentLoaded', () => {
       toggleFavorite(id);
     } else if (catCard) {
       currentCategory = catCard.dataset.category;
+      currentTag = '';
+      document.querySelectorAll('.tag-chip').forEach(t => {
+        t.classList.toggle('active', t.dataset.category === currentCategory);
+      });
       switchTab('home');
       renderElements();
     } else if (adminEditBtn) {
@@ -1437,7 +1466,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ channel: formattedCh, admin_user_id: adminId })
       });
       const data = await res.json();
-      if (data.success) {
+      if (data.ok || data.success) {
         showToast('✅ Kanal saqlandi!');
         if (newChannelInput) newChannelInput.value = '';
         renderChannelsList(data.channels || []);
@@ -1460,7 +1489,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
       const data = await res.json();
-      if (data.success) {
+      if (data.ok || data.success) {
         showToast('🗑 Kanal o\'chirildi');
         renderChannelsList(data.channels || []);
       } else {
@@ -1484,7 +1513,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ enabled: e.target.checked, admin_user_id: adminId })
       });
       const data = await res.json();
-      if (data.success) {
+      if (data.ok || data.success) {
         showToast(e.target.checked ? '🔒 Majburiy obuna YOQILDI' : '🔓 Majburiy obuna O\'CHIRILDI');
       }
     } catch (err) {
@@ -1538,7 +1567,7 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({ slot: Number(slot), imageUrl, linkUrl, admin_user_id: adminId })
         });
         const data = await res.json();
-        if (data.success) {
+        if (data.ok || data.success) {
           showToast(`✅ Banner ${slot} saqlandi!`);
           fetchBannersAndRenderCarousel();
         } else {
@@ -1665,11 +1694,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const userId = getTelegramUserId();
 
     // Admins always bypass lock immediately
-    if (userId && (Number(userId) === SUPER_ADMIN_ID || Number(userId) === ZUHRA_ADMIN_ID)) {
-      revealMainAppContent();
-      return;
-    }
-    if (isUserAdmin) {
+    const uId = userId ? Number(userId) : null;
+    const isLocalAdmin = isUserAdmin || (uId && (uId === SUPER_ADMIN_ID || uId === ZUHRA_ADMIN_ID || adminList.includes(uId) || adminList.includes(String(uId))));
+    if (isLocalAdmin) {
       revealMainAppContent();
       return;
     }
@@ -1725,6 +1752,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkBtn = document.getElementById('btn-recheck-sub-overlay');
 
     if (!overlay) return;
+
+    // 5-click secret unlock on lock screen icon for admins
+    const gateLockIcon = overlay.querySelector('.sub-gate-icon');
+    if (gateLockIcon && !gateLockIcon.dataset.hasListener) {
+      gateLockIcon.dataset.hasListener = 'true';
+      let gateClickCounter = 0;
+      let gateClickTimer = null;
+      gateLockIcon.addEventListener('click', () => {
+        gateClickCounter++;
+        if (gateClickTimer) clearTimeout(gateClickTimer);
+        if (gateClickCounter >= 5) {
+          gateClickCounter = 0;
+          openAdminLoginModal();
+        } else {
+          gateClickTimer = setTimeout(() => { gateClickCounter = 0; }, 1500);
+        }
+      });
+    }
 
     if (isNoUser) {
       if (desc) desc.textContent = "Ushbu Mini App faqat rasmiy Telegram boti orqali to'liq ishlaydi. Iltimos, bot orqali oching:";

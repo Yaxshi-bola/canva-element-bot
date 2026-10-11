@@ -13,8 +13,8 @@ export default {
     // CORS Headers for Mini App
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-telegram-init-data',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-telegram-init-data, x-user-id',
     };
 
     if (request.method === 'OPTIONS') {
@@ -132,11 +132,12 @@ export default {
           }
           return new Response(JSON.stringify({
             ok: true,
+            success: true,
             channels: settings.forceChannels,
             forceSubActive: settings.forceSubActive
           }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         } catch (e) {
-          return new Response(JSON.stringify({ ok: false, error: e.message }), {
+          return new Response(JSON.stringify({ ok: false, success: false, error: e.message }), {
             status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
         }
@@ -152,6 +153,7 @@ export default {
       await saveSettingsToR2(env, settings);
       return new Response(JSON.stringify({
         ok: true,
+        success: true,
         channels: settings.forceChannels,
         forceSubActive: settings.forceSubActive
       }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
@@ -161,10 +163,11 @@ export default {
       const settings = await getSettingsFromR2(env);
       let body = {};
       try { body = await request.json(); } catch(e) {}
-      settings.forceSubActive = typeof body.active === 'boolean' ? body.active : !settings.forceSubActive;
+      settings.forceSubActive = typeof body.active === 'boolean' ? body.active : (typeof body.enabled === 'boolean' ? body.enabled : !settings.forceSubActive);
       await saveSettingsToR2(env, settings);
       return new Response(JSON.stringify({
         ok: true,
+        success: true,
         channels: settings.forceChannels,
         forceSubActive: settings.forceSubActive
       }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
@@ -201,11 +204,11 @@ export default {
           }
           settings.banners = banners;
           await saveSettingsToR2(env, settings);
-          return new Response(JSON.stringify({ ok: true, banners }), {
+          return new Response(JSON.stringify({ ok: true, success: true, banners }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
         } catch (e) {
-          return new Response(JSON.stringify({ ok: false, error: e.message }), {
+          return new Response(JSON.stringify({ ok: false, success: false, error: e.message }), {
             status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
         }
@@ -222,7 +225,7 @@ export default {
       let admins = Array.isArray(settings.admins) ? settings.admins : [superAdminId, zuhraId];
 
       if (request.method === 'GET') {
-        return new Response(JSON.stringify({ ok: true, admins }), {
+        return new Response(JSON.stringify({ ok: true, success: true, admins }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
       }
@@ -236,11 +239,11 @@ export default {
             settings.admins = admins;
             await saveSettingsToR2(env, settings);
           }
-          return new Response(JSON.stringify({ ok: true, admins }), {
+          return new Response(JSON.stringify({ ok: true, success: true, admins }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
         } catch (e) {
-          return new Response(JSON.stringify({ ok: false, error: e.message }), {
+          return new Response(JSON.stringify({ ok: false, success: false, error: e.message }), {
             status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
         }
@@ -256,7 +259,7 @@ export default {
       admins = admins.filter(a => String(a) !== String(delAdmin) && Number(a) !== Number(delAdmin));
       settings.admins = admins;
       await saveSettingsToR2(env, settings);
-      return new Response(JSON.stringify({ ok: true, admins }), {
+      return new Response(JSON.stringify({ ok: true, success: true, admins }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
@@ -286,11 +289,11 @@ export default {
           };
           elements.unshift(newElement);
           await saveElementsToR2(env, elements);
-          return new Response(JSON.stringify({ ok: true, element: newElement }), {
+          return new Response(JSON.stringify({ ok: true, success: true, element: newElement }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
         } catch (e) {
-          return new Response(JSON.stringify({ ok: false, error: e.message }), {
+          return new Response(JSON.stringify({ ok: false, success: false, error: e.message }), {
             status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
         }
@@ -304,7 +307,7 @@ export default {
       if (request.method === 'DELETE') {
         elements = elements.filter(e => String(e.id) !== String(elemId));
         await saveElementsToR2(env, elements);
-        return new Response(JSON.stringify({ ok: true }), {
+        return new Response(JSON.stringify({ ok: true, success: true }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
       }
@@ -316,18 +319,49 @@ export default {
           if (idx !== -1) {
             elements[idx] = { ...elements[idx], ...body };
             await saveElementsToR2(env, elements);
-            return new Response(JSON.stringify({ ok: true, element: elements[idx] }), {
+            return new Response(JSON.stringify({ ok: true, success: true, element: elements[idx] }), {
               headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
           }
-          return new Response(JSON.stringify({ ok: false, error: 'Not found' }), {
+          return new Response(JSON.stringify({ ok: false, success: false, error: 'Not found' }), {
             status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
         } catch (e) {
-          return new Response(JSON.stringify({ ok: false, error: e.message }), {
+          return new Response(JSON.stringify({ ok: false, success: false, error: e.message }), {
             status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
         }
+      }
+    }
+
+    // ==========================================
+    // API: FORCE SUBSCRIPTION SETTINGS SHORTCUT
+    // ==========================================
+    if (url.pathname === '/api/settings/force-sub' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const settings = await getSettingsFromR2(env);
+        const ch = (body.channelUsername || body.channel || '').trim();
+        if (ch) {
+          let clean = ch.replace(/^https?:\/\/(www\.)?t\.me\//i, '').replace(/[\/\?#].*$/, '');
+          if (!clean.startsWith('@') && !/^-?\d+$/.test(clean)) clean = '@' + clean;
+          if (!settings.forceChannels.includes(clean)) {
+            settings.forceChannels.push(clean);
+          }
+        }
+        if (typeof body.isEnabled === 'boolean') {
+          settings.forceSubActive = body.isEnabled;
+        } else if (typeof body.forceSub === 'boolean') {
+          settings.forceSubActive = body.forceSub;
+        }
+        await saveSettingsToR2(env, settings);
+        return new Response(JSON.stringify({ ok: true, success: true, settings }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ ok: false, success: false, error: e.message }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
       }
     }
 
@@ -345,12 +379,14 @@ export default {
       if (request.method === 'POST') {
         try {
           const body = await request.json();
-          await saveSettingsToR2(env, body);
-          return new Response(JSON.stringify({ ok: true, settings: body }), {
+          const current = await getSettingsFromR2(env);
+          const merged = { ...current, ...body };
+          await saveSettingsToR2(env, merged);
+          return new Response(JSON.stringify({ ok: true, success: true, settings: merged }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
         } catch (e) {
-          return new Response(JSON.stringify({ ok: false, error: e.message }), {
+          return new Response(JSON.stringify({ ok: false, success: false, error: e.message }), {
             status: 400,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
