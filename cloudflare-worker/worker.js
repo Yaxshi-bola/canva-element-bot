@@ -102,7 +102,7 @@ export default {
 async function handleTelegramUpdate(update, env) {
   const botToken = env.BOT_TOKEN;
   const superAdminId = Number(env.SUPER_ADMIN_ID || 8544023815);
-  const webAppUrl = env.WEB_APP_URL || 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+  const webAppUrl = env.WEB_APP_URL || 'https://canva-elements.pages.dev';
 
   if (!botToken) return;
 
@@ -385,7 +385,7 @@ async function handleTelegramUpdate(update, env) {
  */
 async function renderAdminDashboard(botToken, chatId, userId, env, messageId = null) {
   const settings = await getSettingsFromR2(env);
-  const webAppUrl = env.WEB_APP_URL || 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+  const webAppUrl = env.WEB_APP_URL || 'https://canva-elements.pages.dev';
   const superAdminId = Number(env.SUPER_ADMIN_ID || 8544023815);
 
   const channelsList = settings.forceChannels?.length > 0 
@@ -550,7 +550,7 @@ async function getSettingsFromR2(env) {
   let settings = {
     forceChannels: [],
     forceSubActive: false,
-    webAppUrl: env.WEB_APP_URL || 'https://canva-element-kodlari-zuhra-olimova.vercel.app',
+    webAppUrl: env.WEB_APP_URL || 'https://canva-elements.pages.dev',
     banners: []
   };
 

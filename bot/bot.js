@@ -129,7 +129,7 @@ const PREMIUM_EMOJIS = {
 // Get User Keyboards
 function getUserKeyboard(userId) {
   const settings = db.getSettings();
-  const webAppUrl = settings.webAppUrl || 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+  const webAppUrl = settings.webAppUrl || 'https://canva-elements.pages.dev';
   const isAdm = db.isAdmin(userId);
   const ts = Date.now();
   const targetUrl = isAdm ? `${webAppUrl}?admin=1&user_id=${userId}&v=${ts}` : `${webAppUrl}?user_id=${userId}&v=${ts}`;
@@ -250,7 +250,7 @@ bot.onText(/\/start/, async (msg) => {
   // Activate Mini App Chat Menu Button for Subscribed User
   try {
     const settings = db.getSettings();
-    const webAppUrl = settings.webAppUrl || 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+    const webAppUrl = settings.webAppUrl || 'https://canva-elements.pages.dev';
     const isAdm = db.isAdmin(userId);
     const ts = Date.now();
     const targetUrl = isAdm ? `${webAppUrl}?admin=1&user_id=${userId}&v=${ts}` : `${webAppUrl}?user_id=${userId}&v=${ts}`;
@@ -381,7 +381,7 @@ bot.on('callback_query', async (query) => {
       // Activate Mini App Chat Menu Button for Subscribed User
       try {
         const settings = db.getSettings();
-        const webAppUrl = settings.webAppUrl || 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+        const webAppUrl = settings.webAppUrl || 'https://canva-elements.pages.dev';
         const isAdm = db.isAdmin(userId);
         const ts = Date.now();
         const targetUrl = isAdm ? `${webAppUrl}?admin=1&user_id=${userId}&v=${ts}` : `${webAppUrl}?user_id=${userId}&v=${ts}`;

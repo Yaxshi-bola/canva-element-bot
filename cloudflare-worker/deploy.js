@@ -12,7 +12,7 @@ const API_TOKEN = process.env.R2_API_TOKEN || '';
 const SCRIPT_NAME = 'canva-bot';
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 const SUPER_ADMIN_ID = '8544023815';
-const WEB_APP_URL = 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+const WEB_APP_URL = 'https://canva-elements.pages.dev';
 
 async function deploy() {
   if (!ACCOUNT_ID || !API_TOKEN || !BOT_TOKEN) {

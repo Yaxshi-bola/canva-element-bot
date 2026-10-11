@@ -123,7 +123,7 @@ class DB {
     this.memoryUsers = new Map(); // id -> userData
     this.forceChannels = [];
     this.forceSubActive = true;
-    this.webAppUrl = 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+    this.webAppUrl = 'https://canva-elements.pages.dev';
     this.superAdminId = 8544023815;
     this.zuhraAdminId = 8112688757;
     this.adminsList = [8544023815, 8112688757];

@@ -333,9 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Data Fetching from Supabase Backend API
   async function fetchSupabaseElements() {
     try {
-      const API_BASE = window.location.origin.includes('vercel.app') 
-        ? 'https://canva-element-bot.onrender.com/api/elements' 
-        : '/api/elements';
+    const API_BASE = `${API_HOST}/api/elements`;
 
       const res = await fetch(API_BASE, { cache: 'no-cache' });
       if (res.ok) {
@@ -786,9 +784,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnSaveElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saqlanmoqda...';
     }
 
-    const API_BASE = window.location.origin.includes('vercel.app') 
-      ? 'https://canva-element-bot.onrender.com/api/elements' 
-      : '/api/elements';
+    const API_BASE = `${API_HOST}/api/elements`;
 
     const initData = tg?.initData || '';
     const tgUser = tg?.initDataUnsafe?.user;
@@ -863,9 +859,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function deleteElement(id) {
     if (!confirm('Ushbu elementni o\'chirmoqchimisiz?')) return;
 
-    const API_BASE = window.location.origin.includes('vercel.app') 
-      ? 'https://canva-element-bot.onrender.com/api/elements' 
-      : '/api/elements';
+    const API_BASE = `${API_HOST}/api/elements`;
 
     const initData = tg?.initData || '';
     const tgUser = tg?.initDataUnsafe?.user;
@@ -950,9 +944,7 @@ document.addEventListener('DOMContentLoaded', () => {
       checkAdminPermissions();
       showToast("✅ Yangi admin qo'shildi!");
 
-      const API_BASE = window.location.origin.includes('vercel.app') 
-        ? 'https://canva-element-bot.onrender.com/api' 
-        : '/api';
+      const API_BASE = `${API_HOST}/api`;
 
       try {
         await fetch(`${API_BASE}/admins`, {
@@ -981,9 +973,7 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAdminPermissions();
     showToast("🗑️ Admin huquqi olindi");
 
-    const API_BASE = window.location.origin.includes('vercel.app') 
-      ? 'https://canva-element-bot.onrender.com/api' 
-      : '/api';
+    const API_BASE = `${API_HOST}/api`;
 
     try {
       await fetch(`${API_BASE}/admins/${item}`, {
@@ -1079,9 +1069,7 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('zo_canva_settings', JSON.stringify(settingsObj));
     } catch(e) {}
 
-    const API_BASE = window.location.origin.includes('vercel.app') 
-      ? 'https://canva-element-bot.onrender.com/api' 
-      : '/api';
+    const API_BASE = `${API_HOST}/api`;
 
     try {
       await fetch(`${API_BASE}/settings/force-sub`, {
