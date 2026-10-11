@@ -35,27 +35,251 @@ export default {
       });
     }
 
-    // API: Get Elements from R2 or fallback
-    if (url.pathname === '/api/elements' && request.method === 'GET') {
-      try {
-        if (env.R2_BUCKET) {
-          const r2Obj = await env.R2_BUCKET.get('elements.json');
-          if (r2Obj) {
-            const text = await r2Obj.text();
-            return new Response(text, {
+    // ==========================================
+    // API: CHECK USER SUBSCRIPTION (MINI APP GUARD)
+    // ==========================================
+    if (url.pathname === '/api/check-sub') {
+      const userId = url.searchParams.get('user_id') || url.searchParams.get('userId') || request.headers.get('x-user-id');
+      const settings = await getSettingsFromR2(env);
+      const superAdminId = Number(env.SUPER_ADMIN_ID || 8544023815);
+      const zuhraId = 8112688757;
+
+      // 1. If forceSub is disabled or no channels exist
+      if (!settings.forceSubActive || !Array.isArray(settings.forceChannels) || settings.forceChannels.length === 0) {
+        return new Response(JSON.stringify({
+          ok: true,
+          forceSubActive: false,
+          isSubscribed: true,
+          subscribed: true,
+          missing: []
+        }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      // 2. Admins always bypass lock
+      if (userId && (Number(userId) === superAdminId || Number(userId) === zuhraId)) {
+        return new Response(JSON.stringify({
+          ok: true,
+          forceSubActive: settings.forceSubActive,
+          isSubscribed: true,
+          subscribed: true,
+          missing: [],
+          isAdmin: true
+        }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      // 3. If no userId provided (e.g. opened in browser without Telegram WebApp)
+      if (!userId) {
+        return new Response(JSON.stringify({
+          ok: true,
+          forceSubActive: true,
+          isSubscribed: false,
+          subscribed: false,
+          missing: settings.forceChannels,
+          reason: 'no_user_id'
+        }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      // 4. Verify subscription against all force channels via Telegram Bot API
+      const checkResult = await checkSubscription(env.BOT_TOKEN, Number(userId), settings.forceChannels, settings.forceSubActive);
+
+      // If user is verified, dynamically activate their chat menu button
+      if (checkResult.subscribed) {
+        try {
+          ctx.waitUntil(setChatMenuButton(env.BOT_TOKEN, Number(userId), env.WEB_APP_URL || 'https://canva-elements.pages.dev'));
+        } catch (e) {}
+      }
+
+      return new Response(JSON.stringify({
+        ok: true,
+        forceSubActive: settings.forceSubActive,
+        isSubscribed: checkResult.subscribed,
+        subscribed: checkResult.subscribed,
+        missing: checkResult.missing
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    // ==========================================
+    // API: CHANNELS MANAGEMENT
+    // ==========================================
+    if (url.pathname === '/api/channels') {
+      const settings = await getSettingsFromR2(env);
+
+      if (request.method === 'GET') {
+        return new Response(JSON.stringify({
+          ok: true,
+          channels: settings.forceChannels || [],
+          forceSubActive: Boolean(settings.forceSubActive)
+        }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      if (request.method === 'POST') {
+        try {
+          const body = await request.json();
+          let ch = (body.channel || '').trim();
+          if (ch) {
+            ch = ch.replace(/^https?:\/\/(www\.)?t\.me\//i, '').replace(/[\/\?#].*$/, '');
+            if (!ch.startsWith('@') && !/^-?\d+$/.test(ch)) ch = '@' + ch;
+            if (!settings.forceChannels.includes(ch)) {
+              settings.forceChannels.push(ch);
+              settings.forceSubActive = true;
+              await saveSettingsToR2(env, settings);
+            }
+          }
+          return new Response(JSON.stringify({
+            ok: true,
+            channels: settings.forceChannels,
+            forceSubActive: settings.forceSubActive
+          }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        } catch (e) {
+          return new Response(JSON.stringify({ ok: false, error: e.message }), {
+            status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      }
+    }
+
+    if (url.pathname.startsWith('/api/channels/') && request.method === 'DELETE') {
+      const chParam = decodeURIComponent(url.pathname.replace('/api/channels/', '')).trim();
+      const settings = await getSettingsFromR2(env);
+      let clean = chParam;
+      if (!clean.startsWith('@') && !/^-?\d+$/.test(clean)) clean = '@' + clean;
+      settings.forceChannels = (settings.forceChannels || []).filter(c => c !== clean && c !== chParam);
+      await saveSettingsToR2(env, settings);
+      return new Response(JSON.stringify({
+        ok: true,
+        channels: settings.forceChannels,
+        forceSubActive: settings.forceSubActive
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    if (url.pathname === '/api/channels/toggle' && request.method === 'POST') {
+      const settings = await getSettingsFromR2(env);
+      let body = {};
+      try { body = await request.json(); } catch(e) {}
+      settings.forceSubActive = typeof body.active === 'boolean' ? body.active : !settings.forceSubActive;
+      await saveSettingsToR2(env, settings);
+      return new Response(JSON.stringify({
+        ok: true,
+        channels: settings.forceChannels,
+        forceSubActive: settings.forceSubActive
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    // ==========================================
+    // API: BANNERS MANAGEMENT
+    // ==========================================
+    if (url.pathname === '/api/banners') {
+      const settings = await getSettingsFromR2(env);
+
+      if (request.method === 'GET') {
+        return new Response(JSON.stringify({
+          ok: true,
+          banners: settings.banners || []
+        }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      if (request.method === 'POST') {
+        try {
+          const body = await request.json();
+          let banners = settings.banners || [];
+          const slot = Number(body.slot || 1);
+          const idx = banners.findIndex(b => b.slot === slot);
+          const item = {
+            slot,
+            imageUrl: body.imageUrl || body.image_url || '',
+            linkUrl: body.linkUrl || body.link_url || body.target_url || ''
+          };
+          if (idx !== -1) {
+            banners[idx] = { ...banners[idx], ...item };
+          } else {
+            banners.push(item);
+          }
+          settings.banners = banners;
+          await saveSettingsToR2(env, settings);
+          return new Response(JSON.stringify({ ok: true, banners }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        } catch (e) {
+          return new Response(JSON.stringify({ ok: false, error: e.message }), {
+            status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      }
+    }
+
+    // ==========================================
+    // API: ELEMENTS CRUD (R2 STORAGE)
+    // ==========================================
+    if (url.pathname === '/api/elements') {
+      if (request.method === 'GET') {
+        const elements = await getElementsFromR2(env);
+        return new Response(JSON.stringify(elements), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      if (request.method === 'POST') {
+        try {
+          const body = await request.json();
+          const elements = await getElementsFromR2(env);
+          const newElement = {
+            id: body.id || Date.now(),
+            code: body.code,
+            description: body.description || '',
+            category: body.category || 'Boshqa',
+            isNew: body.is_new !== false,
+            keywords: Array.isArray(body.keywords) ? body.keywords : (body.keywords || '').split(',').map(s => s.trim()).filter(Boolean)
+          };
+          elements.unshift(newElement);
+          await saveElementsToR2(env, elements);
+          return new Response(JSON.stringify({ ok: true, element: newElement }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        } catch (e) {
+          return new Response(JSON.stringify({ ok: false, error: e.message }), {
+            status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      }
+    }
+
+    if (url.pathname.startsWith('/api/elements/') && (request.method === 'PUT' || request.method === 'DELETE')) {
+      const elemId = url.pathname.replace('/api/elements/', '').trim();
+      let elements = await getElementsFromR2(env);
+
+      if (request.method === 'DELETE') {
+        elements = elements.filter(e => String(e.id) !== String(elemId));
+        await saveElementsToR2(env, elements);
+        return new Response(JSON.stringify({ ok: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      if (request.method === 'PUT') {
+        try {
+          const body = await request.json();
+          const idx = elements.findIndex(e => String(e.id) === String(elemId));
+          if (idx !== -1) {
+            elements[idx] = { ...elements[idx], ...body };
+            await saveElementsToR2(env, elements);
+            return new Response(JSON.stringify({ ok: true, element: elements[idx] }), {
               headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
           }
+          return new Response(JSON.stringify({ ok: false, error: 'Not found' }), {
+            status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        } catch (e) {
+          return new Response(JSON.stringify({ ok: false, error: e.message }), {
+            status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
         }
-      } catch (e) {
-        console.error('R2 elements error:', e);
       }
-      return new Response(JSON.stringify([]), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
     }
 
-    // API: Get / Save Settings
+    // ==========================================
+    // API: GET / SAVE SETTINGS
+    // ==========================================
     if (url.pathname === '/api/settings') {
       if (request.method === 'GET') {
         const settings = await getSettingsFromR2(env);
@@ -137,6 +361,10 @@ async function handleTelegramUpdate(update, env) {
         const isSub = await checkSubscription(botToken, userId, settings.forceChannels, settings.forceSubActive);
 
         if (!isSub.subscribed) {
+          try {
+            await resetChatMenuButton(botToken, chatId);
+          } catch (e) {}
+
           let channelButtons = isSub.missing.map((ch, idx) => {
             const cleanName = ch.replace('@', '');
             const url = ch.startsWith('-100') ? `https://t.me/c/${ch.replace('-100', '')}` : `https://t.me/${cleanName}`;
@@ -145,7 +373,7 @@ async function handleTelegramUpdate(update, env) {
 
           channelButtons.push([{ text: '✅ A\'zo bo\'ldim / Tekshirish', callback_data: 'check_sub' }]);
 
-          const promptText = `🛑 <b>Botdan foydalanish uchun homiy kanalimizga obuna bo'ling!</b>\n\n` +
+          const promptText = `🛑 <b>Botdan va Mini App'dan foydalanish uchun homiy kanalimizga obuna bo'ling!</b>\n\n` +
             `Kanallarga a'zo bo'lgach, <b>"A'zo bo'ldim / Tekshirish"</b> tugmasini bosing:`;
 
           await tgSendMessage(botToken, chatId, promptText, {
@@ -474,6 +702,10 @@ async function renderChannelsMenu(botToken, chatId, env, messageId = null) {
  * Send Welcome Message with Mini App Button
  */
 async function sendWelcome(botToken, chatId, userId, firstName, webAppUrl, isAdmin = false) {
+  try {
+    await setChatMenuButton(botToken, chatId, webAppUrl);
+  } catch (e) {}
+
   const ts = Date.now();
   const appUrl = isAdmin 
     ? `${webAppUrl}?admin=1&user_id=${userId}&v=${ts}` 
@@ -525,12 +757,18 @@ async function checkSubscription(botToken, userId, channels, forceSubActive) {
       const data = await res.json();
       if (data.ok) {
         const status = data.result?.status;
-        if (!['creator', 'administrator', 'member'].includes(status)) {
+        if (!['creator', 'administrator', 'member', 'restricted'].includes(status)) {
           missing.push(channel);
         }
       } else {
-        // If bot is not admin in channel, do NOT block user
-        console.warn('Channel check warning:', data.description);
+        const desc = (data.description || '').toLowerCase();
+        if (desc.includes('user not found') || desc.includes('participant_id_invalid')) {
+          missing.push(channel);
+        } else if (desc.includes('chat not found') || desc.includes('bot is not a member') || desc.includes('not an admin')) {
+          console.warn(`Bot lacks admin access in ${channel}:`, data.description);
+        } else {
+          missing.push(channel);
+        }
       }
     } catch (e) {
       console.error('getChatMember error:', e);
@@ -630,4 +868,73 @@ function escapeHtml(str) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+/**
+ * R2 Elements Storage Helpers
+ */
+async function getElementsFromR2(env) {
+  if (env.R2_BUCKET) {
+    try {
+      const obj = await env.R2_BUCKET.get('elements.json');
+      if (obj) {
+        const text = await obj.text();
+        return JSON.parse(text);
+      }
+    } catch (e) {
+      console.error('getElementsFromR2 error:', e);
+    }
+  }
+  return [];
+}
+
+async function saveElementsToR2(env, elements) {
+  if (env.R2_BUCKET) {
+    try {
+      await env.R2_BUCKET.put('elements.json', JSON.stringify(elements, null, 2));
+    } catch (e) {
+      console.error('saveElementsToR2 error:', e);
+    }
+  }
+}
+
+/**
+ * Chat Menu Button Helpers (Dynamic per-user WebApp menu toggle)
+ */
+async function setChatMenuButton(token, chatId, webAppUrl) {
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/setChatMenuButton`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        menu_button: {
+          type: 'web_app',
+          text: '🎨 Elementlar Katalogi',
+          web_app: { url: webAppUrl }
+        }
+      })
+    });
+    return await res.json();
+  } catch (e) {
+    console.error('setChatMenuButton error:', e);
+  }
+}
+
+async function resetChatMenuButton(token, chatId) {
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/setChatMenuButton`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        menu_button: {
+          type: 'default'
+        }
+      })
+    });
+    return await res.json();
+  } catch (e) {
+    console.error('resetChatMenuButton error:', e);
+  }
 }

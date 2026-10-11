@@ -1621,26 +1621,35 @@ document.addEventListener('DOMContentLoaded', () => {
   // Check mandatory subscription gate on Mini App startup
   async function checkUserSubscriptionOnStartup() {
     const userId = getTelegramUserId();
-    const API_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? ''
-      : 'https://canva-element-bot.onrender.com';
+
+    // Admins always bypass lock immediately
+    if (userId && (Number(userId) === SUPER_ADMIN_ID || Number(userId) === ZUHRA_ADMIN_ID)) {
+      revealMainAppContent();
+      return;
+    }
+    if (isUserAdmin) {
+      revealMainAppContent();
+      return;
+    }
 
     try {
       const checkUrl = userId 
         ? `${API_HOST}/api/check-sub?user_id=${userId}`
         : `${API_HOST}/api/check-sub`;
 
-      const res = await fetch(checkUrl);
+      const res = await fetch(checkUrl, { cache: 'no-store' });
       if (!res.ok) return;
 
       const data = await res.json();
 
       if (data.forceSubActive && (data.isSubscribed === false || !userId)) {
         hideMainAppContent();
-        showSubscriptionGateOverlay(data.missing || []);
+        showSubscriptionGateOverlay(data.missing || [], !userId);
+      } else {
+        revealMainAppContent();
       }
     } catch (e) {
-      console.log('Sub check error:', e);
+      console.warn('Sub check error:', e);
     }
   }
 
@@ -1648,111 +1657,143 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainContent = document.getElementById('main-content');
     const searchSection = document.getElementById('sticky-search-section');
     const bottomNav = document.getElementById('bottom-nav');
+    const appHeader = document.getElementById('app-header');
     if (mainContent) mainContent.style.display = 'none';
     if (searchSection) searchSection.style.display = 'none';
     if (bottomNav) bottomNav.style.display = 'none';
+    if (appHeader) appHeader.style.display = 'none';
   }
 
   function revealMainAppContent() {
     const mainContent = document.getElementById('main-content');
     const searchSection = document.getElementById('sticky-search-section');
     const bottomNav = document.getElementById('bottom-nav');
+    const appHeader = document.getElementById('app-header');
     if (mainContent) mainContent.style.display = 'block';
     if (searchSection) searchSection.style.display = 'block';
     if (bottomNav) bottomNav.style.display = 'flex';
+    if (appHeader) appHeader.style.display = 'block';
   }
 
-  function showSubscriptionGateOverlay(missingChannels) {
-    let overlay = document.getElementById('sub-gate-overlay');
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.id = 'sub-gate-overlay';
-      overlay.style.position = 'fixed';
-      overlay.style.top = '0';
-      overlay.style.left = '0';
-      overlay.style.width = '100vw';
-      overlay.style.height = '100vh';
-      overlay.style.zIndex = '99999';
-      overlay.style.background = 'rgba(15, 12, 29, 0.96)';
-      overlay.style.backdropFilter = 'blur(20px)';
-      overlay.style.display = 'flex';
-      overlay.style.alignItems = 'center';
-      overlay.style.justifyContent = 'center';
-      overlay.style.padding = '20px';
+  function showSubscriptionGateOverlay(missingChannels, isNoUser = false) {
+    const overlay = document.getElementById('sub-gate-overlay');
+    const card = document.getElementById('sub-gate-card');
+    const desc = document.getElementById('sub-gate-desc');
+    const channelsContainer = document.getElementById('sub-gate-channels-list');
+    const checkBtn = document.getElementById('btn-recheck-sub-overlay');
 
-      document.body.appendChild(overlay);
+    if (!overlay) return;
+
+    if (isNoUser) {
+      if (desc) desc.textContent = "Ushbu Mini App faqat rasmiy Telegram boti orqali to'liq ishlaydi. Iltimos, bot orqali oching:";
+      if (channelsContainer) {
+        channelsContainer.innerHTML = `
+          <a href="https://t.me/zuhracanva_bot" class="sub-gate-channel-btn" style="background: linear-gradient(135deg, #FF6B8B, #FF8E53);">
+            <i class="fa-brands fa-telegram"></i> @zuhracanva_bot orqali ochish
+          </a>
+        `;
+      }
+      if (checkBtn) checkBtn.style.display = 'none';
+      overlay.classList.remove('hidden');
+      return;
     }
 
-    const chList = Array.isArray(missingChannels) && missingChannels.length > 0 ? missingChannels : ['@zuhracanva_official'];
+    if (desc) {
+      desc.textContent = "Canva element kodlaridan to'liq va bepul foydalanish uchun homiy kanalimizga a'zo bo'ling:";
+    }
 
-    const chButtonsHTML = chList.map(ch => {
-      const chClean = String(ch).replace('@', '');
-      const url = String(ch).startsWith('-100') ? 'https://t.me' : `https://t.me/${chClean}`;
-      return `
-        <a href="${url}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; background: linear-gradient(135deg, #ff4e50, #f9d423); color: #fff; text-decoration: none; border-radius: 16px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 15px rgba(255, 78, 80, 0.3);">
-          <i class="fa-brands fa-telegram"></i> ${ch} kanaliga obuna bo'lish
-        </a>
-      `;
-    }).join('');
+    const chList = Array.isArray(missingChannels) && missingChannels.length > 0 
+      ? missingChannels 
+      : ['@zuhracanva_official'];
 
-    overlay.innerHTML = `
-      <div style="background: rgba(255, 255, 255, 0.96); width: 100%; max-width: 380px; padding: 26px; border-radius: 24px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); font-family: 'Plus Jakarta Sans', sans-serif;">
-        <div style="width: 64px; height: 64px; background: #FFF0F5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #ff4e50; font-size: 26px;">
-          <i class="fa-solid fa-lock"></i>
-        </div>
-        <h2 style="font-size: 20px; font-weight: 800; color: #1a1a2e; margin-bottom: 8px;">Obuna bo'lish talab etiladi</h2>
-        <p style="font-size: 14px; color: #666; margin-bottom: 20px; line-height: 1.5;">
-          Mini App'dan foydalanish uchun quyidagi rasmiy kanalimizga a'zo bo'ling:
-        </p>
+    if (channelsContainer) {
+      channelsContainer.innerHTML = chList.map((ch, idx) => {
+        const cleanName = String(ch).replace('@', '');
+        const url = String(ch).startsWith('-100') ? 'https://t.me' : `https://t.me/${cleanName}`;
+        return `
+          <a href="${url}" class="sub-gate-channel-btn" data-channel="${ch}">
+            <i class="fa-brands fa-telegram"></i> ${idx + 1}-kanalga a'zo bo'lish
+          </a>
+        `;
+      }).join('');
 
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-          ${chButtonsHTML}
-        </div>
+      // Add click handler to open inside Telegram via tg.openTelegramLink
+      channelsContainer.querySelectorAll('.sub-gate-channel-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const href = btn.getAttribute('href');
+          if (tg && typeof tg.openTelegramLink === 'function') {
+            e.preventDefault();
+            tg.openTelegramLink(href);
+          }
+        });
+      });
+    }
 
-        <button id="btn-recheck-sub-overlay" style="width: 100%; padding: 14px; background: #0088cc; color: #fff; border: none; border-radius: 16px; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);">
-          <i class="fa-solid fa-rotate-right"></i> Obunani tekshirish
-        </button>
-      </div>
-    `;
+    if (checkBtn) {
+      checkBtn.style.display = 'flex';
+      checkBtn.disabled = false;
+      checkBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> <span>Obunani tekshirish</span>';
+    }
 
-    document.getElementById('btn-recheck-sub-overlay')?.addEventListener('click', async () => {
-      const btn = document.getElementById('btn-recheck-sub-overlay');
-      if (btn) btn.textContent = 'Tekshirilmoqda...';
+    overlay.classList.remove('hidden');
+    overlay.classList.remove('fade-out');
+
+    // Attach click listener
+    checkBtn?.replaceWith(checkBtn.cloneNode(true));
+    const newCheckBtn = document.getElementById('btn-recheck-sub-overlay');
+
+    newCheckBtn?.addEventListener('click', async () => {
+      newCheckBtn.disabled = true;
+      newCheckBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Tekshirilmoqda...</span>';
+      triggerHaptic('light');
 
       const userId = getTelegramUserId();
-      const API_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? ''
-        : 'https://canva-element-bot.onrender.com';
-
       if (!userId) {
-        showToast("⚠️ Iltimos, Mini App'ni Telegram boti orqali oching!");
-        if (btn) btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Obunani tekshirish';
+        showToast("⚠️ Telegram boti orqali kiring!");
+        newCheckBtn.disabled = false;
+        newCheckBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> <span>Obunani tekshirish</span>';
         return;
       }
 
       try {
         const checkUrl = `${API_HOST}/api/check-sub?user_id=${userId}`;
-        const res = await fetch(checkUrl);
+        const res = await fetch(checkUrl, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           if (data.isSubscribed) {
-            overlay.remove();
-            revealMainAppContent();
-            showToast('✅ Obuna tasdiqlandi!');
+            triggerHaptic('success');
+            showToast("✅ Obuna tasdiqlandi! Xush kelibsiz!");
+            overlay.classList.add('fade-out');
+            setTimeout(() => {
+              overlay.classList.add('hidden');
+              overlay.classList.remove('fade-out');
+              revealMainAppContent();
+            }, 250);
           } else {
-            showToast("❌ Siz hali kanalga obuna bo'lmadingiz!");
-            if (btn) btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Qayta tekshirish';
+            triggerHaptic('error');
+            if (card) {
+              card.classList.remove('shake-anim');
+              void card.offsetWidth;
+              card.classList.add('shake-anim');
+            }
+            showToast("❌ Siz hali kanalga a'zo bo'lmadingiz!");
+            newCheckBtn.disabled = false;
+            newCheckBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> <span>Qayta tekshirish</span>';
           }
+        } else {
+          newCheckBtn.disabled = false;
+          newCheckBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> <span>Qayta tekshirish</span>';
         }
-      } catch (e) {
-        if (btn) btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Obunani tekshirish';
+      } catch (err) {
+        newCheckBtn.disabled = false;
+        newCheckBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> <span>Qayta tekshirish</span>';
       }
     });
   }
 
-  // Initial Safe Execution (Run sub check FIRST!)
-  try { checkUserSubscriptionOnStartup(); } catch (e) { console.error('Sub check startup error:', e); }
+  // Initial Safe Execution (Run admin check first so admins are never gated)
   try { checkAdminPermissions(); } catch (e) { console.error('Admin check error:', e); }
+  try { checkUserSubscriptionOnStartup(); } catch (e) { console.error('Sub check startup error:', e); }
   try { updateStats(); } catch (e) { console.error('Stats error:', e); }
   try { renderElements(); } catch (e) { console.error('Render elements error:', e); }
   try { renderCategoriesGrid(); } catch (e) { console.error('Categories error:', e); }

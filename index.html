@@ -17,7 +17,7 @@
   <!-- FontAwesome Free Icons 6.5.1 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   
-  <link rel="stylesheet" href="styles.css?v=14.0" />
+  <link rel="stylesheet" href="styles.css?v=15.0" />
 </head>
 <body class="apple-vision-theme">
 
@@ -573,6 +573,31 @@
     </div>
   </div>
 
+  <!-- Mandatory Channel Subscription Lock Overlay (Apple VisionOS Glassmorphism Guard) -->
+  <div class="sub-gate-overlay hidden" id="sub-gate-overlay">
+    <div class="sub-gate-card" id="sub-gate-card">
+      <div class="sub-gate-icon-wrapper">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <h2 class="sub-gate-title">Obuna bo'lish talab etiladi</h2>
+      <p class="sub-gate-desc" id="sub-gate-desc">
+        Canva element kodlaridan to'liq va bepul foydalanish uchun homiy kanalimizga a'zo bo'ling:
+      </p>
+
+      <div class="sub-gate-channels" id="sub-gate-channels-list">
+        <!-- Dynamically injected channel buttons -->
+      </div>
+
+      <button class="sub-gate-btn-check" id="btn-recheck-sub-overlay">
+        <i class="fa-solid fa-rotate-right"></i> <span>Obunani tekshirish</span>
+      </button>
+
+      <div class="sub-gate-footer-note">
+        <i class="fa-solid fa-shield-halved"></i> A'zo bo'lgach katalog avtomatik ochiladi
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div class="toast-notification hidden" id="toast">
     <div class="toast-content">
@@ -584,6 +609,6 @@
 
   <!-- Include Data and Main Logic Scripts -->
   <script src="data.js?v=14.0"></script>
-  <script src="app.js?v=14.0"></script>
+  <script src="app.js?v=15.0"></script>
 </body>
 </html>
