@@ -342,7 +342,7 @@ body.apple-vision-theme {
 .main-content {
   max-width: 540px;
   margin: 0 auto;
-  padding: 16px 16px 24px;
+  padding: 16px 16px calc(88px + env(safe-area-inset-bottom, 0px));
 }
 
 .tab-view {
@@ -996,31 +996,40 @@ body.apple-vision-theme {
 .btn-admin-edit { background: var(--pink-soft-bg); color: var(--primary-pink); }
 .btn-admin-delete { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
-/* FLOATING GLASSMORPHISM BOTTOM NAVIGATION BAR */
+/* ==========================================================================
+   PERFECT FLOATING GLASS BOTTOM NAVIGATION BAR (Apple iOS / VisionOS)
+   ========================================================================== */
 .bottom-nav-bar {
   position: fixed;
-  bottom: 12px;
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   left: 12px;
   right: 12px;
-  max-width: 480px;
+  max-width: 440px;
   margin: 0 auto;
-  z-index: 100;
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 45, 141, 0.15);
-  border-radius: var(--radius-pill);
-  padding: 6px;
-  box-shadow: var(--shadow-float);
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 45, 141, 0.16);
+  border-radius: 22px;
+  padding: 5px 6px;
+  box-shadow: 0 10px 30px rgba(255, 45, 141, 0.12), 0 2px 10px rgba(0, 0, 0, 0.05);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .nav-container {
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
+  width: 100%;
+  gap: 4px;
 }
 
 .nav-item {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 48px;
   position: relative;
   border: none;
   background: transparent;
@@ -1028,53 +1037,102 @@ body.apple-vision-theme {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 6px 12px;
-  border-radius: var(--radius-pill);
-  color: var(--text-secondary);
-  font-size: 10px;
-  font-weight: 600;
+  padding: 4px 2px;
+  border-radius: 16px;
+  color: #8E8E93;
   cursor: pointer;
-  transition: var(--transition);
-  gap: 3px;
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-item:active {
+  transform: scale(0.92);
+}
+
+.nav-item.hidden {
+  display: none !important;
+}
+
+.nav-icon-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  width: 28px;
+  font-size: 18px;
+  transition: transform 180ms ease, color 180ms ease;
 }
 
 .nav-item i {
-  font-size: 16px;
+  font-size: 18px;
+  color: inherit;
+  transition: transform 180ms ease;
 }
 
-.nav-item span {
-  display: none;
+.nav-label {
+  display: block !important;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  line-height: 1.2;
+  margin-top: 2px;
+  color: inherit;
+  transition: color 180ms ease, font-weight 180ms ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
+/* ACTIVE STATE */
 .nav-item.active {
-  background: var(--pink-gradient);
-  color: #FFFFFF;
-  padding: 8px 16px;
-  box-shadow: 0 4px 14px rgba(255, 45, 141, 0.35);
-  flex-direction: row;
-  gap: 6px;
+  color: #FF2D8D;
+  background: rgba(255, 45, 141, 0.08);
+}
+
+.nav-item.active .nav-icon-box {
+  transform: translateY(-1px);
+  color: #FF2D8D;
 }
 
 .nav-item.active i {
-  font-size: 14px;
+  color: #FF2D8D;
+  filter: drop-shadow(0 2px 6px rgba(255, 45, 141, 0.35));
 }
 
-.nav-item.active span {
-  display: inline;
-  font-size: 11px;
+.nav-item.active .nav-label {
+  color: #FF2D8D;
   font-weight: 700;
+}
+
+/* Floating indicator dot under active tab */
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #FF2D8D;
+  box-shadow: 0 0 6px rgba(255, 45, 141, 0.6);
 }
 
 .nav-badge-news {
   position: absolute;
-  top: 2px;
-  right: 6px;
-  background: #FF2D8D;
+  top: -4px;
+  right: -8px;
+  background: linear-gradient(135deg, #FF2D8D, #FF6B8B);
   color: #FFFFFF;
   font-size: 7px;
   font-weight: 800;
   padding: 1px 4px;
-  border-radius: var(--radius-pill);
+  border-radius: 999px;
+  line-height: 1.2;
+  box-shadow: 0 2px 4px rgba(255, 45, 141, 0.4);
 }
 
 /* BACKUP & SETTINGS MODALS STYLES */

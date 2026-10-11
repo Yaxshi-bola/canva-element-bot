@@ -25,7 +25,7 @@
   <!-- FontAwesome Free Icons 6.5.1 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   
-  <link rel="stylesheet" href="styles.css?v=18.0" />
+  <link rel="stylesheet" href="styles.css?v=19.0" />
 </head>
 <body class="apple-vision-theme">
 
@@ -272,30 +272,40 @@
   <!-- Floating Glassmorphism Bottom Navigation Bar -->
   <nav class="bottom-nav-bar" id="bottom-nav-bar">
     <div class="nav-container">
-      <button class="nav-item active" data-tab="home" id="nav-item-home">
-        <i class="fa-solid fa-house"></i>
-        <span>Bosh sahifa</span>
+      <button class="nav-item active" data-tab="home" id="nav-item-home" aria-label="Bosh sahifa">
+        <div class="nav-icon-box">
+          <i class="fa-solid fa-house"></i>
+        </div>
+        <span class="nav-label">Bosh sahifa</span>
       </button>
       
-      <button class="nav-item" data-tab="categories" id="nav-item-categories">
-        <i class="fa-solid fa-layer-group"></i>
-        <span>Bo'limlar</span>
+      <button class="nav-item" data-tab="categories" id="nav-item-categories" aria-label="Bo'limlar">
+        <div class="nav-icon-box">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <span class="nav-label">Bo'limlar</span>
       </button>
       
-      <button class="nav-item" data-tab="news" id="nav-item-news">
-        <span class="nav-badge-news">NEW</span>
-        <i class="fa-solid fa-bolt"></i>
-        <span>Yangiliklar</span>
+      <button class="nav-item" data-tab="news" id="nav-item-news" aria-label="Yangiliklar">
+        <div class="nav-icon-box">
+          <i class="fa-solid fa-bolt"></i>
+          <span class="nav-badge-news">NEW</span>
+        </div>
+        <span class="nav-label">Yangiliklar</span>
       </button>
       
-      <button class="nav-item" data-tab="favorites" id="nav-item-favorites">
-        <i class="fa-solid fa-heart"></i>
-        <span>Saqlanganlar</span>
+      <button class="nav-item" data-tab="favorites" id="nav-item-favorites" aria-label="Saqlanganlar">
+        <div class="nav-icon-box">
+          <i class="fa-solid fa-heart"></i>
+        </div>
+        <span class="nav-label">Saqlanganlar</span>
       </button>
       
-      <button class="nav-item hidden" data-tab="admin" id="nav-item-admin">
-        <i class="fa-solid fa-shield-halved"></i>
-        <span>Admin</span>
+      <button class="nav-item hidden" data-tab="admin" id="nav-item-admin" aria-label="Admin">
+        <div class="nav-icon-box">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <span class="nav-label">Admin</span>
       </button>
     </div>
   </nav>
@@ -616,6 +626,6 @@
 
   <!-- Include Data and Main Logic Scripts -->
   <script src="data.js?v=18.0"></script>
-  <script src="app.js?v=18.0"></script>
+  <script src="app.js?v=19.0"></script>
 </body>
 </html>
