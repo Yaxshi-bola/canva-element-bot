@@ -662,22 +662,60 @@ async function handleTelegramUpdate(update, env) {
         return;
       }
 
-      // /setcanva or /canvapro command
-      if ((text.startsWith('/setcanva') || text.startsWith('/canvapro')) && userId === superAdminId) {
-        const parts = text.split(/\s+/);
-        const newLink = parts.slice(1).join(' ').trim();
-        if (!newLink) {
-          await tgSendMessage(botToken, chatId, '⚠️ Format: <code>/setcanva https://www.canva.com/brand/join?token=...</code>', { parse_mode: 'HTML' });
+      // Canva Pro Message Handlers for Admin
+      if (userId === superAdminId) {
+        if (text === '/canvapro') {
+          await renderCanvaProAdminMenu(botToken, chatId, env);
           return;
         }
+
         const settings = await getSettingsFromR2(env);
-        let clean = newLink;
-        if (!clean.startsWith('http://') && !clean.startsWith('https://')) clean = `https://${clean}`;
-        settings.canvaProLink = clean;
-        settings.canvaProEnabled = true;
-        await saveSettingsToR2(env, settings);
-        await tgSendMessage(botToken, chatId, `✅ <b>Canva Pro taklif havolasi saqlandi va faollashtirildi!</b>\n\n🔗 <code>${clean}</code>\n\nKanal a'zolari "👑 Canva Pro olish" tugmasi orqali jamoaga qo'shila oladilar.`, { parse_mode: 'HTML' });
-        return;
+
+        // Awaiting Expiry Input
+        if (settings.adminPendingAction === 'awaiting_canva_expiry' || (msg.reply_to_message?.text && msg.reply_to_message.text.includes('amal qilish muddatini'))) {
+          settings.canvaProExpiry = text.trim();
+          settings.adminPendingAction = null;
+          await saveSettingsToR2(env, settings);
+          await tgSendMessage(botToken, chatId,
+            `✅ <b>Canva Pro amal qilish muddati belgilandi!</b>\n\n📅 <b>Muddat:</b> <code>${text.trim()}</code>\n\nUshbu muddat Mini App'da ko'rinib turadi!`,
+            {
+              parse_mode: 'HTML',
+              reply_markup: {
+                inline_keyboard: [
+                  [{ text: '💎 Canva Pro Menyu', callback_data: 'admin_canva_menu' }]
+                ]
+              }
+            }
+          );
+          return;
+        }
+
+        // Awaiting Link Input or Direct Link Sent
+        if (settings.adminPendingAction === 'awaiting_canva_link' || (msg.reply_to_message?.text && msg.reply_to_message.text.includes('taklif havolasini')) || text.includes('canva.com') || text.startsWith('/setcanva')) {
+          let clean = text.replace(/^\/setcanva\s*/i, '').trim();
+          const [rawLink, rawExpiry] = clean.split('|').map(s => s.trim());
+          let link = rawLink;
+          if (!link.startsWith('http://') && !link.startsWith('https://')) link = `https://${link}`;
+          settings.canvaProLink = link;
+          if (rawExpiry) settings.canvaProExpiry = rawExpiry;
+          settings.canvaProEnabled = true;
+          settings.adminPendingAction = null;
+          await saveSettingsToR2(env, settings);
+          const expNote = settings.canvaProExpiry ? `\n📅 <b>Muddati:</b> <code>${settings.canvaProExpiry}</code>` : '';
+          await tgSendMessage(botToken, chatId,
+            `✅ <b>Canva Pro taklif havolasi saqlandi va faollashtirildi!</b>\n\n🔗 <code>${link}</code>${expNote}\n⚙️ <b>Holat:</b> FAOL ✅\n\nFoydalanuvchilar Mini App orqali Canva Pro jamoasiga qo'shila oladilar!`,
+            {
+              parse_mode: 'HTML',
+              reply_markup: {
+                inline_keyboard: [
+                  [{ text: '💎 Canva Pro Menyu', callback_data: 'admin_canva_menu' }],
+                  [{ text: '📅 Muddatni tanlash', callback_data: 'admin_canva_choose_expiry' }]
+                ]
+              }
+            }
+          );
+          return;
+        }
       }
     }
 
@@ -709,7 +747,7 @@ async function handleTelegramUpdate(update, env) {
         return;
       }
 
-      // User: Canva Pro Claim
+      // User: Canva Pro Info (Direct to Mini App Only, never send join link in chat)
       if (data === 'get_canva_pro' || data === 'check_sub_and_canva') {
         const settings = await getSettingsFromR2(env);
         const isSub = await checkSubscription(botToken, userId, settings.forceChannels, settings.forceSubActive);
@@ -721,10 +759,10 @@ async function handleTelegramUpdate(update, env) {
             const url = ch.startsWith('-100') ? `https://t.me/c/${ch.replace('-100', '')}` : `https://t.me/${cleanName}`;
             return [{ text: `📢 ${idx + 1}-kanalga a'zo bo'lish`, url: url }];
           });
-          channelButtons.push([{ text: '✅ A\'zo bo\'ldim / Canva Pro olish', callback_data: 'check_sub_and_canva' }]);
+          channelButtons.push([{ text: '✅ A\'zo bo\'ldim / Tekshirish', callback_data: 'check_sub_and_canva' }]);
 
           const promptText = `🛑 <b>Canva Pro (Team) olish uchun homiy kanalimizga obuna bo'ling!</b>\n\n` +
-            `Kanallarga a'zo bo'lgach, <b>"A'zo bo'ldim / Canva Pro olish"</b> tugmasini bosing:`;
+            `Kanallarga a'zo bo'lgach, <b>"A'zo bo'ldim / Tekshirish"</b> tugmasini bosing:`;
 
           await tgSendMessage(botToken, chatId, promptText, {
             parse_mode: 'HTML',
@@ -735,24 +773,24 @@ async function handleTelegramUpdate(update, env) {
 
         await tgAnswerCallbackQuery(botToken, q.id);
 
-        if (!settings.canvaProEnabled || !settings.canvaProLink) {
-          await tgSendMessage(botToken, chatId, `😔 <b>Hozircha Canva Pro (Team) jamoamizda bo'sh o'rinlar qolmagan!</b>\n\nTez orada yangi havola qo'shiladi. Kanalimizni kuzatib boring! 💖`, { parse_mode: 'HTML' });
-          return;
-        }
+        const targetUrl = userId && (userId === superAdminId || userId === 8112688757)
+          ? `${webAppUrl}?admin=1&user_id=${userId}&v=${Date.now()}`
+          : `${webAppUrl}?user_id=${userId}&v=${Date.now()}`;
 
-        // Record claim
-        settings.canvaProClaims = (settings.canvaProClaims || 0) + 1;
-        await saveSettingsToR2(env, settings);
+        const expiryLine = settings.canvaProExpiry 
+          ? `⏳ <b>Amal qilish muddati:</b> <b>${settings.canvaProExpiry}</b>\n\n` 
+          : '';
 
-        const successText = `🎉 <b>TABRIKLAYMIZ! Siz kanalimizning faol a'zosisiz!</b> ✨\n\n` +
-          `Siz uchun bepul <b>Canva Pro (Team)</b> jamoamiz ochiq!\n\n` +
-          `👇 <b>Canva jamoasiga qo'shilish uchun pastdagi tugmani bosing:</b>`;
+        const infoText = `👑 <b>CANVA PRO (TEAM) QO'SHILISH</b>\n\n` +
+          expiryLine +
+          `Canva Pro jamoasiga qo'shilish <b>faqat Mini App ilovasi</b> orqali amalga oshiriladi!\n\n` +
+          `Ilovani ochib, bosh sahifadagi <b>"Canva Pro-ga Qo'shilish"</b> tugmasini bosing:`;
 
-        await tgSendMessage(botToken, chatId, successText, {
+        await tgSendMessage(botToken, chatId, infoText, {
           parse_mode: 'HTML',
           reply_markup: {
             inline_keyboard: [
-              [{ text: '🚀 Canva Team-ga qo\'shilish', url: settings.canvaProLink }]
+              [{ text: '📱 Mini App orqali Canva Pro olish', web_app: { url: targetUrl } }]
             ]
           }
         });
@@ -761,6 +799,96 @@ async function handleTelegramUpdate(update, env) {
 
       // ADMIN ONLY ACTIONS
       if (userId === superAdminId) {
+        // Admin: Canva Pro Menu
+        if (data === 'admin_canva_menu') {
+          await tgAnswerCallbackQuery(botToken, q.id);
+          await renderCanvaProAdminMenu(botToken, chatId, env, messageId);
+          return;
+        }
+
+        // Admin: Choose Expiry
+        if (data === 'admin_canva_choose_expiry') {
+          await tgAnswerCallbackQuery(botToken, q.id);
+          await renderCanvaExpirySelectionMenu(botToken, chatId, env, messageId);
+          return;
+        }
+
+        // Admin: Set Expiry via Preset Button
+        if (data.startsWith('admin_canva_exp_')) {
+          const expType = data.replace('admin_canva_exp_', '');
+          let expiryVal = '';
+          if (expType === '1m') expiryVal = '1 oy';
+          else if (expType === '2m') expiryVal = '2 oy';
+          else if (expType === '3m') expiryVal = '3 oy';
+          else if (expType === '6m') expiryVal = '6 oy';
+          else if (expType === 'year') expiryVal = '2026-yil oxirigacha';
+          else if (expType === 'forever') expiryVal = 'Doimiy';
+          else if (expType === 'custom') {
+            const settings = await getSettingsFromR2(env);
+            settings.adminPendingAction = 'awaiting_canva_expiry';
+            await saveSettingsToR2(env, settings);
+            await tgAnswerCallbackQuery(botToken, q.id);
+            await tgSendMessage(botToken, chatId, 
+              `📅 <b>Canva Pro amal qilish muddatini yozib yuboring:</b>\n\nMasalan:\n<code>30-noyabrgacha</code> yoki <code>15-dekabrgacha</code>\n\n<i>Shunchaki matnni yuboring:</i>`,
+              { parse_mode: 'HTML', reply_markup: { force_reply: true } }
+            );
+            return;
+          }
+
+          if (expiryVal) {
+            const settings = await getSettingsFromR2(env);
+            settings.canvaProExpiry = expiryVal;
+            await saveSettingsToR2(env, settings);
+            await tgAnswerCallbackQuery(botToken, q.id, `✅ Muddat "${expiryVal}" ga sozlandi!`);
+            await renderCanvaProAdminMenu(botToken, chatId, env, messageId);
+            return;
+          }
+        }
+
+        // Admin: Set Link Prompt
+        if (data === 'admin_canva_set_link') {
+          const settings = await getSettingsFromR2(env);
+          settings.adminPendingAction = 'awaiting_canva_link';
+          await saveSettingsToR2(env, settings);
+          await tgAnswerCallbackQuery(botToken, q.id);
+          await tgSendMessage(botToken, chatId,
+            `🔗 <b>Yangi Canva Pro (Team) taklif havolasini yuboring:</b>\n\nMasalan:\n<code>https://www.canva.com/brand/join?token=...</code>\n\n<i>Havolani shu yerga xabar qilib yuboring:</i>`,
+            { parse_mode: 'HTML', reply_markup: { force_reply: true } }
+          );
+          return;
+        }
+
+        // Admin: Toggle Canva Pro
+        if (data === 'admin_canva_toggle') {
+          const settings = await getSettingsFromR2(env);
+          settings.canvaProEnabled = settings.canvaProEnabled === false ? true : false;
+          await saveSettingsToR2(env, settings);
+          await tgAnswerCallbackQuery(botToken, q.id, `Holat: ${settings.canvaProEnabled ? 'Yoqildi ✅' : "O'chirildi ❌"}`);
+          await renderCanvaProAdminMenu(botToken, chatId, env, messageId);
+          return;
+        }
+
+        // Admin: Reset Canva Pro Claims
+        if (data === 'admin_canva_reset') {
+          const settings = await getSettingsFromR2(env);
+          settings.canvaProClaims = 0;
+          settings.canvaProClaimers = [];
+          await saveSettingsToR2(env, settings);
+          await tgAnswerCallbackQuery(botToken, q.id, 'Hisoblagich 0 qilindi!');
+          await renderCanvaProAdminMenu(botToken, chatId, env, messageId);
+          return;
+        }
+
+        // Admin: Delete Canva Pro Link
+        if (data === 'admin_canva_del') {
+          const settings = await getSettingsFromR2(env);
+          settings.canvaProLink = '';
+          await saveSettingsToR2(env, settings);
+          await tgAnswerCallbackQuery(botToken, q.id, "Canva Pro havolasi o'chirildi!");
+          await renderCanvaProAdminMenu(botToken, chatId, env, messageId);
+          return;
+        }
+
         // Admin: Main Dashboard
         if (data === 'admin_main') {
           await tgAnswerCallbackQuery(botToken, q.id);
@@ -912,11 +1040,14 @@ async function renderAdminDashboard(botToken, chatId, userId, env, messageId = n
       { text: '🔗 Kanallar boshqaruvi', callback_data: 'admin_channels' }
     ],
     [
-      { text: '➕ Kanal qo\'shish', callback_data: 'admin_prompt_add' },
+      { text: '💎 Canva Pro Sozlamalari', callback_data: 'admin_canva_menu' },
       { text: `⚙️ Obuna: ${settings.forceSubActive ? 'O\'chirish ❌' : 'Yoqish ✅'}`, callback_data: 'admin_toggle_sub' }
     ],
     [
-      { text: '💾 Zaxira nusxa (R2)', callback_data: 'admin_backup' },
+      { text: '➕ Kanal qo\'shish', callback_data: 'admin_prompt_add' },
+      { text: '💾 Zaxira nusxa (R2)', callback_data: 'admin_backup' }
+    ],
+    [
       { text: '🎨 Mini App (Admin)', web_app: { url: `${webAppUrl}?admin=1&user_id=${userId}` } }
     ]
   ];
@@ -928,6 +1059,92 @@ async function renderAdminDashboard(botToken, chatId, userId, env, messageId = n
     });
   } else {
     await tgSendMessage(botToken, chatId, adminText, {
+      parse_mode: 'HTML',
+      reply_markup: { inline_keyboard: inlineKeyboard }
+    });
+  }
+}
+
+/**
+ * Render Canva Pro Admin Menu with Inline Buttons
+ */
+async function renderCanvaProAdminMenu(botToken, chatId, env, messageId = null) {
+  const settings = await getSettingsFromR2(env);
+  const linkDisplay = settings.canvaProLink ? `<code>${settings.canvaProLink}</code>` : '<i>Kiritilmagan / Bo\'sh ⚠️</i>';
+  const statusDisplay = settings.canvaProEnabled !== false ? 'YOQILGAN (FAOL) ✅' : 'TO\'XTATILGAN (NOFAOL) ❌';
+
+  const menuText = `💎 <b>CANVA PRO (TEAM) SOZLAMALARI</b>\n\n` +
+    `📌 <b>Hozirgi taklif havolasi:</b>\n${linkDisplay}\n\n` +
+    `📅 <b>Amal qilish muddati:</b> <b>${settings.canvaProExpiry || 'Belgilanmagan (Doimiy)'}</b>\n` +
+    `⚙️ <b>Holat:</b> ${statusDisplay}\n` +
+    `👥 <b>Mini App orqali olganlar:</b> <b>${settings.canvaProClaims || 0}</b> ta\n\n` +
+    `<i>ℹ️ Havolani va muddatni pastdagi tugmalar orqali osongina kiritishingiz mumkin:</i>`;
+
+  const inlineKeyboard = [
+    [
+      { text: '🔗 Havola kiritish', callback_data: 'admin_canva_set_link' },
+      { text: '📅 Muddatni tanlash', callback_data: 'admin_canva_choose_expiry' }
+    ],
+    [
+      { text: `⚙️ Holat: ${settings.canvaProEnabled !== false ? "O'chirish ❌" : "Yoqish ✅"}`, callback_data: 'admin_canva_toggle' },
+      { text: '🔄 Hisoblagichni 0 qilish', callback_data: 'admin_canva_reset' }
+    ],
+    [
+      { text: '🗑 Havolani o\'chirish', callback_data: 'admin_canva_del' },
+      { text: '◀️ Admin menyusi', callback_data: 'admin_main' }
+    ]
+  ];
+
+  if (messageId) {
+    await tgEditMessageText(botToken, chatId, messageId, menuText, {
+      parse_mode: 'HTML',
+      reply_markup: { inline_keyboard: inlineKeyboard }
+    });
+  } else {
+    await tgSendMessage(botToken, chatId, menuText, {
+      parse_mode: 'HTML',
+      reply_markup: { inline_keyboard: inlineKeyboard }
+    });
+  }
+}
+
+/**
+ * Render Expiry Selection Menu with Quick Preset Buttons
+ */
+async function renderCanvaExpirySelectionMenu(botToken, chatId, env, messageId = null) {
+  const settings = await getSettingsFromR2(env);
+  const currentExp = settings.canvaProExpiry ? `<code>${settings.canvaProExpiry}</code>` : '<i>Belgilanmagan</i>';
+
+  const text = `📅 <b>CANVA PRO MUDDATINI TANLANG</b>\n\n` +
+    `📌 <b>Hozirgi muddat:</b> ${currentExp}\n\n` +
+    `Quyidagi tugmalardan birini bosing — muddat avtomatik saqlanadi va Mini App'da ko'rinadi:`;
+
+  const inlineKeyboard = [
+    [
+      { text: '📅 1 oy', callback_data: 'admin_canva_exp_1m' },
+      { text: '📅 2 oy', callback_data: 'admin_canva_exp_2m' },
+      { text: '📅 3 oy', callback_data: 'admin_canva_exp_3m' }
+    ],
+    [
+      { text: '📅 6 oy', callback_data: 'admin_canva_exp_6m' },
+      { text: '📅 2026-yil oxirigacha', callback_data: 'admin_canva_exp_year' }
+    ],
+    [
+      { text: '♾ Doimiy (Cheksiz)', callback_data: 'admin_canva_exp_forever' },
+      { text: '✏️ O\'zim yozaman', callback_data: 'admin_canva_exp_custom' }
+    ],
+    [
+      { text: '◀️ Orqaga (Canva menyu)', callback_data: 'admin_canva_menu' }
+    ]
+  ];
+
+  if (messageId) {
+    await tgEditMessageText(botToken, chatId, messageId, text, {
+      parse_mode: 'HTML',
+      reply_markup: { inline_keyboard: inlineKeyboard }
+    });
+  } else {
+    await tgSendMessage(botToken, chatId, text, {
       parse_mode: 'HTML',
       reply_markup: { inline_keyboard: inlineKeyboard }
     });
@@ -1011,8 +1228,8 @@ async function sendWelcome(botToken, chatId, userId, firstName, webAppUrl, isAdm
     ],
     [
       {
-        text: '👑 Canva Pro (Team) olish',
-        callback_data: 'get_canva_pro'
+        text: '👑 Canva Pro olish (Mini App)',
+        web_app: { url: appUrl }
       }
     ]
   ];
