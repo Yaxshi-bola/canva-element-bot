@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "description": "Canva Element Kodlari Telegram Bot by Zuhra Olimova",
   "main": "bot/server.js",
+  "scripts": {
+    "start": "node bot/server.js",
+    "deploy:worker": "node cloudflare-worker/deploy.js",
+    "deploy:pages": "node cloudflare-worker/deploy-pages.js",
+    "deploy": "node cloudflare-worker/deploy.js && node cloudflare-worker/deploy-pages.js"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
