@@ -1,6 +1,6 @@
 /* -------------------------------------------------------------
  * Supabase & Local DB Manager for Telegram Bot & Mini App
- * Supabase URL: https://mjenunxgakcvyzcikjmi.supabase.co
+ * Supabase URL: https://mybbihqsxrlfmmrvmmki.supabase.co
  * Author: Zuhra Olimova & Yaxshi Bola
  * ------------------------------------------------------------- */
 
@@ -8,8 +8,8 @@ const urllib = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://mjenunxgakcvyzcikjmi.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_nSt8XQyZetNEC7ROiU3XeA_iPBDMPRn';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://mybbihqsxrlfmmrvmmki.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_OLa43IPz8KtbppGPrexpUA_Rm4uoX0Z';
 const ADMINS_FILE = path.join(__dirname, 'admins.json');
 const DB_FILE = path.join(__dirname, 'db.json');
 
@@ -123,12 +123,20 @@ class DB {
     this.memoryUsers = new Map(); // id -> userData
     this.forceChannels = [];
     this.forceSubActive = true;
-    this.webAppUrl = 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+    this.webAppUrl = 'https://canva-elements.pages.dev';
     this.superAdminId = 8544023815;
     this.zuhraAdminId = 8112688757;
     this.adminsList = [8544023815, 8112688757];
     this.blockedUsers = new Set();
     this.joinRequestMode = 'approve_all'; // 'approve_all' | 'female_only' | 'male_only' | 'manual'
+    this.banners = [
+      { slot: 1, imageUrl: 'assets/user_banner3.jpg', linkUrl: '' },
+      { slot: 2, imageUrl: 'assets/user_banner2.jpg', linkUrl: '' },
+      { slot: 3, imageUrl: 'assets/user_banner1.jpg', linkUrl: '' }
+    ];
+    this.canvaProLink = '';
+    this.canvaProEnabled = true;
+    this.canvaProClaimers = new Set();
 
     this.loadAdminsFromFile();
     this.loadDbFile();
@@ -152,6 +160,18 @@ class DB {
           }
           if (parsed.settings.joinRequestMode) {
             this.joinRequestMode = parsed.settings.joinRequestMode;
+          }
+          if (Array.isArray(parsed.settings.banners) && parsed.settings.banners.length > 0) {
+            this.banners = parsed.settings.banners;
+          }
+          if (typeof parsed.settings.canvaProLink === 'string') {
+            this.canvaProLink = parsed.settings.canvaProLink;
+          }
+          if (typeof parsed.settings.canvaProEnabled === 'boolean') {
+            this.canvaProEnabled = parsed.settings.canvaProEnabled;
+          }
+          if (Array.isArray(parsed.settings.canvaProClaimers)) {
+            this.canvaProClaimers = new Set(parsed.settings.canvaProClaimers.map(Number));
           }
         }
 
@@ -183,7 +203,11 @@ class DB {
           forceChannels: this.forceChannels,
           forceSubActive: this.forceSubActive,
           webAppUrl: this.webAppUrl,
-          joinRequestMode: this.joinRequestMode
+          joinRequestMode: this.joinRequestMode,
+          banners: this.banners,
+          canvaProLink: this.canvaProLink,
+          canvaProEnabled: this.canvaProEnabled,
+          canvaProClaimers: Array.from(this.canvaProClaimers)
         },
         blockedUsers: Array.from(this.blockedUsers),
         stats: {
@@ -211,7 +235,19 @@ class DB {
         if (cfg.joinRequestMode) {
           this.joinRequestMode = cfg.joinRequestMode;
         }
-        console.log('✅ Settings loaded permanently from Supabase:', this.forceChannels);
+        if (Array.isArray(cfg.banners) && cfg.banners.length > 0) {
+          this.banners = cfg.banners;
+        }
+        if (typeof cfg.canvaProLink === 'string') {
+          this.canvaProLink = cfg.canvaProLink;
+        }
+        if (typeof cfg.canvaProEnabled === 'boolean') {
+          this.canvaProEnabled = cfg.canvaProEnabled;
+        }
+        if (Array.isArray(cfg.canvaProClaimers)) {
+          this.canvaProClaimers = new Set(cfg.canvaProClaimers.map(Number));
+        }
+        console.log('✅ Settings loaded permanently from Supabase:', this.forceChannels, this.banners, 'CanvaPro:', Boolean(this.canvaProLink));
         this.saveDbFile();
       }
     } catch (e) {
@@ -227,7 +263,11 @@ class DB {
           forceChannels: this.forceChannels,
           forceSubActive: this.forceSubActive,
           joinRequestMode: this.joinRequestMode,
-          webAppUrl: this.webAppUrl
+          webAppUrl: this.webAppUrl,
+          banners: this.banners,
+          canvaProLink: this.canvaProLink,
+          canvaProEnabled: this.canvaProEnabled,
+          canvaProClaimers: Array.from(this.canvaProClaimers)
         },
         updated_at: new Date().toISOString()
       };
@@ -382,38 +422,43 @@ class DB {
     if (!clean) return false;
 
     // Check if numeric channel ID (e.g. -1001234567890)
-    if (/^-?\d+$/.test(clean)) {
-      if (!this.forceChannels.includes(clean)) {
-        this.forceChannels.push(clean);
-        this.saveDbFile();
-        this.saveSettingsToSupabase().catch(() => {});
-        return clean;
-      }
-      return false;
-    }
-
-    // Add leading @ if missing
-    if (!clean.startsWith('@')) {
+    if (!/^-?\d+$/.test(clean) && !clean.startsWith('@')) {
       clean = `@${clean}`;
     }
 
-    if (!this.forceChannels.includes(clean)) {
+    const cleanNorm = clean.replace(/^@/, '').toLowerCase();
+    const exists = this.forceChannels.some(ch => ch.replace(/^@/, '').toLowerCase() === cleanNorm);
+
+    if (!exists) {
       this.forceChannels.push(clean);
       this.saveDbFile();
       this.saveSettingsToSupabase().catch(() => {});
-      return clean;
     }
-    return false;
+    return clean;
   }
 
   removeForceChannel(channelInput) {
     if (!channelInput) return false;
-    let clean = String(channelInput).trim();
-    clean = clean.replace(/^https?:\/\/(www\.)?t\.me\//i, '').replace(/^t\.me\//i, '');
-    if (!clean.startsWith('@') && !/^-?\d+$/.test(clean)) clean = `@${clean}`;
+    const targetNorm = String(channelInput).trim()
+      .replace(/^https?:\/\/(www\.)?t\.me\//i, '')
+      .replace(/^t\.me\//i, '')
+      .replace(/^telegram\.me\//i, '')
+      .replace(/[\/\?#].*$/, '')
+      .replace(/^@/, '')
+      .toLowerCase();
 
     const beforeLen = this.forceChannels.length;
-    this.forceChannels = this.forceChannels.filter(ch => ch.toLowerCase() !== clean.toLowerCase());
+    this.forceChannels = this.forceChannels.filter(ch => {
+      const chNorm = String(ch).trim()
+        .replace(/^https?:\/\/(www\.)?t\.me\//i, '')
+        .replace(/^t\.me\//i, '')
+        .replace(/^telegram\.me\//i, '')
+        .replace(/[\/\?#].*$/, '')
+        .replace(/^@/, '')
+        .toLowerCase();
+      return chNorm !== targetNorm;
+    });
+
     if (this.forceChannels.length < beforeLen) {
       this.saveDbFile();
       this.saveSettingsToSupabase().catch(() => {});
@@ -589,7 +634,10 @@ class DB {
       forceSubActive: this.forceSubActive ? 'Yoqilgan ✅' : "O'chirilgan ❌",
       blockedUsersCount: this.blockedUsers.size,
       joinRequestMode: this.joinRequestMode,
-      webAppUrl: this.webAppUrl
+      webAppUrl: this.webAppUrl,
+      canvaProClaims: this.canvaProClaimers.size,
+      canvaProEnabled: this.canvaProEnabled,
+      hasCanvaProLink: Boolean(this.canvaProLink)
     };
   }
 
@@ -610,7 +658,11 @@ class DB {
       superAdminId: this.superAdminId,
       admins: this.adminsList,
       joinRequestMode: this.joinRequestMode,
-      blockedUsersCount: this.blockedUsers.size
+      blockedUsersCount: this.blockedUsers.size,
+      banners: this.banners,
+      canvaProLink: this.canvaProLink,
+      canvaProEnabled: this.canvaProEnabled,
+      canvaProClaims: this.canvaProClaimers.size
     };
   }
 
@@ -621,6 +673,96 @@ class DB {
   toggleForceSub(status) {
     this.forceSubActive = typeof status === 'boolean' ? status : !this.forceSubActive;
     this.saveDbFile();
+  }
+
+  // Banner Management
+  getBanners() {
+    return this.banners;
+  }
+
+  setBanner(slot, imageUrl, linkUrl) {
+    const slotNum = Number(slot);
+    if (slotNum < 1 || slotNum > 10) return false;
+    const existing = this.banners.find(b => b.slot === slotNum);
+    if (existing) {
+      existing.imageUrl = imageUrl || existing.imageUrl;
+      existing.linkUrl = linkUrl !== undefined ? linkUrl : existing.linkUrl;
+    } else {
+      this.banners.push({ slot: slotNum, imageUrl: imageUrl || '', linkUrl: linkUrl || '' });
+    }
+    this.banners.sort((a, b) => a.slot - b.slot);
+    this.saveDbFile();
+    this.saveSettingsToSupabase().catch(() => {});
+    return true;
+  }
+
+  removeBanner(slot) {
+    const slotNum = Number(slot);
+    const beforeLen = this.banners.length;
+    this.banners = this.banners.filter(b => b.slot !== slotNum);
+    if (this.banners.length < beforeLen) {
+      this.saveDbFile();
+      this.saveSettingsToSupabase().catch(() => {});
+      return true;
+    }
+    return false;
+  }
+
+  // Canva Pro Management
+  getCanvaProSettings() {
+    return {
+      link: this.canvaProLink || '',
+      isEnabled: this.canvaProEnabled,
+      claimsCount: this.canvaProClaimers.size,
+      claimers: Array.from(this.canvaProClaimers)
+    };
+  }
+
+  setCanvaProLink(link) {
+    if (!link || typeof link !== 'string') return false;
+    let clean = link.trim();
+    if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
+      clean = `https://${clean}`;
+    }
+    this.canvaProLink = clean;
+    this.canvaProEnabled = true;
+    this.saveDbFile();
+    this.saveSettingsToSupabase().catch(() => {});
+    return this.canvaProLink;
+  }
+
+  deleteCanvaProLink() {
+    this.canvaProLink = '';
+    this.saveDbFile();
+    this.saveSettingsToSupabase().catch(() => {});
+    return true;
+  }
+
+  toggleCanvaPro(status = null) {
+    if (status !== null) {
+      this.canvaProEnabled = Boolean(status);
+    } else {
+      this.canvaProEnabled = !this.canvaProEnabled;
+    }
+    this.saveDbFile();
+    this.saveSettingsToSupabase().catch(() => {});
+    return this.canvaProEnabled;
+  }
+
+  recordCanvaProClaim(userId) {
+    if (!userId) return false;
+    const num = Number(userId);
+    this.canvaProClaimers.add(num);
+    this.saveDbFile();
+    this.saveSettingsToSupabase().catch(() => {});
+    return this.canvaProClaimers.size;
+  }
+
+  resetCanvaProClaims() {
+    this.canvaProClaimers = new Set();
+    this.saveDbFile();
+    this.saveSettingsToSupabase().catch(() => {});
+    return true;
   }
 }
 

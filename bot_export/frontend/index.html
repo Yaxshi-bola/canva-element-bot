@@ -2,6 +2,14 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8" />
+  <script>
+    if (window.location.hostname && window.location.hostname.includes('vercel.app')) {
+      window.location.replace('https://canva-elements.pages.dev' + window.location.search + window.location.hash);
+    }
+  </script>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Canva Element Kodlari — Zuhra Olimova</title>
   <meta name="description" content="Canva uchun 400+ saralangan 3D, Estetik, SMM va Animatsiyali element kodlari to'plami. Zuhra Olimova muallifligida." />
@@ -17,7 +25,7 @@
   <!-- FontAwesome Free Icons 6.5.1 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   
-  <link rel="stylesheet" href="styles.css?v=14.0" />
+  <link rel="stylesheet" href="styles.css?v=20.0" />
 </head>
 <body class="apple-vision-theme">
 
@@ -84,7 +92,7 @@
         <i class="fa-solid fa-bullhorn"></i> SMM
       </button>
       <button class="tag-chip" data-category="Aesthetic/Estetik Elementlar">
-        <i class="fa-solid fa-sparkles"></i> Estetik
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Estetik
       </button>
       <button class="tag-chip" data-category="Ramazon">
         <i class="fa-solid fa-moon"></i> Ramazon
@@ -110,6 +118,38 @@
           <!-- Dots loaded dynamically -->
         </div>
       </div>
+
+      <!-- Canva Pro (Team) Promo Card -->
+      <section class="canva-pro-promo-card" id="canva-pro-promo-card">
+        <div class="pro-card-glow"></div>
+        <div class="pro-card-inner">
+          <div class="pro-card-top">
+            <div class="pro-badge-group">
+              <span class="pro-tag"><i class="fa-solid fa-crown"></i> CANVA PRO TEAM</span>
+              <span class="pro-status-badge" id="pro-card-status-badge">
+                <span class="status-dot"></span> <span id="pro-card-status-text">Faol</span>
+              </span>
+            </div>
+            <div class="pro-expiry-pill" id="pro-card-expiry-pill">
+              <i class="fa-regular fa-clock"></i> <span id="pro-card-expiry-text">Doimiy</span>
+            </div>
+          </div>
+
+          <div class="pro-card-content">
+            <h3 class="pro-card-title">Canva Pro Jamoasiga Qo'shiling</h3>
+            <p class="pro-card-desc">
+              Kanalimiz a'zolari uchun maxsus bepul imkoniyat! 100+ million pullik shablonlar va Pro elementlardan cheksiz foydalaning.
+            </p>
+          </div>
+
+          <div class="pro-card-actions">
+            <button class="btn-canva-pro-claim" id="btn-canva-pro-claim">
+              <i class="fa-solid fa-crown"></i> <span>Canva Pro-ga Qo'shilish</span>
+              <i class="fa-solid fa-arrow-up-right-from-square pro-arrow-icon"></i>
+            </button>
+          </div>
+        </div>
+      </section>
 
       <!-- Section Title Row -->
       <div class="section-header-row">
@@ -152,7 +192,7 @@
     <div class="tab-view hidden" id="view-favorites">
       <div class="tab-page-header">
         <h2>Saqlanganlar</h2>
-        <button class="header-icon-btn"><i class="fa-solid fa-ellipsis"></i></button>
+        <button class="header-icon-btn" id="btn-favs-options" aria-label="Saqlanganlarni tozalash" title="Saqlanganlarni tozalash"><i class="fa-regular fa-trash-can"></i></button>
       </div>
       
       <!-- Empty State -->
@@ -227,6 +267,14 @@
           <i class="fa-solid fa-chevron-right action-arrow"></i>
         </button>
 
+        <button class="admin-action-row" id="admin-btn-canva-pro">
+          <div class="action-left">
+            <span class="action-icon" style="background:linear-gradient(135deg,#FF6B8B,#8A2BE2);"><i class="fa-solid fa-crown"></i></span>
+            <span class="action-title">Canva Pro (Team) sozlamalari</span>
+          </div>
+          <i class="fa-solid fa-chevron-right action-arrow"></i>
+        </button>
+
         <button class="admin-action-row" id="admin-btn-settings">
           <div class="action-left">
             <span class="action-icon settings-icon"><i class="fa-solid fa-gear"></i></span>
@@ -264,30 +312,40 @@
   <!-- Floating Glassmorphism Bottom Navigation Bar -->
   <nav class="bottom-nav-bar" id="bottom-nav-bar">
     <div class="nav-container">
-      <button class="nav-item active" data-tab="home" id="nav-item-home">
-        <i class="fa-solid fa-house"></i>
-        <span>Bosh sahifa</span>
+      <button class="nav-item active" data-tab="home" id="nav-item-home" aria-label="Bosh sahifa">
+        <div class="nav-icon-box">
+          <i class="fa-solid fa-house"></i>
+        </div>
+        <span class="nav-label">Bosh sahifa</span>
       </button>
       
-      <button class="nav-item" data-tab="categories" id="nav-item-categories">
-        <i class="fa-solid fa-layer-group"></i>
-        <span>Bo'limlar</span>
+      <button class="nav-item" data-tab="categories" id="nav-item-categories" aria-label="Bo'limlar">
+        <div class="nav-icon-box">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <span class="nav-label">Bo'limlar</span>
       </button>
       
-      <button class="nav-item" data-tab="news" id="nav-item-news">
-        <span class="nav-badge-news">NEW</span>
-        <i class="fa-solid fa-bolt"></i>
-        <span>Yangiliklar</span>
+      <button class="nav-item" data-tab="news" id="nav-item-news" aria-label="Yangiliklar">
+        <div class="nav-icon-box">
+          <i class="fa-solid fa-bolt"></i>
+          <span class="nav-badge-news">NEW</span>
+        </div>
+        <span class="nav-label">Yangiliklar</span>
       </button>
       
-      <button class="nav-item" data-tab="favorites" id="nav-item-favorites">
-        <i class="fa-solid fa-heart"></i>
-        <span>Saqlanganlar</span>
+      <button class="nav-item" data-tab="favorites" id="nav-item-favorites" aria-label="Saqlanganlar">
+        <div class="nav-icon-box">
+          <i class="fa-solid fa-heart"></i>
+        </div>
+        <span class="nav-label">Saqlanganlar</span>
       </button>
       
-      <button class="nav-item hidden" data-tab="admin" id="nav-item-admin">
-        <i class="fa-solid fa-shield-halved"></i>
-        <span>Admin</span>
+      <button class="nav-item hidden" data-tab="admin" id="nav-item-admin" aria-label="Admin">
+        <div class="nav-icon-box">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <span class="nav-label">Admin</span>
       </button>
     </div>
   </nav>
@@ -408,7 +466,7 @@
 
         <div class="form-group" style="margin-top: 14px;">
           <label>Mini App Havolasi</label>
-          <input type="text" id="settings-webapp-url" readonly value="https://canva-element-kodlari-zuhra-olimova.vercel.app" />
+          <input type="text" id="settings-webapp-url" readonly value="https://canva-elements.pages.dev" />
         </div>
       </div>
       <div class="modal-footer">
@@ -523,6 +581,53 @@
     </div>
   </div>
 
+  <!-- Manage Canva Pro Modal -->
+  <div class="modal-overlay hidden" id="modal-manage-canva-pro">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-crown" style="color:#FF8E53;"></i> Canva Pro (Team) Sozlamalari</h3>
+        <button class="modal-close-btn" id="modal-canva-pro-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-checkbox-group" style="margin-bottom: 14px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px;">
+          <label class="checkbox-container" style="font-weight: 600;">
+            <input type="checkbox" id="canva-pro-active-toggle" checked />
+            <span class="checkmark"></span>
+            Canva Pro qo'shilish faol (Ochiq)
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>Canva Team Taklif Havolasi (Invite Link)</label>
+          <input type="text" id="canva-pro-link-input" placeholder="https://www.canva.com/brand/join?token=..." />
+          <small class="form-help">Ushbu havola faqat kanal a'zosi bo'lganlarga ochiladi (asl tugmada link ko'rinmaydi).</small>
+        </div>
+
+        <div class="form-group" style="margin-top: 14px;">
+          <label>Amal qilish muddati (foydalanuvchilarga ko'rinadi)</label>
+          <input type="text" id="canva-pro-expiry-input" placeholder="masalan: 30-noyabrgacha yoki 2026-yil oxirigacha" />
+          <small class="form-help">Ushbu muddat Mini App va botda ko'rinib turadi.</small>
+        </div>
+
+        <div class="form-group" style="margin-top: 14px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:12px; opacity:0.7;">Havola olgan foydalanuvchilar:</div>
+              <div style="font-size:18px; font-weight:800; color:#FF8E53;" id="canva-pro-claims-stat">0 ta</div>
+            </div>
+            <button type="button" class="btn-modal-cancel" id="btn-reset-canva-pro-claims" style="font-size:11px; padding:6px 10px;">
+              <i class="fa-solid fa-rotate-right"></i> Hisoblagichni 0 qilish
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" id="btn-close-canva-pro-modal">Bekor qilish</button>
+        <button class="btn-modal-save" id="btn-save-canva-pro"><i class="fa-solid fa-check"></i> Saqlash</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Download JSON Backup Modal -->
   <div class="modal-overlay hidden" id="modal-backup-download">
     <div class="modal-card">
@@ -573,17 +678,41 @@
     </div>
   </div>
 
-  <!-- Toast Notification -->
+  <!-- Mandatory Channel Subscription Lock Overlay (Apple VisionOS Glassmorphism Guard) -->
+  <div class="sub-gate-overlay hidden" id="sub-gate-overlay">
+    <div class="sub-gate-card" id="sub-gate-card">
+      <div class="sub-gate-icon-wrapper">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <h2 class="sub-gate-title">Obuna bo'lish talab etiladi</h2>
+      <p class="sub-gate-desc" id="sub-gate-desc">
+        Canva element kodlaridan to'liq va bepul foydalanish uchun homiy kanalimizga a'zo bo'ling:
+      </p>
+
+      <div class="sub-gate-channels" id="sub-gate-channels-list">
+        <!-- Dynamically injected channel buttons -->
+      </div>
+
+      <button class="sub-gate-btn-check" id="btn-recheck-sub-overlay">
+        <i class="fa-solid fa-rotate-right"></i> <span>Obunani tekshirish</span>
+      </button>
+
+      <div class="sub-gate-footer-note">
+        <i class="fa-solid fa-shield-halved"></i> A'zo bo'lgach katalog avtomatik ochiladi
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification (Micro-Pill) -->
   <div class="toast-notification hidden" id="toast">
     <div class="toast-content">
-      <i class="fa-solid fa-circle-check toast-icon"></i>
-      <span class="toast-title" id="toast-title">Nusxalandi!</span>
-      <span class="toast-code" id="toast-code">set:nAG35oM8lfI</span>
+      <i class="fa-solid fa-check toast-icon"></i>
+      <span class="toast-title" id="toast-title">Nusxalandi</span>
     </div>
   </div>
 
   <!-- Include Data and Main Logic Scripts -->
-  <script src="data.js?v=14.0"></script>
-  <script src="app.js?v=14.0"></script>
+  <script src="data.js?v=20.0"></script>
+  <script src="app.js?v=20.0"></script>
 </body>
 </html>

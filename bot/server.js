@@ -322,6 +322,103 @@ app.delete('/api/banners/:slot', requireAdminAuth, (req, res) => {
   });
 });
 
+// ========== CANVA PRO MANAGEMENT APIs ==========
+
+// GET: Canva Pro public / admin status
+app.get('/api/canva-pro', (req, res) => {
+  const settings = db.getCanvaProSettings();
+  const candidateId = req.query.admin_user_id || req.query.user_id || req.headers['x-user-id'];
+  const isAdminUser = candidateId && db.isAdmin(candidateId);
+  res.json({
+    success: true,
+    isEnabled: settings.isEnabled,
+    claimsCount: settings.claimsCount,
+    hasLink: Boolean(settings.link),
+    expiryDate: settings.expiryDate || '',
+    link: isAdminUser ? settings.link : undefined
+  });
+});
+
+// POST / GET: Claim Canva Pro Link (Protected by channel subscription)
+app.all('/api/canva-pro/claim', async (req, res) => {
+  const settings = db.getCanvaProSettings();
+  if (!settings.isEnabled || !settings.link) {
+    return res.status(400).json({
+      success: false,
+      error: "Hozirda Canva Pro jamoasiga qabul yopiq yoki havola mavjud emas."
+    });
+  }
+
+  const userId = req.body?.user_id || req.query.user_id || req.headers['x-user-id'];
+  if (!userId) {
+    return res.status(400).json({
+      success: false,
+      error: "Telegram foydalanuvchi identifikatori topilmadi. Iltimos bot orqali kiring."
+    });
+  }
+
+  const isAdminUser = db.isAdmin(userId);
+  if (!isAdminUser && db.isForceSubActive()) {
+    const channels = db.getForceChannels();
+    const botInstance = require('./bot');
+    const missing = [];
+    for (const channel of channels) {
+      try {
+        const member = await botInstance.getChatMember(channel, userId);
+        const validStatuses = ['creator', 'administrator', 'member'];
+        if (!validStatuses.includes(member.status)) {
+          missing.push(channel);
+        }
+      } catch (err) {
+        if (!err.message?.includes('chat not found') && !err.message?.includes('not a member') && !err.message?.includes('not an admin')) {
+          missing.push(channel);
+        }
+      }
+    }
+    if (missing.length > 0) {
+      return res.json({
+        success: false,
+        isSubscribed: false,
+        missing,
+        message: "Canva Pro havolasini olish uchun homiy kanallarga a'zo bo'lishingiz shart."
+      });
+    }
+  }
+
+  // User is subscribed or admin
+  db.recordCanvaProClaim(userId);
+  res.json({
+    success: true,
+    isSubscribed: true,
+    link: settings.link,
+    expiryDate: settings.expiryDate || ''
+  });
+});
+
+// POST: Update Canva Pro Link and Settings (Admin Only)
+app.post('/api/settings/canva-pro', requireAdminAuth, (req, res) => {
+  const { link, isEnabled, resetClaims, deleteLink, expiryDate } = req.body;
+  if (link !== undefined) {
+    db.setCanvaProLink(link, expiryDate);
+  }
+  if (expiryDate !== undefined && link === undefined) {
+    db.setCanvaProExpiry(expiryDate);
+  }
+  if (isEnabled !== undefined) {
+    db.toggleCanvaPro(isEnabled);
+  }
+  if (resetClaims) {
+    db.resetCanvaProClaims();
+  }
+  if (deleteLink) {
+    db.deleteCanvaProLink();
+  }
+  res.json({
+    success: true,
+    canvaPro: db.getCanvaProSettings()
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Bot Web Server is running on port ${PORT}`);
 });

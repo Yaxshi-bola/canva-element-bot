@@ -142,6 +142,14 @@ function getUserKeyboard(userId) {
         style: 'primary',
         icon_custom_emoji_id: PREMIUM_EMOJIS.SAKURA
       }
+    ],
+    [
+      {
+        text: '👑 Canva Pro (Team) olish',
+        callback_data: 'get_canva_pro',
+        style: 'success',
+        icon_custom_emoji_id: PREMIUM_EMOJIS.CROWN
+      }
     ]
   ];
 
@@ -156,7 +164,9 @@ function getUserKeyboard(userId) {
     ]);
   }
 
-  const replyKeyboard = [];
+  const replyKeyboard = [
+    [{ text: '👑 Canva Pro olish' }]
+  ];
   if (isAdm) {
     replyKeyboard.push([{ text: '👑 Admin Panel' }]);
   }
@@ -169,7 +179,7 @@ function getAdminKeyboard(userId) {
   const isSuper = isSuperAdmin(userId);
   const keyboard = [
     [{ text: '📊 Statistika' }, { text: '➕ Yangi Element Qo\'shish' }],
-    [{ text: '🔗 Majburiy Obuna Kanallari' }]
+    [{ text: '🔗 Majburiy Obuna Kanallari' }, { text: '💎 Canva Pro Sozlamalari' }]
   ];
 
   if (isSuper) {
@@ -185,6 +195,143 @@ function getAdminKeyboard(userId) {
       resize_keyboard: true
     }
   };
+}
+
+// Deliver Canva Pro to Subscribed User (No exposed link on button, direct delivery)
+async function handleGetCanvaPro(chatId, userId, query = null) {
+  if (isBlockedUser(userId)) {
+    if (query) return bot.answerCallbackQuery(query.id, { text: '🚫 Siz bloklangansiz!', show_alert: true });
+    return bot.sendMessage(chatId, `🚫 **Siz bloklangansiz!**`, { parse_mode: 'Markdown' });
+  }
+
+  // 1. Verify compulsory channels subscription
+  const subStatus = await checkUserSubscription(userId);
+
+  if (!subStatus.isSubscribed) {
+    if (query) {
+      await bot.answerCallbackQuery(query.id, {
+        text: "⚠️ Canva Pro faqat kanalimiz a'zolari uchun bepul! Iltimos, avval kanalimizga obuna bo'ling.",
+        show_alert: true
+      });
+    }
+
+    const inlineButtons = subStatus.missing.map(ch => [
+      {
+        text: `${ch} kanaliga obuna bo'lish`,
+        url: ch.startsWith('-100') ? 'https://t.me' : `https://t.me/${ch.replace('@', '')}`,
+        style: 'danger',
+        icon_custom_emoji_id: PREMIUM_EMOJIS.TELEGRAM
+      }
+    ]);
+
+    inlineButtons.push([
+      {
+        text: '✅ A\'zo bo\'ldim / Canva Pro olish',
+        callback_data: 'check_sub_and_canva',
+        style: 'success',
+        icon_custom_emoji_id: PREMIUM_EMOJIS.SUCCESS_CHECK
+      }
+    ]);
+
+    const lockText = `<tg-emoji emoji-id="${PREMIUM_EMOJIS.DANGER_STOP}">🛑</tg-emoji> <b>Canva Pro (Team) olish uchun kanal(lar)imizga obuna bo'ling!</b>\n\n` +
+      `Bizning <b>Canva Pro (Team)</b> jamoamiz faqat kanalimizning sodiq a'zolari uchun bepul taqdim etiladi.\n\n` +
+      `Quyidagi homiy kanallarga a'zo bo'lgach, <b>"A'zo bo'ldim / Canva Pro olish"</b> tugmasini bosing:`;
+
+    return bot.sendMessage(chatId, lockText, {
+      parse_mode: 'HTML',
+      reply_markup: { inline_keyboard: inlineButtons }
+    });
+  }
+
+  if (query) {
+    await bot.answerCallbackQuery(query.id);
+  }
+
+  // 2. User is verified! Check Canva Pro settings
+  const canvaSettings = db.getCanvaProSettings();
+
+  if (!canvaSettings.isEnabled || !canvaSettings.link) {
+    const closedText = `😔 <b>Hozircha Canva Pro (Team) jamoamizda bo'sh o'rinlar qolmagan!</b>\n\n` +
+      `Jamoamiz to'lganligi sababli yangi havola tayyorlanmoqda. Yangi joylar ochilishi bilan kanalimizda e'lon qilamiz.\n\n` +
+      `Iltimos, kanalimizni kuzatib boring! <tg-emoji emoji-id="${PREMIUM_EMOJIS.PINK_HEART}">💖</tg-emoji>`;
+
+    return bot.sendMessage(chatId, closedText, { parse_mode: 'HTML' });
+  }
+
+  // 3. Record claim & Deliver private link
+  db.recordCanvaProClaim(userId);
+
+  const expiryLine = canvaSettings.expiryDate 
+    ? `⏳ <b>Amal qilish muddati:</b> <b>${canvaSettings.expiryDate}</b>\n\n` 
+    : '';
+
+  const successText = `🎉 <b>TABRIKLAYMIZ! Siz kanalimizning faol a'zosisiz!</b> <tg-emoji emoji-id="${PREMIUM_EMOJIS.SPARKLES}">✨</tg-emoji>\n\n` +
+    `Siz uchun maxsus bepul <b>Canva Pro (Team)</b> jamoamizga qo'shilish imkoniyati ochildi!\n\n` +
+    expiryLine +
+    `Jamoaga qo'shilish orqali barcha pullik shablonlar, shriftlar, 3D elementlar va Pro imkoniyatlardan bepul foydalanishingiz mumkin.\n\n` +
+    `👇 <b>Canva jamoasiga qo'shilish uchun pastdagi tugmani bosing:</b>`;
+
+  const claimButtons = [
+    [
+      {
+        text: '🚀 Canva Team-ga qo\'shilish',
+        url: canvaSettings.link,
+        style: 'success',
+        icon_custom_emoji_id: PREMIUM_EMOJIS.CROWN
+      }
+    ]
+  ];
+
+  return bot.sendMessage(chatId, successText, {
+    parse_mode: 'HTML',
+    reply_markup: { inline_keyboard: claimButtons }
+  });
+}
+
+// Render Admin Canva Pro Settings Menu
+async function renderCanvaProAdminMenu(chatId, userId, messageId = null) {
+  if (!isAdmin(userId)) return;
+  const pro = db.getCanvaProSettings();
+  const linkDisplay = pro.link ? `<code>${pro.link}</code>` : '<i>Kiritilmagan / Bo\'sh ⚠️</i>';
+  const statusDisplay = pro.isEnabled ? 'YOQILGAN (FAOL) ✅' : 'TO\'XTATILGAN (NOFAOL) ❌';
+
+  const menuText = `💎 <b>CANVA PRO (TEAM) LINK BOSHQARUVI</b>\n\n` +
+    `📌 <b>Hozirgi taklif havolasi:</b>\n${linkDisplay}\n\n` +
+    `📅 <b>Amal qilish muddati:</b> <b>${pro.expiryDate || 'Belgilanmagan (Doimiy)'}</b>\n` +
+    `⚙️ <b>Holat:</b> ${statusDisplay}\n` +
+    `👥 <b>Havolani olgan foydalanuvchilar:</b> <b>${pro.claimsCount}</b> ta\n\n` +
+    `<i>Eslatma: Kanal a'zolari botda yoki Mini App'da Canva Pro olishni bosganda ushbu havola va muddat ko'rinadi!</i>`;
+
+  const inlineKeyboard = [
+    [
+      { text: '✏️ Havolani almashtirish', callback_data: 'admin_canva_edit' },
+      { text: '📅 Muddatni belgilash', callback_data: 'admin_canva_edit_expiry' }
+    ],
+    [
+      { text: `⚙️ Holat: ${pro.isEnabled ? "O'chirish ❌" : "Yoqish ✅"}`, callback_data: 'admin_canva_toggle' },
+      { text: '🔄 Hisoblagichni 0 qilish', callback_data: 'admin_canva_reset' }
+    ],
+    [
+      { text: '🗑 Havolani o\'chirish', callback_data: 'admin_canva_del' },
+      { text: '◀️ Admin menyusi', callback_data: 'admin_back_to_menu' }
+    ]
+  ];
+
+  if (messageId) {
+    return bot.editMessageText(menuText, {
+      chat_id: chatId,
+      message_id: messageId,
+      parse_mode: 'HTML',
+      reply_markup: { inline_keyboard: inlineKeyboard }
+    }).catch(() => {
+      bot.sendMessage(chatId, menuText, { parse_mode: 'HTML', reply_markup: { inline_keyboard: inlineKeyboard } });
+    });
+  }
+
+  return bot.sendMessage(chatId, menuText, {
+    parse_mode: 'HTML',
+    reply_markup: { inline_keyboard: inlineKeyboard }
+  });
 }
 
 // Global Block Check Middleware
@@ -277,9 +424,10 @@ function sendWelcomeMessage(chatId, userId) {
     `• <tg-emoji emoji-id="5472164874886846699">✨</tg-emoji> <b>3D elementlar</b>\n` +
     `• <tg-emoji emoji-id="5404835520150773707">🌷</tg-emoji> <b>Estetik bezaklar</b>\n` +
     `• <tg-emoji emoji-id="5458795341774083865">🎯</tg-emoji> <b>SMM elementlari</b>\n` +
-    `• <tg-emoji emoji-id="5375464961822695044">🎬</tg-emoji> <b>Animatsiyali elementlar</b>\n\n` +
+    `• <tg-emoji emoji-id="5375464961822695044">🎬</tg-emoji> <b>Animatsiyali elementlar</b>\n` +
+    `• <tg-emoji emoji-id="5229011542011299168">👑</tg-emoji> <b>Canva Pro (Team)</b> — kanalimiz a'zolariga bepul!\n\n` +
     `<tg-emoji emoji-id="5431449001532594346">⚡</tg-emoji> <b>Tezkor qidiruv</b> • <tg-emoji emoji-id="5987635334945444280">📋</tg-emoji> <b>Oson nusxalash</b>\n\n` +
-    `<tg-emoji emoji-id="5406745015365943482">👇</tg-emoji> <b>Mini App’ni ochish uchun pastdagi tugmani bosing!</b>`;
+    `<tg-emoji emoji-id="5406745015365943482">👇</tg-emoji> <b>Kerakli bo'limni tanlash uchun pastdagi tugmalardan foydalaning:</b>`;
 
   bot.sendMessage(chatId, welcomeText, {
     parse_mode: 'HTML',
@@ -288,7 +436,7 @@ function sendWelcomeMessage(chatId, userId) {
     }
   });
 
-  if (isAdmin(userId) && replyKeyboard.length > 0) {
+  if (isAdmin(userId)) {
     const isSuper = isSuperAdmin(userId);
     const adminTag = isSuper 
       ? `Yaxshi Bola <tg-emoji emoji-id="5433856365061746058">🩵</tg-emoji>` 
@@ -301,6 +449,13 @@ function sendWelcomeMessage(chatId, userId) {
         resize_keyboard: true
       }
     });
+  } else if (replyKeyboard.length > 0) {
+    bot.sendMessage(chatId, `👇 Pastdagi menyudan ham foydalanishingiz mumkin:`, {
+      reply_markup: {
+        keyboard: replyKeyboard,
+        resize_keyboard: true
+      }
+    }).catch(() => {});
   }
 }
 
@@ -403,8 +558,85 @@ bot.on('callback_query', async (query) => {
     return;
   }
 
+  // Canva Pro Claim Callback (User)
+  if (data === 'get_canva_pro') {
+    return handleGetCanvaPro(chatId, userId, query);
+  }
+
+  // Check Sub and Deliver Canva Pro Callback (User)
+  if (data === 'check_sub_and_canva') {
+    const subStatus = await checkUserSubscription(userId);
+    if (subStatus.isSubscribed) {
+      await bot.answerCallbackQuery(query.id, { text: 'Obuna tasdiqlandi! Canva Pro ochilmoqda...' });
+      await bot.deleteMessage(chatId, query.message.message_id).catch(() => {});
+      return handleGetCanvaPro(chatId, userId);
+    } else {
+      await bot.answerCallbackQuery(query.id, {
+        text: "Siz hali barcha majburiy kanallarga obuna bo'lmadingiz! Iltimos, avval kanallarga a'zo bo'ling.",
+        show_alert: true
+      });
+      return;
+    }
+  }
+
   // Admin Callbacks
   if (!isAdmin(userId)) return;
+
+  // Canva Pro Admin Callbacks
+  if (data === 'admin_canva_menu') {
+    await bot.answerCallbackQuery(query.id);
+    return renderCanvaProAdminMenu(chatId, userId, query.message?.message_id);
+  }
+
+  if (data === 'admin_canva_edit') {
+    adminState[userId] = 'awaiting_canva_pro_link';
+    await bot.answerCallbackQuery(query.id);
+    return bot.sendMessage(
+      chatId,
+      `✏️ <b>Yangi Canva Pro (Team) taklif havolasini yuboring:</b>\n\n` +
+      `Masalan:\n<code>https://www.canva.com/brand/join?token=xxxxxx</code>\n\n` +
+      `<i>Bekor qilish uchun /cancel deb yozing.</i>`,
+      { parse_mode: 'HTML' }
+    );
+  }
+
+  if (data === 'admin_canva_edit_expiry') {
+    adminState[userId] = 'awaiting_canva_pro_expiry';
+    await bot.answerCallbackQuery(query.id);
+    return bot.sendMessage(
+      chatId,
+      `📅 <b>Canva Pro amal qilish muddatini yuboring:</b>\n\n` +
+      `Masalan:\n<code>30-noyabrgacha</code> yoki <code>2026-yil oxirigacha</code> yoki <code>1 oy</code>\n\n` +
+      `<i>Bekor qilish uchun /cancel deb yozing.</i>`,
+      { parse_mode: 'HTML' }
+    );
+  }
+
+  if (data === 'admin_canva_toggle') {
+    const newStatus = db.toggleCanvaPro();
+    await bot.answerCallbackQuery(query.id, { text: `Holat: ${newStatus ? 'YOQILDI ✅' : "O'CHIRILDI ❌"}` });
+    return renderCanvaProAdminMenu(chatId, userId, query.message?.message_id);
+  }
+
+  if (data === 'admin_canva_reset') {
+    db.resetCanvaProClaims();
+    await bot.answerCallbackQuery(query.id, { text: 'Hisoblagich 0 qilindi!' });
+    return renderCanvaProAdminMenu(chatId, userId, query.message?.message_id);
+  }
+
+  if (data === 'admin_canva_del') {
+    db.deleteCanvaProLink();
+    await bot.answerCallbackQuery(query.id, { text: "Canva Pro havolasi o'chirildi!" });
+    return renderCanvaProAdminMenu(chatId, userId, query.message?.message_id);
+  }
+
+  if (data === 'admin_back_to_menu') {
+    await bot.answerCallbackQuery(query.id);
+    return bot.sendMessage(chatId, `👑 <b>Admin Paneli</b>\n\nBoshqaruv bo'limini tanlang:`, {
+      parse_mode: 'HTML',
+      ...getAdminKeyboard(userId)
+    });
+  }
 
   // Broadcast Actions
   if (data === 'broadcast_add_buttons') {
@@ -675,6 +907,11 @@ bot.on('message', async (msg) => {
     last_name: msg.from.last_name
   }).catch(() => {});
 
+  // Canva Pro Claim via Persistent Reply Button (Accessible to ALL users)
+  if (text === '👑 Canva Pro olish') {
+    return handleGetCanvaPro(chatId, userId);
+  }
+
   if (!isAdmin(userId)) return;
 
   // Handle Admin Menu Commands
@@ -691,6 +928,38 @@ bot.on('message', async (msg) => {
     });
   }
 
+  if (text === '💎 Canva Pro Sozlamalari') {
+    adminState[userId] = null;
+    return renderCanvaProAdminMenu(chatId, userId);
+  }
+
+  // Quick Canva Pro Link Command (/setcanva or /canvapro)
+  if (text && (text.startsWith('/setcanva') || text.startsWith('/canvapro'))) {
+    const raw = text.replace(/^\/(setcanva|canvapro)\s*/i, '').trim();
+    if (!raw) {
+      adminState[userId] = 'awaiting_canva_pro_link';
+      return bot.sendMessage(
+        chatId,
+        `✏️ <b>Yangi Canva Pro (Team) taklif havolasini yuboring:</b>\n\n` +
+        `Format:\n<code>https://www.canva.com/brand/join?token=...</code>\n\n` +
+        `Yoki muddat bilan:\n<code>https://www.canva.com/brand/join?token=... | 30-noyabrgacha</code>\n\n` +
+        `<i>Bekor qilish uchun /cancel deb yozing.</i>`,
+        { parse_mode: 'HTML' }
+      );
+    }
+    const [rawLink, rawExpiry] = raw.split('|').map(s => s.trim());
+    const saved = db.setCanvaProLink(rawLink, rawExpiry || null);
+    const expiryMsg = rawExpiry ? `\n📅 <b>Muddati:</b> <code>${rawExpiry}</code>` : '';
+    return bot.sendMessage(
+      chatId,
+      `✅ <b>Canva Pro ma'lumotlari muvaffaqiyatli saqlandi!</b>\n\n` +
+      `🔗 <b>Havola:</b> <code>${saved}</code>${expiryMsg}\n` +
+      `⚙️ <b>Holat:</b> FAOL ✅\n\n` +
+      `Endi kanal a'zolari botda va Mini App'da Canva Pro olishlari mumkin!`,
+      { parse_mode: 'HTML', ...getAdminKeyboard(userId) }
+    );
+  }
+
   if (text === '🏠 Bosh Menyuga Qaytish') {
     adminState[userId] = null;
     return sendWelcomeMessage(chatId, userId);
@@ -704,6 +973,7 @@ bot.on('message', async (msg) => {
       `👩 **Qizlar:** ${stats.femaleCount} ta\n` +
       `👨 **O'g'il bolalar:** ${stats.maleCount} ta\n` +
       `❓ **Noma'lum:** ${stats.unknownCount} ta\n\n` +
+      `💎 **Canva Pro olganlar:** ${stats.canvaProClaims} ta (${stats.hasCanvaProLink ? (stats.canvaProEnabled ? 'Faol ✅' : 'To\'xtatilgan ❌') : 'Havola yo\'q ⚠️'})\n\n` +
       `✨ **Yangi element kodlari:** ${stats.customCount} ta\n` +
       `🛑 **Bloklanganlar:** ${stats.blockedUsersCount} ta\n` +
       `👑 **Adminlar soni:** ${stats.adminCount} ta\n\n` +
@@ -860,6 +1130,37 @@ bot.on('message', async (msg) => {
     } else {
       return bot.sendMessage(chatId, `⚠️ Ushbu kanal allaqachon ro'yxatda bor yoki xato link kiritildi.`, getAdminKeyboard(userId));
     }
+  }
+
+  // Canva Pro Link Input Handler
+  if (adminState[userId] === 'awaiting_canva_pro_link') {
+    adminState[userId] = null;
+    const cleanText = text.trim();
+    const [cleanLink, cleanExpiry] = cleanText.split('|').map(s => s.trim());
+    const saved = db.setCanvaProLink(cleanLink, cleanExpiry || null);
+    const expiryMsg = cleanExpiry ? `\n📅 <b>Muddati:</b> <code>${cleanExpiry}</code>` : '';
+    return bot.sendMessage(
+      chatId,
+      `✅ <b>Canva Pro taklif havolasi muvaffaqiyatli saqlandi va faollashtirildi!</b>\n\n` +
+      `🔗 <b>Havola:</b> <code>${saved}</code>${expiryMsg}\n` +
+      `⚙️ <b>Holat:</b> FAOL ✅\n\n` +
+      `Endi kanal a'zolari "👑 Canva Pro olish" tugmasi orqali jamoaga qo'shila oladi!`,
+      { parse_mode: 'HTML', ...getAdminKeyboard(userId) }
+    );
+  }
+
+  // Canva Pro Expiry Input Handler
+  if (adminState[userId] === 'awaiting_canva_pro_expiry') {
+    adminState[userId] = null;
+    const cleanExpiry = text.trim();
+    db.setCanvaProExpiry(cleanExpiry);
+    return bot.sendMessage(
+      chatId,
+      `✅ <b>Canva Pro amal qilish muddati belgilandi!</b>\n\n` +
+      `📅 <b>Muddat:</b> <code>${cleanExpiry}</code>\n\n` +
+      `Ushbu muddat botda va Mini App'da foydalanuvchilarga ko'rinib turadi!`,
+      { parse_mode: 'HTML', ...getAdminKeyboard(userId) }
+    );
   }
 
   // Broadcast Message Creation

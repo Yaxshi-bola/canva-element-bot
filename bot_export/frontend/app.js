@@ -105,6 +105,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalBannersClose = document.getElementById('modal-banners-close');
   const btnCloseBannersModal = document.getElementById('btn-close-banners-modal');
 
+  // Canva Pro Promo Card & Modal DOM Elements
+  const canvaProPromoCard = document.getElementById('canva-pro-promo-card');
+  const proCardStatusBadge = document.getElementById('pro-card-status-badge');
+  const proCardStatusText = document.getElementById('pro-card-status-text');
+  const proCardExpiryPill = document.getElementById('pro-card-expiry-pill');
+  const proCardExpiryText = document.getElementById('pro-card-expiry-text');
+  const btnCanvaProClaim = document.getElementById('btn-canva-pro-claim');
+
+  const adminBtnCanvaPro = document.getElementById('admin-btn-canva-pro');
+  const modalManageCanvaPro = document.getElementById('modal-manage-canva-pro');
+  const modalCanvaProClose = document.getElementById('modal-canva-pro-close');
+  const btnCloseCanvaProModal = document.getElementById('btn-close-canva-pro-modal');
+  const canvaProActiveToggle = document.getElementById('canva-pro-active-toggle');
+  const canvaProLinkInput = document.getElementById('canva-pro-link-input');
+  const canvaProExpiryInput = document.getElementById('canva-pro-expiry-input');
+  const canvaProClaimsStat = document.getElementById('canva-pro-claims-stat');
+  const btnResetCanvaProClaims = document.getElementById('btn-reset-canva-pro-claims');
+  const btnSaveCanvaPro = document.getElementById('btn-save-canva-pro');
+
   // Haptic Feedback Helper
   function triggerHaptic(type = 'light') {
     try {
@@ -120,21 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let toastTimer = null;
 
-  // Toast Notification (Compact, non-overflowing Apple VisionOS style)
-  function showToast(msg, codeStr = '') {
+  // Toast Notification (Micro-Pill Apple Dynamic Island Style)
+  function showToast(msg = 'Nusxalandi') {
     const toastTitle = document.getElementById('toast-title');
-    const toastCode = document.getElementById('toast-code');
-    
     if (toastTitle) toastTitle.textContent = msg;
-    if (toastCode) {
-      // Never show multiline or long text in toastCode pill
-      if (codeStr && codeStr.length <= 22 && !codeStr.includes('\n')) {
-        toastCode.textContent = codeStr;
-        toastCode.style.display = 'inline-block';
-      } else {
-        toastCode.style.display = 'none';
-      }
-    }
 
     if (toast) {
       toast.classList.remove('hidden');
@@ -147,11 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (toastTimer) clearTimeout(toastTimer);
     toastTimer = setTimeout(() => {
       toast?.classList.add('hidden');
-    }, 2000);
+    }, 1200);
   }
 
   // Copy to Clipboard Helper with In-Place Feedback & Anti-Zoom Fallback
-  function copyToClipboard(text, customToastMsg = 'Nusxalandi!', triggerEl = null) {
+  function copyToClipboard(text, customToastMsg = 'Nusxalandi', triggerEl = null) {
     if (!text) return;
 
     // In-place button tactile visual feedback
@@ -166,12 +174,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (triggerEl.classList.contains('btn-copy') || triggerEl.classList.contains('btn-copy-action')) {
           triggerEl.innerHTML = originalHtml;
         }
-      }, 1400);
+      }, 1100);
     }
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(() => {
-        showToast(customToastMsg, text);
+        showToast(customToastMsg);
       }).catch(() => {
         fallbackCopyTextToClipboard(text, customToastMsg);
       });
@@ -201,14 +209,14 @@ document.addEventListener('DOMContentLoaded', () => {
     textArea.setSelectionRange(0, 99999);
     try {
       document.execCommand('copy');
-      showToast(customToastMsg, text);
+      showToast(customToastMsg);
     } catch (err) {
       showToast("❌ Nusxalab bo'lmadi");
     }
     document.body.removeChild(textArea);
   }
 
-  // Share / Uzatish Element Helper
+  // Share / Uzatish Element Helper (Opens Native Telegram Share, No Floating Popup)
   function shareElement(code, description, triggerEl = null) {
     if (triggerEl) {
       triggerEl.classList.add('copied-active');
@@ -217,13 +225,13 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         triggerEl.classList.remove('copied-active');
         triggerEl.innerHTML = origHtml;
-      }, 1400);
+      }, 1100);
     }
+
+    triggerHaptic('light');
 
     const shareText = `🎨 Canva Element Kodi: ${code}\n📌 Tavsif: ${description || 'Canva elementi'}\n\n✨ Bot: @zuhracanva_bot`;
     const shareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/zuhracanva_bot')}&text=${encodeURIComponent(shareText)}`;
-
-    showToast("Ulashish uchun ochildi");
 
     try {
       if (tg && typeof tg.openTelegramLink === 'function') {
@@ -248,20 +256,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Admin Verification Logic (Hide Admin tab by default for non-admins)
   function checkAdminPermissions() {
-    const currentUserId = tg?.initDataUnsafe?.user?.id;
+    const currentUserId = getTelegramUserId() || tg?.initDataUnsafe?.user?.id;
     const currentUsername = tg?.initDataUnsafe?.user?.username?.toLowerCase();
     const navItemAdmin = document.getElementById('nav-item-admin');
+    const urlParams = new URLSearchParams(window.location.search);
+    const adminParam = urlParams.get('admin');
 
     let adminUnlocked = false;
     try {
       adminUnlocked = localStorage.getItem('zo_admin_unlocked') === 'true';
     } catch(e) {}
 
-    if (currentUserId && (Number(currentUserId) === SUPER_ADMIN_ID || Number(currentUserId) === ZUHRA_ADMIN_ID || adminList.includes(Number(currentUserId)) || adminList.includes(String(currentUserId)))) {
-      isUserAdmin = true;
-    } else if (currentUsername && (currentUsername === 'yaxshibola' || currentUsername === 'zuhra_olimova' || adminList.includes(`@${currentUsername}`) || adminList.includes(currentUsername))) {
-      isUserAdmin = true;
-    } else if (adminUnlocked) {
+    const uId = currentUserId ? Number(currentUserId) : null;
+    const isIdAdmin = uId && (uId === SUPER_ADMIN_ID || uId === ZUHRA_ADMIN_ID || adminList.includes(uId) || adminList.includes(String(uId)));
+    const isNameAdmin = currentUsername && (currentUsername === 'yaxshibola' || currentUsername === 'zuhra_olimova' || adminList.includes(`@${currentUsername}`) || adminList.includes(currentUsername));
+    const isExplicitAdminUrl = adminParam === '1' && (uId === SUPER_ADMIN_ID || uId === ZUHRA_ADMIN_ID || isIdAdmin);
+
+    if (isIdAdmin || isNameAdmin || isExplicitAdminUrl || adminUnlocked) {
       isUserAdmin = true;
     } else {
       isUserAdmin = false;
@@ -311,6 +322,8 @@ document.addEventListener('DOMContentLoaded', () => {
       try { localStorage.setItem('zo_admin_unlocked', 'true'); } catch(e) {}
       checkAdminPermissions();
       modalAdminLogin?.classList.add('hidden');
+      document.getElementById('sub-gate-overlay')?.classList.add('hidden');
+      revealMainAppContent();
       switchTab('admin');
       showToast('🔑 Admin panelga xush kelibsiz!');
     } else {
@@ -333,9 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Data Fetching from Supabase Backend API
   async function fetchSupabaseElements() {
     try {
-      const API_BASE = window.location.origin.includes('vercel.app') 
-        ? 'https://canva-element-bot.onrender.com/api/elements' 
-        : '/api/elements';
+    const API_BASE = `${API_HOST}/api/elements`;
 
       const res = await fetch(API_BASE, { cache: 'no-cache' });
       if (res.ok) {
@@ -371,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'Trenddagi 3D Elementlar': 'fa-box-open',
     'SMM, Target, Dizayn va Infografika': 'fa-bullhorn',
     'Abstrakt Elementlar va Shakllar': 'fa-shapes',
-    'Aesthetic/Estetik Elementlar': 'fa-sparkles',
+    'Aesthetic/Estetik Elementlar': 'fa-wand-magic-sparkles',
     'Kosmik Elementlar': 'fa-rocket',
     'Ajoyib va Qiziqarli Elementlar': 'fa-face-smile-beam',
     'Bog\' va Gullar': 'fa-seedling',
@@ -417,35 +428,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderElements();
     renderFavoritesElements();
+    renderNewsElements();
+  }
+
+  function escapeAttr(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
   }
 
   // Render Single Card HTML
   function renderCardHTML(item) {
     if (!item) return '';
     const isFav = favorites.includes(item.id) || favorites.includes(String(item.id));
+    const safeCode = escapeAttr(item.code || '');
+    const safeDesc = escapeAttr(item.description || 'Canva elementi');
+    const safeCat = escapeAttr(item.category || "Bo'lim");
 
     return `
       <div class="element-card" data-id="${item.id}">
         <div class="card-header-row">
-          <span class="category-tag-badge">${item.category || 'Bo\'lim'}</span>
+          <span class="category-tag-badge">${safeCat}</span>
           <button class="fav-star-btn ${isFav ? 'active' : ''} fav-btn" data-id="${item.id}" aria-label="Saqlash">
             <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
           </button>
         </div>
 
-        <div class="element-card-title">${item.description || 'Element kodi'}</div>
+        <div class="element-card-title">${safeDesc}</div>
 
-        <div class="code-block-container code-box" data-code="${item.code}">
-          <span class="code-text">${item.code}</span>
+        <div class="code-block-container code-box" data-code="${safeCode}">
+          <span class="code-text">${safeCode}</span>
           <i class="fa-regular fa-copy code-copy-icon"></i>
         </div>
 
         <div class="card-bottom-row">
-          <button class="btn-copy-action btn-copy" data-code="${item.code}">
+          <button class="btn-copy-action btn-copy" data-code="${safeCode}">
             <i class="fa-regular fa-copy"></i> Nusxalash
           </button>
-          <button class="btn-share-icon btn-share" data-code="${item.code}" data-desc="${item.description}">
-            <i class="fa-solid fa-arrow-turn-up"></i>
+          <button class="btn-share-icon btn-share" data-code="${safeCode}" data-desc="${safeDesc}" aria-label="Ulashish">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i>
           </button>
         </div>
       </div>
@@ -540,7 +565,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderNewsElements() {
     try {
       if (!newsElementsGrid) return;
-      const newsItems = allElements.filter(item => item && (item.isNew || item.id <= 50));
+      let newsItems = allElements.filter(item => item && (item.isNew || item.id <= 50));
+      if (currentCategory && currentCategory !== 'all') {
+        newsItems = allElements.filter(item => item && item.category === currentCategory);
+      }
       newsElementsGrid.innerHTML = newsItems.map(renderCardHTML).filter(Boolean).join('');
     } catch (e) {
       console.error('Render news error:', e);
@@ -590,7 +618,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const q = filterText.toLowerCase().trim();
     let html = '';
 
-    if (pickerTarget === 'admin') {
+    if (pickerTarget === 'admin' || pickerTarget === 'filter') {
       html += `
         <div class="custom-cat-item ${currentCategory === 'all' ? 'selected' : ''}" data-cat="all">
           <div class="cat-item-info">
@@ -664,6 +692,18 @@ document.addEventListener('DOMContentLoaded', () => {
       currentCategory = cat;
       if (adminFilterCatLabel) adminFilterCatLabel.textContent = cat === 'all' ? "Barcha Bo'limlar" : cat;
       renderAdminElements();
+    } else if (pickerTarget === 'filter') {
+      currentCategory = cat;
+      currentTag = '';
+      document.querySelectorAll('.tag-chip').forEach(t => {
+        t.classList.toggle('active', t.dataset.category === cat || (cat === 'all' && t.dataset.category === 'all'));
+      });
+      if (activeTab === 'news') {
+        renderNewsElements();
+      } else {
+        if (activeTab !== 'home') switchTab('home');
+        renderElements();
+      }
     }
 
     document.getElementById('modal-category-picker')?.classList.add('hidden');
@@ -786,16 +826,15 @@ document.addEventListener('DOMContentLoaded', () => {
       btnSaveElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saqlanmoqda...';
     }
 
-    const API_BASE = window.location.origin.includes('vercel.app') 
-      ? 'https://canva-element-bot.onrender.com/api/elements' 
-      : '/api/elements';
+    const API_BASE = `${API_HOST}/api/elements`;
 
     const initData = tg?.initData || '';
     const tgUser = tg?.initDataUnsafe?.user;
+    const adminId = getActiveAdminId();
     const authHeaders = {
       'Content-Type': 'application/json',
       'x-telegram-init-data': initData,
-      'x-user-id': String(tgUser?.id || '')
+      'x-user-id': String(adminId || tgUser?.id || '')
     };
 
     try {
@@ -863,16 +902,15 @@ document.addEventListener('DOMContentLoaded', () => {
   async function deleteElement(id) {
     if (!confirm('Ushbu elementni o\'chirmoqchimisiz?')) return;
 
-    const API_BASE = window.location.origin.includes('vercel.app') 
-      ? 'https://canva-element-bot.onrender.com/api/elements' 
-      : '/api/elements';
+    const API_BASE = `${API_HOST}/api/elements`;
 
     const initData = tg?.initData || '';
     const tgUser = tg?.initDataUnsafe?.user;
+    const adminId = getActiveAdminId();
     const authHeaders = {
       'Content-Type': 'application/json',
       'x-telegram-init-data': initData,
-      'x-user-id': String(tgUser?.id || '')
+      'x-user-id': String(adminId || tgUser?.id || '')
     };
 
     try {
@@ -950,9 +988,7 @@ document.addEventListener('DOMContentLoaded', () => {
       checkAdminPermissions();
       showToast("✅ Yangi admin qo'shildi!");
 
-      const API_BASE = window.location.origin.includes('vercel.app') 
-        ? 'https://canva-element-bot.onrender.com/api' 
-        : '/api';
+      const API_BASE = `${API_HOST}/api`;
 
       try {
         await fetch(`${API_BASE}/admins`, {
@@ -981,9 +1017,7 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAdminPermissions();
     showToast("🗑️ Admin huquqi olindi");
 
-    const API_BASE = window.location.origin.includes('vercel.app') 
-      ? 'https://canva-element-bot.onrender.com/api' 
-      : '/api';
+    const API_BASE = `${API_HOST}/api`;
 
     try {
       await fetch(`${API_BASE}/admins/${item}`, {
@@ -1050,7 +1084,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Admin Settings Modal Logic
-  function openAdminSettingsModal() {
+  async function openAdminSettingsModal() {
     const modalSettings = document.getElementById('modal-admin-settings');
     const channelInput = document.getElementById('settings-channel-input');
     const forceSubToggle = document.getElementById('settings-force-sub-toggle');
@@ -1065,6 +1099,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (forceSubToggle) forceSubToggle.checked = !!savedSettings.forceSub;
 
     modalSettings?.classList.remove('hidden');
+
+    try {
+      const res = await fetch(`${API_HOST}/api/settings`);
+      if (res.ok) {
+        const live = await res.json();
+        if (channelInput && Array.isArray(live.forceChannels) && live.forceChannels.length > 0) {
+          channelInput.value = live.forceChannels[0];
+        }
+        if (forceSubToggle && typeof live.forceSubActive === 'boolean') {
+          forceSubToggle.checked = live.forceSubActive;
+        }
+      }
+    } catch (e) {}
   }
 
   async function saveAdminSettings() {
@@ -1079,9 +1126,7 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('zo_canva_settings', JSON.stringify(settingsObj));
     } catch(e) {}
 
-    const API_BASE = window.location.origin.includes('vercel.app') 
-      ? 'https://canva-element-bot.onrender.com/api' 
-      : '/api';
+    const API_BASE = `${API_HOST}/api`;
 
     try {
       await fetch(`${API_BASE}/settings/force-sub`, {
@@ -1266,6 +1311,35 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-news-back')?.addEventListener('click', () => switchTab('home'));
   document.getElementById('btn-admin-back')?.addEventListener('click', () => switchTab('home'));
   
+  // Header Notification & Search & Filter Buttons
+  document.getElementById('btn-header-notif')?.addEventListener('click', () => {
+    switchTab('news');
+    showToast('🔔 Yangi qo\'shilgan elementlar');
+  });
+
+  document.getElementById('btn-cat-search')?.addEventListener('click', () => {
+    switchTab('home');
+    if (searchInput) searchInput.focus();
+  });
+
+  document.getElementById('btn-news-filter')?.addEventListener('click', () => {
+    openCategoryPicker('filter');
+  });
+
+  document.getElementById('btn-favs-options')?.addEventListener('click', () => {
+    if (!favorites || favorites.length === 0) {
+      showToast('⭐ Saqlanganlar hozircha bo\'sh');
+      return;
+    }
+    if (confirm('Barcha saqlangan elementlarni o\'chirmoqchimisiz?')) {
+      favorites = [];
+      try { localStorage.removeItem('zo_canva_favs'); } catch (e) {}
+      renderFavoritesElements();
+      renderElements();
+      showToast('🗑️ Saqlanganlar tozalandi');
+    }
+  });
+  
   // Settings & Backup Modals Click Handlers
   document.getElementById('admin-btn-settings')?.addEventListener('click', openAdminSettingsModal);
   document.getElementById('btn-cancel-settings')?.addEventListener('click', () => document.getElementById('modal-admin-settings')?.classList.add('hidden'));
@@ -1300,6 +1374,10 @@ document.addEventListener('DOMContentLoaded', () => {
       toggleFavorite(id);
     } else if (catCard) {
       currentCategory = catCard.dataset.category;
+      currentTag = '';
+      document.querySelectorAll('.tag-chip').forEach(t => {
+        t.classList.toggle('active', t.dataset.category === currentCategory);
+      });
       switchTab('home');
       renderElements();
     } else if (adminEditBtn) {
@@ -1321,10 +1399,12 @@ document.addEventListener('DOMContentLoaded', () => {
   adminBtnRefresh?.addEventListener('click', () => {
     fetchSupabaseElements();
     fetchBannersAndRenderCarousel();
+    fetchCanvaProData();
     showToast('🔄 Ma\'lumotlar yangilandi');
   });
   adminBtnChannels?.addEventListener('click', openManageChannelsModal);
   adminBtnBanners?.addEventListener('click', openManageBannersModal);
+  adminBtnCanvaPro?.addEventListener('click', openManageCanvaProModal);
 
   // Channel Management Logic
   async function openManageChannelsModal() {
@@ -1407,7 +1487,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ channel: formattedCh, admin_user_id: adminId })
       });
       const data = await res.json();
-      if (data.success) {
+      if (data.ok || data.success) {
         showToast('✅ Kanal saqlandi!');
         if (newChannelInput) newChannelInput.value = '';
         renderChannelsList(data.channels || []);
@@ -1430,7 +1510,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
       const data = await res.json();
-      if (data.success) {
+      if (data.ok || data.success) {
         showToast('🗑 Kanal o\'chirildi');
         renderChannelsList(data.channels || []);
       } else {
@@ -1454,7 +1534,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ enabled: e.target.checked, admin_user_id: adminId })
       });
       const data = await res.json();
-      if (data.success) {
+      if (data.ok || data.success) {
         showToast(e.target.checked ? '🔒 Majburiy obuna YOQILDI' : '🔓 Majburiy obuna O\'CHIRILDI');
       }
     } catch (err) {
@@ -1508,7 +1588,7 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({ slot: Number(slot), imageUrl, linkUrl, admin_user_id: adminId })
         });
         const data = await res.json();
-        if (data.success) {
+        if (data.ok || data.success) {
           showToast(`✅ Banner ${slot} saqlandi!`);
           fetchBannersAndRenderCarousel();
         } else {
@@ -1522,6 +1602,245 @@ document.addEventListener('DOMContentLoaded', () => {
 
   modalBannersClose?.addEventListener('click', () => modalManageBanners?.classList.add('hidden'));
   btnCloseBannersModal?.addEventListener('click', () => modalManageBanners?.classList.add('hidden'));
+
+  // ==========================================
+  // Canva Pro State & Management Logic
+  // ==========================================
+  let canvaProData = {
+    isEnabled: true,
+    hasLink: false,
+    expiryDate: '',
+    claimsCount: 0,
+    link: ''
+  };
+
+  async function fetchCanvaProData() {
+    try {
+      const userId = getTelegramUserId();
+      const adminId = getActiveAdminId();
+      const isAdm = isUserAdmin || (adminId && (adminId === SUPER_ADMIN_ID || adminId === ZUHRA_ADMIN_ID || adminList.includes(Number(adminId))));
+
+      const queryParams = new URLSearchParams();
+      if (userId) queryParams.set('user_id', String(userId));
+      if (isAdm) queryParams.set('admin_user_id', String(adminId));
+
+      const res = await fetch(`${API_HOST}/api/canva-pro?${queryParams.toString()}`, { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        canvaProData = {
+          isEnabled: data.isEnabled !== false,
+          hasLink: Boolean(data.hasLink),
+          expiryDate: data.expiryDate || '',
+          claimsCount: data.claimsCount || 0,
+          link: data.link || ''
+        };
+        updateCanvaProUI();
+      }
+    } catch (e) {
+      console.warn('Canva Pro fetch error:', e);
+    }
+  }
+
+  function updateCanvaProUI() {
+    if (!canvaProPromoCard) return;
+
+    // Expiry Date Pill
+    const expiry = (canvaProData.expiryDate || '').trim();
+    if (proCardExpiryText) {
+      proCardExpiryText.textContent = expiry ? `Muddati: ${expiry}` : 'Doimiy';
+    }
+
+    // Status Badge & Button styling
+    if (proCardStatusBadge && proCardStatusText) {
+      if (!canvaProData.isEnabled) {
+        proCardStatusBadge.className = 'pro-status-badge status-closed';
+        proCardStatusText.textContent = 'Yopiq';
+      } else if (!canvaProData.hasLink) {
+        proCardStatusBadge.className = 'pro-status-badge status-full';
+        proCardStatusText.textContent = "Joylar to'lgan";
+      } else {
+        proCardStatusBadge.className = 'pro-status-badge status-active';
+        proCardStatusText.textContent = 'Faol';
+      }
+    }
+
+    if (btnCanvaProClaim) {
+      if (!canvaProData.isEnabled) {
+        btnCanvaProClaim.disabled = true;
+        btnCanvaProClaim.classList.add('disabled');
+        btnCanvaProClaim.innerHTML = '<i class="fa-solid fa-lock"></i> <span>Hozirda yopiq</span>';
+      } else if (!canvaProData.hasLink) {
+        btnCanvaProClaim.disabled = true;
+        btnCanvaProClaim.classList.add('disabled');
+        btnCanvaProClaim.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> <span>Joylar to\'lgan</span>';
+      } else {
+        btnCanvaProClaim.disabled = false;
+        btnCanvaProClaim.classList.remove('disabled');
+        btnCanvaProClaim.innerHTML = '<i class="fa-solid fa-crown"></i> <span>Canva Pro-ga Qo\'shilish</span> <i class="fa-solid fa-arrow-up-right-from-square pro-arrow-icon"></i>';
+      }
+    }
+  }
+
+  async function claimCanvaPro() {
+    triggerHaptic('medium');
+    if (!canvaProData.isEnabled) {
+      showToast('⚠️ Hozirda Canva Pro qabuli yopiq');
+      return;
+    }
+    if (!canvaProData.hasLink) {
+      showToast('⚠️ Hozirda jamoada bo\'sh joylar qolmagan');
+      return;
+    }
+
+    const userId = getTelegramUserId();
+    if (!userId) {
+      showToast('⚠️ Iltimos, Telegram boti orqali kiring!');
+      showSubscriptionGateOverlay(['@zuhracanva_official'], true);
+      return;
+    }
+
+    if (btnCanvaProClaim) {
+      btnCanvaProClaim.disabled = true;
+      btnCanvaProClaim.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Tekshirilmoqda...</span>';
+    }
+
+    try {
+      const res = await fetch(`${API_HOST}/api/canva-pro/claim`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-telegram-init-data': tg?.initData || '',
+          'x-user-id': String(userId)
+        },
+        body: JSON.stringify({ user_id: userId })
+      });
+
+      const data = await res.json();
+
+      if (data.isSubscribed === false) {
+        triggerHaptic('warning');
+        showToast('⚠️ Avval homiy kanalimizga a\'zo bo\'ling!');
+        showSubscriptionGateOverlay(data.missing || []);
+        updateCanvaProUI();
+        return;
+      }
+
+      if (data.ok || data.success) {
+        triggerHaptic('success');
+        showToast('🎉 Canva Pro jamoasiga havola ochilmoqda...');
+        const inviteLink = data.link;
+        if (inviteLink) {
+          if (tg && typeof tg.openLink === 'function') {
+            tg.openLink(inviteLink);
+          } else {
+            window.open(inviteLink, '_blank');
+          }
+        }
+        await fetchCanvaProData();
+      } else {
+        triggerHaptic('error');
+        showToast(`❌ ${data.error || 'Xatolik yuz berdi'}`);
+        updateCanvaProUI();
+      }
+    } catch (err) {
+      triggerHaptic('error');
+      showToast('❌ Serverga ulanishda xatolik');
+      updateCanvaProUI();
+    }
+  }
+
+  btnCanvaProClaim?.addEventListener('click', claimCanvaPro);
+
+  // Admin Canva Pro Modal Management
+  async function openManageCanvaProModal() {
+    modalManageCanvaPro?.classList.remove('hidden');
+    const adminId = getActiveAdminId();
+
+    try {
+      const res = await fetch(`${API_HOST}/api/canva-pro?admin_user_id=${adminId}`, {
+        headers: {
+          'x-user-id': String(adminId),
+          'x-telegram-init-data': tg?.initData || ''
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (canvaProActiveToggle) canvaProActiveToggle.checked = data.isEnabled !== false;
+        if (canvaProLinkInput) canvaProLinkInput.value = data.link || '';
+        if (canvaProExpiryInput) canvaProExpiryInput.value = data.expiryDate || '';
+        if (canvaProClaimsStat) canvaProClaimsStat.textContent = `${data.claimsCount || 0} ta`;
+      }
+    } catch (e) {
+      showToast('⚠️ Ma\'lumotlarni yuklashda xatolik');
+    }
+  }
+
+  modalCanvaProClose?.addEventListener('click', () => modalManageCanvaPro?.classList.add('hidden'));
+  btnCloseCanvaProModal?.addEventListener('click', () => modalManageCanvaPro?.classList.add('hidden'));
+
+  btnSaveCanvaPro?.addEventListener('click', async () => {
+    const adminId = getActiveAdminId();
+    const link = canvaProLinkInput?.value.trim() || '';
+    const expiryDate = canvaProExpiryInput?.value.trim() || '';
+    const isEnabled = canvaProActiveToggle ? canvaProActiveToggle.checked : true;
+
+    try {
+      const res = await fetch(`${API_HOST}/api/settings/canva-pro`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-telegram-init-data': tg?.initData || '',
+          'x-user-id': String(adminId)
+        },
+        body: JSON.stringify({
+          link,
+          expiryDate,
+          isEnabled,
+          admin_user_id: adminId
+        })
+      });
+
+      const data = await res.json();
+      if (data.ok || data.success) {
+        showToast('✅ Canva Pro sozlamalari saqlandi!');
+        modalManageCanvaPro?.classList.add('hidden');
+        await fetchCanvaProData();
+      } else {
+        showToast(`❌ ${data.error || 'Saqlanmadi'}`);
+      }
+    } catch (err) {
+      showToast('❌ Xatolik yuz berdi');
+    }
+  });
+
+  btnResetCanvaProClaims?.addEventListener('click', async () => {
+    if (!confirm('Haqiqatan ham havola olganlar hisoblagichini 0 qilmoqchimisiz?')) return;
+    const adminId = getActiveAdminId();
+
+    try {
+      const res = await fetch(`${API_HOST}/api/settings/canva-pro`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-telegram-init-data': tg?.initData || '',
+          'x-user-id': String(adminId)
+        },
+        body: JSON.stringify({
+          resetClaims: true,
+          admin_user_id: adminId
+        })
+      });
+
+      const data = await res.json();
+      if (data.ok || data.success) {
+        if (canvaProClaimsStat) canvaProClaimsStat.textContent = '0 ta';
+        showToast('🔄 Hisoblagich 0 qilindi');
+        await fetchCanvaProData();
+      }
+    } catch (err) {
+      showToast('❌ Xatolik yuz berdi');
+    }
+  });
 
   // Admin Form Events
   btnSaveElement?.addEventListener('click', saveElementForm);
@@ -1633,142 +1952,200 @@ document.addEventListener('DOMContentLoaded', () => {
   // Check mandatory subscription gate on Mini App startup
   async function checkUserSubscriptionOnStartup() {
     const userId = getTelegramUserId();
-    const API_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? ''
-      : 'https://canva-element-bot.onrender.com';
+
+    // Admins always bypass lock immediately
+    const uId = userId ? Number(userId) : null;
+    const isLocalAdmin = isUserAdmin || (uId && (uId === SUPER_ADMIN_ID || uId === ZUHRA_ADMIN_ID || adminList.includes(uId) || adminList.includes(String(uId))));
+    if (isLocalAdmin) {
+      revealMainAppContent();
+      return;
+    }
 
     try {
       const checkUrl = userId 
         ? `${API_HOST}/api/check-sub?user_id=${userId}`
         : `${API_HOST}/api/check-sub`;
 
-      const res = await fetch(checkUrl);
+      const res = await fetch(checkUrl, { cache: 'no-store' });
       if (!res.ok) return;
 
       const data = await res.json();
 
       if (data.forceSubActive && (data.isSubscribed === false || !userId)) {
         hideMainAppContent();
-        showSubscriptionGateOverlay(data.missing || []);
+        showSubscriptionGateOverlay(data.missing || [], !userId);
+      } else {
+        revealMainAppContent();
       }
     } catch (e) {
-      console.log('Sub check error:', e);
+      console.warn('Sub check error:', e);
     }
   }
 
   function hideMainAppContent() {
     const mainContent = document.getElementById('main-content');
     const searchSection = document.getElementById('sticky-search-section');
-    const bottomNav = document.getElementById('bottom-nav');
+    const bottomNav = document.getElementById('bottom-nav-bar') || document.getElementById('bottom-nav');
+    const appHeader = document.getElementById('app-header');
     if (mainContent) mainContent.style.display = 'none';
     if (searchSection) searchSection.style.display = 'none';
     if (bottomNav) bottomNav.style.display = 'none';
+    if (appHeader) appHeader.style.display = 'none';
   }
 
   function revealMainAppContent() {
     const mainContent = document.getElementById('main-content');
     const searchSection = document.getElementById('sticky-search-section');
-    const bottomNav = document.getElementById('bottom-nav');
+    const bottomNav = document.getElementById('bottom-nav-bar') || document.getElementById('bottom-nav');
+    const appHeader = document.getElementById('app-header');
     if (mainContent) mainContent.style.display = 'block';
     if (searchSection) searchSection.style.display = 'block';
     if (bottomNav) bottomNav.style.display = 'flex';
+    if (appHeader) appHeader.style.display = 'block';
   }
 
-  function showSubscriptionGateOverlay(missingChannels) {
-    let overlay = document.getElementById('sub-gate-overlay');
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.id = 'sub-gate-overlay';
-      overlay.style.position = 'fixed';
-      overlay.style.top = '0';
-      overlay.style.left = '0';
-      overlay.style.width = '100vw';
-      overlay.style.height = '100vh';
-      overlay.style.zIndex = '99999';
-      overlay.style.background = 'rgba(15, 12, 29, 0.96)';
-      overlay.style.backdropFilter = 'blur(20px)';
-      overlay.style.display = 'flex';
-      overlay.style.alignItems = 'center';
-      overlay.style.justifyContent = 'center';
-      overlay.style.padding = '20px';
+  function showSubscriptionGateOverlay(missingChannels, isNoUser = false) {
+    const overlay = document.getElementById('sub-gate-overlay');
+    const card = document.getElementById('sub-gate-card');
+    const desc = document.getElementById('sub-gate-desc');
+    const channelsContainer = document.getElementById('sub-gate-channels-list');
+    const checkBtn = document.getElementById('btn-recheck-sub-overlay');
 
-      document.body.appendChild(overlay);
+    if (!overlay) return;
+
+    // 5-click secret unlock on lock screen icon for admins
+    const gateLockIcon = overlay.querySelector('.sub-gate-icon');
+    if (gateLockIcon && !gateLockIcon.dataset.hasListener) {
+      gateLockIcon.dataset.hasListener = 'true';
+      let gateClickCounter = 0;
+      let gateClickTimer = null;
+      gateLockIcon.addEventListener('click', () => {
+        gateClickCounter++;
+        if (gateClickTimer) clearTimeout(gateClickTimer);
+        if (gateClickCounter >= 5) {
+          gateClickCounter = 0;
+          openAdminLoginModal();
+        } else {
+          gateClickTimer = setTimeout(() => { gateClickCounter = 0; }, 1500);
+        }
+      });
     }
 
-    const chList = Array.isArray(missingChannels) && missingChannels.length > 0 ? missingChannels : ['@zuhracanva_official'];
+    if (isNoUser) {
+      if (desc) desc.textContent = "Ushbu Mini App faqat rasmiy Telegram boti orqali to'liq ishlaydi. Iltimos, bot orqali oching:";
+      if (channelsContainer) {
+        channelsContainer.innerHTML = `
+          <a href="https://t.me/zuhracanva_bot" class="sub-gate-channel-btn" style="background: linear-gradient(135deg, #FF6B8B, #FF8E53);">
+            <i class="fa-brands fa-telegram"></i> @zuhracanva_bot orqali ochish
+          </a>
+        `;
+      }
+      if (checkBtn) checkBtn.style.display = 'none';
+      overlay.classList.remove('hidden');
+      return;
+    }
 
-    const chButtonsHTML = chList.map(ch => {
-      const chClean = String(ch).replace('@', '');
-      const url = String(ch).startsWith('-100') ? 'https://t.me' : `https://t.me/${chClean}`;
-      return `
-        <a href="${url}" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; background: linear-gradient(135deg, #ff4e50, #f9d423); color: #fff; text-decoration: none; border-radius: 16px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 15px rgba(255, 78, 80, 0.3);">
-          <i class="fa-brands fa-telegram"></i> ${ch} kanaliga obuna bo'lish
-        </a>
-      `;
-    }).join('');
+    if (desc) {
+      desc.textContent = "Canva element kodlaridan to'liq va bepul foydalanish uchun homiy kanalimizga a'zo bo'ling:";
+    }
 
-    overlay.innerHTML = `
-      <div style="background: rgba(255, 255, 255, 0.96); width: 100%; max-width: 380px; padding: 26px; border-radius: 24px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); font-family: 'Plus Jakarta Sans', sans-serif;">
-        <div style="width: 64px; height: 64px; background: #FFF0F5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #ff4e50; font-size: 26px;">
-          <i class="fa-solid fa-lock"></i>
-        </div>
-        <h2 style="font-size: 20px; font-weight: 800; color: #1a1a2e; margin-bottom: 8px;">Obuna bo'lish talab etiladi</h2>
-        <p style="font-size: 14px; color: #666; margin-bottom: 20px; line-height: 1.5;">
-          Mini App'dan foydalanish uchun quyidagi rasmiy kanalimizga a'zo bo'ling:
-        </p>
+    const chList = Array.isArray(missingChannels) && missingChannels.length > 0 
+      ? missingChannels 
+      : ['@zuhracanva_official'];
 
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-          ${chButtonsHTML}
-        </div>
+    if (channelsContainer) {
+      channelsContainer.innerHTML = chList.map((ch, idx) => {
+        const cleanName = String(ch).replace('@', '');
+        const url = String(ch).startsWith('-100') ? 'https://t.me' : `https://t.me/${cleanName}`;
+        return `
+          <a href="${url}" class="sub-gate-channel-btn" data-channel="${ch}">
+            <i class="fa-brands fa-telegram"></i> ${idx + 1}-kanalga a'zo bo'lish
+          </a>
+        `;
+      }).join('');
 
-        <button id="btn-recheck-sub-overlay" style="width: 100%; padding: 14px; background: #0088cc; color: #fff; border: none; border-radius: 16px; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);">
-          <i class="fa-solid fa-rotate-right"></i> Obunani tekshirish
-        </button>
-      </div>
-    `;
+      // Add click handler to open inside Telegram via tg.openTelegramLink
+      channelsContainer.querySelectorAll('.sub-gate-channel-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const href = btn.getAttribute('href');
+          if (tg && typeof tg.openTelegramLink === 'function') {
+            e.preventDefault();
+            tg.openTelegramLink(href);
+          }
+        });
+      });
+    }
 
-    document.getElementById('btn-recheck-sub-overlay')?.addEventListener('click', async () => {
-      const btn = document.getElementById('btn-recheck-sub-overlay');
-      if (btn) btn.textContent = 'Tekshirilmoqda...';
+    if (checkBtn) {
+      checkBtn.style.display = 'flex';
+      checkBtn.disabled = false;
+      checkBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> <span>Obunani tekshirish</span>';
+    }
+
+    overlay.classList.remove('hidden');
+    overlay.classList.remove('fade-out');
+
+    // Attach click listener
+    checkBtn?.replaceWith(checkBtn.cloneNode(true));
+    const newCheckBtn = document.getElementById('btn-recheck-sub-overlay');
+
+    newCheckBtn?.addEventListener('click', async () => {
+      newCheckBtn.disabled = true;
+      newCheckBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Tekshirilmoqda...</span>';
+      triggerHaptic('light');
 
       const userId = getTelegramUserId();
-      const API_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? ''
-        : 'https://canva-element-bot.onrender.com';
-
       if (!userId) {
-        showToast("⚠️ Iltimos, Mini App'ni Telegram boti orqali oching!");
-        if (btn) btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Obunani tekshirish';
+        showToast("⚠️ Telegram boti orqali kiring!");
+        newCheckBtn.disabled = false;
+        newCheckBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> <span>Obunani tekshirish</span>';
         return;
       }
 
       try {
         const checkUrl = `${API_HOST}/api/check-sub?user_id=${userId}`;
-        const res = await fetch(checkUrl);
+        const res = await fetch(checkUrl, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           if (data.isSubscribed) {
-            overlay.remove();
-            revealMainAppContent();
-            showToast('✅ Obuna tasdiqlandi!');
+            triggerHaptic('success');
+            showToast("✅ Obuna tasdiqlandi! Xush kelibsiz!");
+            overlay.classList.add('fade-out');
+            setTimeout(() => {
+              overlay.classList.add('hidden');
+              overlay.classList.remove('fade-out');
+              revealMainAppContent();
+            }, 250);
           } else {
-            showToast("❌ Siz hali kanalga obuna bo'lmadingiz!");
-            if (btn) btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Qayta tekshirish';
+            triggerHaptic('error');
+            if (card) {
+              card.classList.remove('shake-anim');
+              void card.offsetWidth;
+              card.classList.add('shake-anim');
+            }
+            showToast("❌ Siz hali kanalga a'zo bo'lmadingiz!");
+            newCheckBtn.disabled = false;
+            newCheckBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> <span>Qayta tekshirish</span>';
           }
+        } else {
+          newCheckBtn.disabled = false;
+          newCheckBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> <span>Qayta tekshirish</span>';
         }
-      } catch (e) {
-        if (btn) btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Obunani tekshirish';
+      } catch (err) {
+        newCheckBtn.disabled = false;
+        newCheckBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> <span>Qayta tekshirish</span>';
       }
     });
   }
 
-  // Initial Safe Execution (Run sub check FIRST!)
-  try { checkUserSubscriptionOnStartup(); } catch (e) { console.error('Sub check startup error:', e); }
+  // Initial Safe Execution (Run admin check first so admins are never gated)
   try { checkAdminPermissions(); } catch (e) { console.error('Admin check error:', e); }
+  try { checkUserSubscriptionOnStartup(); } catch (e) { console.error('Sub check startup error:', e); }
   try { updateStats(); } catch (e) { console.error('Stats error:', e); }
   try { renderElements(); } catch (e) { console.error('Render elements error:', e); }
   try { renderCategoriesGrid(); } catch (e) { console.error('Categories error:', e); }
   try { fetchSupabaseElements(); } catch (e) { console.error('Supabase fetch error:', e); }
   try { fetchBannersAndRenderCarousel(); } catch (e) { console.error('Banners fetch error:', e); }
+  try { fetchCanvaProData(); } catch (e) { console.error('Canva Pro fetch error:', e); }
 });
 

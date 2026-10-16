@@ -105,6 +105,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalBannersClose = document.getElementById('modal-banners-close');
   const btnCloseBannersModal = document.getElementById('btn-close-banners-modal');
 
+  // Canva Pro Promo Card & Modal DOM Elements
+  const canvaProPromoCard = document.getElementById('canva-pro-promo-card');
+  const proCardStatusBadge = document.getElementById('pro-card-status-badge');
+  const proCardStatusText = document.getElementById('pro-card-status-text');
+  const proCardExpiryPill = document.getElementById('pro-card-expiry-pill');
+  const proCardExpiryText = document.getElementById('pro-card-expiry-text');
+  const btnCanvaProClaim = document.getElementById('btn-canva-pro-claim');
+
+  const adminBtnCanvaPro = document.getElementById('admin-btn-canva-pro');
+  const modalManageCanvaPro = document.getElementById('modal-manage-canva-pro');
+  const modalCanvaProClose = document.getElementById('modal-canva-pro-close');
+  const btnCloseCanvaProModal = document.getElementById('btn-close-canva-pro-modal');
+  const canvaProActiveToggle = document.getElementById('canva-pro-active-toggle');
+  const canvaProLinkInput = document.getElementById('canva-pro-link-input');
+  const canvaProExpiryInput = document.getElementById('canva-pro-expiry-input');
+  const canvaProClaimsStat = document.getElementById('canva-pro-claims-stat');
+  const btnResetCanvaProClaims = document.getElementById('btn-reset-canva-pro-claims');
+  const btnSaveCanvaPro = document.getElementById('btn-save-canva-pro');
+
   // Haptic Feedback Helper
   function triggerHaptic(type = 'light') {
     try {
@@ -1380,10 +1399,12 @@ document.addEventListener('DOMContentLoaded', () => {
   adminBtnRefresh?.addEventListener('click', () => {
     fetchSupabaseElements();
     fetchBannersAndRenderCarousel();
+    fetchCanvaProData();
     showToast('🔄 Ma\'lumotlar yangilandi');
   });
   adminBtnChannels?.addEventListener('click', openManageChannelsModal);
   adminBtnBanners?.addEventListener('click', openManageBannersModal);
+  adminBtnCanvaPro?.addEventListener('click', openManageCanvaProModal);
 
   // Channel Management Logic
   async function openManageChannelsModal() {
@@ -1581,6 +1602,245 @@ document.addEventListener('DOMContentLoaded', () => {
 
   modalBannersClose?.addEventListener('click', () => modalManageBanners?.classList.add('hidden'));
   btnCloseBannersModal?.addEventListener('click', () => modalManageBanners?.classList.add('hidden'));
+
+  // ==========================================
+  // Canva Pro State & Management Logic
+  // ==========================================
+  let canvaProData = {
+    isEnabled: true,
+    hasLink: false,
+    expiryDate: '',
+    claimsCount: 0,
+    link: ''
+  };
+
+  async function fetchCanvaProData() {
+    try {
+      const userId = getTelegramUserId();
+      const adminId = getActiveAdminId();
+      const isAdm = isUserAdmin || (adminId && (adminId === SUPER_ADMIN_ID || adminId === ZUHRA_ADMIN_ID || adminList.includes(Number(adminId))));
+
+      const queryParams = new URLSearchParams();
+      if (userId) queryParams.set('user_id', String(userId));
+      if (isAdm) queryParams.set('admin_user_id', String(adminId));
+
+      const res = await fetch(`${API_HOST}/api/canva-pro?${queryParams.toString()}`, { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        canvaProData = {
+          isEnabled: data.isEnabled !== false,
+          hasLink: Boolean(data.hasLink),
+          expiryDate: data.expiryDate || '',
+          claimsCount: data.claimsCount || 0,
+          link: data.link || ''
+        };
+        updateCanvaProUI();
+      }
+    } catch (e) {
+      console.warn('Canva Pro fetch error:', e);
+    }
+  }
+
+  function updateCanvaProUI() {
+    if (!canvaProPromoCard) return;
+
+    // Expiry Date Pill
+    const expiry = (canvaProData.expiryDate || '').trim();
+    if (proCardExpiryText) {
+      proCardExpiryText.textContent = expiry ? `Muddati: ${expiry}` : 'Doimiy';
+    }
+
+    // Status Badge & Button styling
+    if (proCardStatusBadge && proCardStatusText) {
+      if (!canvaProData.isEnabled) {
+        proCardStatusBadge.className = 'pro-status-badge status-closed';
+        proCardStatusText.textContent = 'Yopiq';
+      } else if (!canvaProData.hasLink) {
+        proCardStatusBadge.className = 'pro-status-badge status-full';
+        proCardStatusText.textContent = "Joylar to'lgan";
+      } else {
+        proCardStatusBadge.className = 'pro-status-badge status-active';
+        proCardStatusText.textContent = 'Faol';
+      }
+    }
+
+    if (btnCanvaProClaim) {
+      if (!canvaProData.isEnabled) {
+        btnCanvaProClaim.disabled = true;
+        btnCanvaProClaim.classList.add('disabled');
+        btnCanvaProClaim.innerHTML = '<i class="fa-solid fa-lock"></i> <span>Hozirda yopiq</span>';
+      } else if (!canvaProData.hasLink) {
+        btnCanvaProClaim.disabled = true;
+        btnCanvaProClaim.classList.add('disabled');
+        btnCanvaProClaim.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> <span>Joylar to\'lgan</span>';
+      } else {
+        btnCanvaProClaim.disabled = false;
+        btnCanvaProClaim.classList.remove('disabled');
+        btnCanvaProClaim.innerHTML = '<i class="fa-solid fa-crown"></i> <span>Canva Pro-ga Qo\'shilish</span> <i class="fa-solid fa-arrow-up-right-from-square pro-arrow-icon"></i>';
+      }
+    }
+  }
+
+  async function claimCanvaPro() {
+    triggerHaptic('medium');
+    if (!canvaProData.isEnabled) {
+      showToast('⚠️ Hozirda Canva Pro qabuli yopiq');
+      return;
+    }
+    if (!canvaProData.hasLink) {
+      showToast('⚠️ Hozirda jamoada bo\'sh joylar qolmagan');
+      return;
+    }
+
+    const userId = getTelegramUserId();
+    if (!userId) {
+      showToast('⚠️ Iltimos, Telegram boti orqali kiring!');
+      showSubscriptionGateOverlay(['@zuhracanva_official'], true);
+      return;
+    }
+
+    if (btnCanvaProClaim) {
+      btnCanvaProClaim.disabled = true;
+      btnCanvaProClaim.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Tekshirilmoqda...</span>';
+    }
+
+    try {
+      const res = await fetch(`${API_HOST}/api/canva-pro/claim`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-telegram-init-data': tg?.initData || '',
+          'x-user-id': String(userId)
+        },
+        body: JSON.stringify({ user_id: userId })
+      });
+
+      const data = await res.json();
+
+      if (data.isSubscribed === false) {
+        triggerHaptic('warning');
+        showToast('⚠️ Avval homiy kanalimizga a\'zo bo\'ling!');
+        showSubscriptionGateOverlay(data.missing || []);
+        updateCanvaProUI();
+        return;
+      }
+
+      if (data.ok || data.success) {
+        triggerHaptic('success');
+        showToast('🎉 Canva Pro jamoasiga havola ochilmoqda...');
+        const inviteLink = data.link;
+        if (inviteLink) {
+          if (tg && typeof tg.openLink === 'function') {
+            tg.openLink(inviteLink);
+          } else {
+            window.open(inviteLink, '_blank');
+          }
+        }
+        await fetchCanvaProData();
+      } else {
+        triggerHaptic('error');
+        showToast(`❌ ${data.error || 'Xatolik yuz berdi'}`);
+        updateCanvaProUI();
+      }
+    } catch (err) {
+      triggerHaptic('error');
+      showToast('❌ Serverga ulanishda xatolik');
+      updateCanvaProUI();
+    }
+  }
+
+  btnCanvaProClaim?.addEventListener('click', claimCanvaPro);
+
+  // Admin Canva Pro Modal Management
+  async function openManageCanvaProModal() {
+    modalManageCanvaPro?.classList.remove('hidden');
+    const adminId = getActiveAdminId();
+
+    try {
+      const res = await fetch(`${API_HOST}/api/canva-pro?admin_user_id=${adminId}`, {
+        headers: {
+          'x-user-id': String(adminId),
+          'x-telegram-init-data': tg?.initData || ''
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (canvaProActiveToggle) canvaProActiveToggle.checked = data.isEnabled !== false;
+        if (canvaProLinkInput) canvaProLinkInput.value = data.link || '';
+        if (canvaProExpiryInput) canvaProExpiryInput.value = data.expiryDate || '';
+        if (canvaProClaimsStat) canvaProClaimsStat.textContent = `${data.claimsCount || 0} ta`;
+      }
+    } catch (e) {
+      showToast('⚠️ Ma\'lumotlarni yuklashda xatolik');
+    }
+  }
+
+  modalCanvaProClose?.addEventListener('click', () => modalManageCanvaPro?.classList.add('hidden'));
+  btnCloseCanvaProModal?.addEventListener('click', () => modalManageCanvaPro?.classList.add('hidden'));
+
+  btnSaveCanvaPro?.addEventListener('click', async () => {
+    const adminId = getActiveAdminId();
+    const link = canvaProLinkInput?.value.trim() || '';
+    const expiryDate = canvaProExpiryInput?.value.trim() || '';
+    const isEnabled = canvaProActiveToggle ? canvaProActiveToggle.checked : true;
+
+    try {
+      const res = await fetch(`${API_HOST}/api/settings/canva-pro`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-telegram-init-data': tg?.initData || '',
+          'x-user-id': String(adminId)
+        },
+        body: JSON.stringify({
+          link,
+          expiryDate,
+          isEnabled,
+          admin_user_id: adminId
+        })
+      });
+
+      const data = await res.json();
+      if (data.ok || data.success) {
+        showToast('✅ Canva Pro sozlamalari saqlandi!');
+        modalManageCanvaPro?.classList.add('hidden');
+        await fetchCanvaProData();
+      } else {
+        showToast(`❌ ${data.error || 'Saqlanmadi'}`);
+      }
+    } catch (err) {
+      showToast('❌ Xatolik yuz berdi');
+    }
+  });
+
+  btnResetCanvaProClaims?.addEventListener('click', async () => {
+    if (!confirm('Haqiqatan ham havola olganlar hisoblagichini 0 qilmoqchimisiz?')) return;
+    const adminId = getActiveAdminId();
+
+    try {
+      const res = await fetch(`${API_HOST}/api/settings/canva-pro`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-telegram-init-data': tg?.initData || '',
+          'x-user-id': String(adminId)
+        },
+        body: JSON.stringify({
+          resetClaims: true,
+          admin_user_id: adminId
+        })
+      });
+
+      const data = await res.json();
+      if (data.ok || data.success) {
+        if (canvaProClaimsStat) canvaProClaimsStat.textContent = '0 ta';
+        showToast('🔄 Hisoblagich 0 qilindi');
+        await fetchCanvaProData();
+      }
+    } catch (err) {
+      showToast('❌ Xatolik yuz berdi');
+    }
+  });
 
   // Admin Form Events
   btnSaveElement?.addEventListener('click', saveElementForm);
@@ -1886,5 +2146,6 @@ document.addEventListener('DOMContentLoaded', () => {
   try { renderCategoriesGrid(); } catch (e) { console.error('Categories error:', e); }
   try { fetchSupabaseElements(); } catch (e) { console.error('Supabase fetch error:', e); }
   try { fetchBannersAndRenderCarousel(); } catch (e) { console.error('Banners fetch error:', e); }
+  try { fetchCanvaProData(); } catch (e) { console.error('Canva Pro fetch error:', e); }
 });
 

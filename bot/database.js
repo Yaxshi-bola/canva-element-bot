@@ -134,6 +134,10 @@ class DB {
       { slot: 2, imageUrl: 'assets/user_banner2.jpg', linkUrl: '' },
       { slot: 3, imageUrl: 'assets/user_banner1.jpg', linkUrl: '' }
     ];
+    this.canvaProLink = '';
+    this.canvaProEnabled = true;
+    this.canvaProExpiry = '';
+    this.canvaProClaimers = new Set();
 
     this.loadAdminsFromFile();
     this.loadDbFile();
@@ -160,6 +164,18 @@ class DB {
           }
           if (Array.isArray(parsed.settings.banners) && parsed.settings.banners.length > 0) {
             this.banners = parsed.settings.banners;
+          }
+          if (typeof parsed.settings.canvaProLink === 'string') {
+            this.canvaProLink = parsed.settings.canvaProLink;
+          }
+          if (typeof parsed.settings.canvaProEnabled === 'boolean') {
+            this.canvaProEnabled = parsed.settings.canvaProEnabled;
+          }
+          if (typeof parsed.settings.canvaProExpiry === 'string') {
+            this.canvaProExpiry = parsed.settings.canvaProExpiry;
+          }
+          if (Array.isArray(parsed.settings.canvaProClaimers)) {
+            this.canvaProClaimers = new Set(parsed.settings.canvaProClaimers.map(Number));
           }
         }
 
@@ -192,7 +208,11 @@ class DB {
           forceSubActive: this.forceSubActive,
           webAppUrl: this.webAppUrl,
           joinRequestMode: this.joinRequestMode,
-          banners: this.banners
+          banners: this.banners,
+          canvaProLink: this.canvaProLink,
+          canvaProEnabled: this.canvaProEnabled,
+          canvaProExpiry: this.canvaProExpiry,
+          canvaProClaimers: Array.from(this.canvaProClaimers)
         },
         blockedUsers: Array.from(this.blockedUsers),
         stats: {
@@ -223,7 +243,19 @@ class DB {
         if (Array.isArray(cfg.banners) && cfg.banners.length > 0) {
           this.banners = cfg.banners;
         }
-        console.log('✅ Settings loaded permanently from Supabase:', this.forceChannels, this.banners);
+        if (typeof cfg.canvaProLink === 'string') {
+          this.canvaProLink = cfg.canvaProLink;
+        }
+        if (typeof cfg.canvaProEnabled === 'boolean') {
+          this.canvaProEnabled = cfg.canvaProEnabled;
+        }
+        if (typeof cfg.canvaProExpiry === 'string') {
+          this.canvaProExpiry = cfg.canvaProExpiry;
+        }
+        if (Array.isArray(cfg.canvaProClaimers)) {
+          this.canvaProClaimers = new Set(cfg.canvaProClaimers.map(Number));
+        }
+        console.log('✅ Settings loaded permanently from Supabase:', this.forceChannels, this.banners, 'CanvaPro:', Boolean(this.canvaProLink));
         this.saveDbFile();
       }
     } catch (e) {
@@ -240,7 +272,11 @@ class DB {
           forceSubActive: this.forceSubActive,
           joinRequestMode: this.joinRequestMode,
           webAppUrl: this.webAppUrl,
-          banners: this.banners
+          banners: this.banners,
+          canvaProLink: this.canvaProLink,
+          canvaProEnabled: this.canvaProEnabled,
+          canvaProExpiry: this.canvaProExpiry,
+          canvaProClaimers: Array.from(this.canvaProClaimers)
         },
         updated_at: new Date().toISOString()
       };
@@ -607,7 +643,10 @@ class DB {
       forceSubActive: this.forceSubActive ? 'Yoqilgan ✅' : "O'chirilgan ❌",
       blockedUsersCount: this.blockedUsers.size,
       joinRequestMode: this.joinRequestMode,
-      webAppUrl: this.webAppUrl
+      webAppUrl: this.webAppUrl,
+      canvaProClaims: this.canvaProClaimers.size,
+      canvaProEnabled: this.canvaProEnabled,
+      hasCanvaProLink: Boolean(this.canvaProLink)
     };
   }
 
@@ -629,7 +668,11 @@ class DB {
       admins: this.adminsList,
       joinRequestMode: this.joinRequestMode,
       blockedUsersCount: this.blockedUsers.size,
-      banners: this.banners
+      banners: this.banners,
+      canvaProLink: this.canvaProLink,
+      canvaProEnabled: this.canvaProEnabled,
+      canvaProExpiry: this.canvaProExpiry,
+      canvaProClaims: this.canvaProClaimers.size
     };
   }
 
@@ -673,6 +716,74 @@ class DB {
       return true;
     }
     return false;
+  }
+
+  // Canva Pro Management
+  getCanvaProSettings() {
+    return {
+      link: this.canvaProLink || '',
+      isEnabled: this.canvaProEnabled,
+      claimsCount: this.canvaProClaimers.size,
+      expiryDate: this.canvaProExpiry || '',
+      claimers: Array.from(this.canvaProClaimers)
+    };
+  }
+
+  setCanvaProLink(link, expiry = null) {
+    if (!link || typeof link !== 'string') return false;
+    let clean = link.trim();
+    if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
+      clean = `https://${clean}`;
+    }
+    this.canvaProLink = clean;
+    this.canvaProEnabled = true;
+    if (typeof expiry === 'string' && expiry.trim().length > 0) {
+      this.canvaProExpiry = expiry.trim();
+    }
+    this.saveDbFile();
+    this.saveSettingsToSupabase().catch(() => {});
+    return this.canvaProLink;
+  }
+
+  setCanvaProExpiry(expiry) {
+    this.canvaProExpiry = typeof expiry === 'string' ? expiry.trim() : '';
+    this.saveDbFile();
+    this.saveSettingsToSupabase().catch(() => {});
+    return this.canvaProExpiry;
+  }
+
+  deleteCanvaProLink() {
+    this.canvaProLink = '';
+    this.saveDbFile();
+    this.saveSettingsToSupabase().catch(() => {});
+    return true;
+  }
+
+  toggleCanvaPro(status = null) {
+    if (status !== null) {
+      this.canvaProEnabled = Boolean(status);
+    } else {
+      this.canvaProEnabled = !this.canvaProEnabled;
+    }
+    this.saveDbFile();
+    this.saveSettingsToSupabase().catch(() => {});
+    return this.canvaProEnabled;
+  }
+
+  recordCanvaProClaim(userId) {
+    if (!userId) return false;
+    const num = Number(userId);
+    this.canvaProClaimers.add(num);
+    this.saveDbFile();
+    this.saveSettingsToSupabase().catch(() => {});
+    return this.canvaProClaimers.size;
+  }
+
+  resetCanvaProClaims() {
+    this.canvaProClaimers = new Set();
+    this.saveDbFile();
+    this.saveSettingsToSupabase().catch(() => {});
+    return true;
   }
 }
 

@@ -4,6 +4,17 @@
  * Author: Zuhra Olimova & Yaxshi Bola
  * ------------------------------------------------------------- */
 
+const path = require('path');
+const fs = require('fs');
+
+// Auto load .env if present
+const envPath = path.join(__dirname, '.env');
+if (fs.existsSync(envPath) && typeof process.loadEnvFile === 'function') {
+  try {
+    process.loadEnvFile(envPath);
+  } catch (e) {}
+}
+
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
@@ -231,6 +242,181 @@ app.get('/api/backup', requireAdminAuth, async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
+});
+
+// ========== CHANNEL MANAGEMENT APIs ==========
+
+// GET: List all force channels + status
+app.get('/api/channels', (req, res) => {
+  res.json({
+    success: true,
+    channels: db.getForceChannels(),
+    forceSubActive: db.getSettings().forceSubActive
+  });
+});
+
+// POST: Add a new channel
+app.post('/api/channels', requireAdminAuth, (req, res) => {
+  const { channel } = req.body;
+  if (!channel) return res.status(400).json({ success: false, error: 'channel required' });
+  const result = db.addForceChannel(channel);
+  res.json({
+    success: Boolean(result),
+    channel: result || channel,
+    channels: db.getForceChannels(),
+    forceSubActive: db.getSettings().forceSubActive
+  });
+});
+
+// DELETE: Remove a channel
+app.delete('/api/channels/:channel', requireAdminAuth, (req, res) => {
+  const ch = decodeURIComponent(req.params.channel);
+  const removed = db.removeForceChannel(ch);
+  res.json({
+    success: removed,
+    channels: db.getForceChannels(),
+    forceSubActive: db.getSettings().forceSubActive
+  });
+});
+
+// POST: Toggle forceSubActive
+app.post('/api/channels/toggle', requireAdminAuth, (req, res) => {
+  const { enabled } = req.body;
+  db.toggleForceSub(typeof enabled === 'boolean' ? enabled : undefined);
+  db.saveSettingsToSupabase().catch(() => {});
+  res.json({
+    success: true,
+    forceSubActive: db.getSettings().forceSubActive,
+    channels: db.getForceChannels()
+  });
+});
+
+// ========== BANNER MANAGEMENT APIs ==========
+
+// GET: List all banners
+app.get('/api/banners', (req, res) => {
+  res.json({
+    success: true,
+    banners: db.getBanners()
+  });
+});
+
+// POST: Add or update a banner slot
+app.post('/api/banners', requireAdminAuth, (req, res) => {
+  const { slot, imageUrl, linkUrl } = req.body;
+  if (!slot) return res.status(400).json({ success: false, error: 'slot required' });
+  const result = db.setBanner(slot, imageUrl, linkUrl);
+  res.json({
+    success: result,
+    banners: db.getBanners()
+  });
+});
+
+// DELETE: Remove a banner slot
+app.delete('/api/banners/:slot', requireAdminAuth, (req, res) => {
+  const slot = req.params.slot;
+  const removed = db.removeBanner(slot);
+  res.json({
+    success: removed,
+    banners: db.getBanners()
+  });
+});
+
+// ========== CANVA PRO MANAGEMENT APIs ==========
+
+// GET: Canva Pro public / admin status
+app.get('/api/canva-pro', (req, res) => {
+  const settings = db.getCanvaProSettings();
+  const candidateId = req.query.admin_user_id || req.query.user_id || req.headers['x-user-id'];
+  const isAdminUser = candidateId && db.isAdmin(candidateId);
+  res.json({
+    success: true,
+    isEnabled: settings.isEnabled,
+    claimsCount: settings.claimsCount,
+    hasLink: Boolean(settings.link),
+    expiryDate: settings.expiryDate || '',
+    link: isAdminUser ? settings.link : undefined
+  });
+});
+
+// POST / GET: Claim Canva Pro Link (Protected by channel subscription)
+app.all('/api/canva-pro/claim', async (req, res) => {
+  const settings = db.getCanvaProSettings();
+  if (!settings.isEnabled || !settings.link) {
+    return res.status(400).json({
+      success: false,
+      error: "Hozirda Canva Pro jamoasiga qabul yopiq yoki havola mavjud emas."
+    });
+  }
+
+  const userId = req.body?.user_id || req.query.user_id || req.headers['x-user-id'];
+  if (!userId) {
+    return res.status(400).json({
+      success: false,
+      error: "Telegram foydalanuvchi identifikatori topilmadi. Iltimos bot orqali kiring."
+    });
+  }
+
+  const isAdminUser = db.isAdmin(userId);
+  if (!isAdminUser && db.isForceSubActive()) {
+    const channels = db.getForceChannels();
+    const botInstance = require('./bot');
+    const missing = [];
+    for (const channel of channels) {
+      try {
+        const member = await botInstance.getChatMember(channel, userId);
+        const validStatuses = ['creator', 'administrator', 'member'];
+        if (!validStatuses.includes(member.status)) {
+          missing.push(channel);
+        }
+      } catch (err) {
+        if (!err.message?.includes('chat not found') && !err.message?.includes('not a member') && !err.message?.includes('not an admin')) {
+          missing.push(channel);
+        }
+      }
+    }
+    if (missing.length > 0) {
+      return res.json({
+        success: false,
+        isSubscribed: false,
+        missing,
+        message: "Canva Pro havolasini olish uchun homiy kanallarga a'zo bo'lishingiz shart."
+      });
+    }
+  }
+
+  // User is subscribed or admin
+  db.recordCanvaProClaim(userId);
+  res.json({
+    success: true,
+    isSubscribed: true,
+    link: settings.link,
+    expiryDate: settings.expiryDate || ''
+  });
+});
+
+// POST: Update Canva Pro Link and Settings (Admin Only)
+app.post('/api/settings/canva-pro', requireAdminAuth, (req, res) => {
+  const { link, isEnabled, resetClaims, deleteLink, expiryDate } = req.body;
+  if (link !== undefined) {
+    db.setCanvaProLink(link, expiryDate);
+  }
+  if (expiryDate !== undefined && link === undefined) {
+    db.setCanvaProExpiry(expiryDate);
+  }
+  if (isEnabled !== undefined) {
+    db.toggleCanvaPro(isEnabled);
+  }
+  if (resetClaims) {
+    db.resetCanvaProClaims();
+  }
+  if (deleteLink) {
+    db.deleteCanvaProLink();
+  }
+  res.json({
+    success: true,
+    canvaPro: db.getCanvaProSettings()
+  });
 });
 
 app.listen(PORT, () => {

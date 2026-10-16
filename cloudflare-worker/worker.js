@@ -394,6 +394,128 @@ export default {
       }
     }
 
+    // ==========================================
+    // ==========================================
+    // API: CANVA PRO SETTINGS & CLAIM
+    // ==========================================
+    if (url.pathname === '/api/canva-pro') {
+      const settings = await getSettingsFromR2(env);
+      const userId = url.searchParams.get('admin_user_id') || url.searchParams.get('user_id') || request.headers.get('x-user-id');
+      const superAdminId = Number(env.SUPER_ADMIN_ID || 8544023815);
+      const admins = Array.isArray(settings.admins) ? settings.admins.map(Number) : [];
+      const isAdm = userId && (Number(userId) === superAdminId || Number(userId) === 8112688757 || admins.includes(Number(userId)));
+
+      return new Response(JSON.stringify({
+        ok: true,
+        success: true,
+        isEnabled: settings.canvaProEnabled !== false,
+        claimsCount: settings.canvaProClaims || 0,
+        hasLink: Boolean(settings.canvaProLink),
+        expiryDate: settings.canvaProExpiry || '',
+        link: isAdm ? settings.canvaProLink : undefined
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    if (url.pathname === '/api/canva-pro/claim') {
+      const settings = await getSettingsFromR2(env);
+      if (settings.canvaProEnabled === false || !settings.canvaProLink) {
+        return new Response(JSON.stringify({
+          ok: false,
+          success: false,
+          error: "Hozirda Canva Pro jamoasiga qabul yopiq yoki havola mavjud emas."
+        }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      let userId = url.searchParams.get('user_id') || request.headers.get('x-user-id');
+      if (request.method === 'POST') {
+        try {
+          const body = await request.json();
+          if (body.user_id) userId = body.user_id;
+        } catch (e) {}
+      }
+
+      if (!userId) {
+        return new Response(JSON.stringify({
+          ok: false,
+          success: false,
+          error: "Telegram foydalanuvchi identifikatori topilmadi. Bot orqali kiring."
+        }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      const superAdminId = Number(env.SUPER_ADMIN_ID || 8544023815);
+      const admins = Array.isArray(settings.admins) ? settings.admins.map(Number) : [];
+      const isAdm = Number(userId) === superAdminId || Number(userId) === 8112688757 || admins.includes(Number(userId));
+
+      if (!isAdm && settings.forceSubActive && Array.isArray(settings.forceChannels) && settings.forceChannels.length > 0) {
+        const missing = [];
+        for (const channel of settings.forceChannels) {
+          const isMember = await checkUserSubscription(channel, userId, env);
+          if (!isMember) missing.push(channel);
+        }
+        if (missing.length > 0) {
+          return new Response(JSON.stringify({
+            ok: false,
+            success: false,
+            isSubscribed: false,
+            missing,
+            message: "Canva Pro havolasini olish uchun homiy kanallarga a'zo bo'lishingiz shart."
+          }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
+      }
+
+      // Record claim
+      settings.canvaProClaims = (settings.canvaProClaims || 0) + 1;
+      if (!Array.isArray(settings.canvaProClaimers)) settings.canvaProClaimers = [];
+      if (!settings.canvaProClaimers.includes(Number(userId))) {
+        settings.canvaProClaimers.push(Number(userId));
+      }
+      await saveSettingsToR2(env, settings);
+
+      return new Response(JSON.stringify({
+        ok: true,
+        success: true,
+        isSubscribed: true,
+        link: settings.canvaProLink,
+        expiryDate: settings.canvaProExpiry || ''
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    if (url.pathname === '/api/settings/canva-pro' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const settings = await getSettingsFromR2(env);
+        if (body.link !== undefined) {
+          let clean = String(body.link).trim();
+          if (clean && !clean.startsWith('http://') && !clean.startsWith('https://')) {
+            clean = `https://${clean}`;
+          }
+          settings.canvaProLink = clean;
+          settings.canvaProEnabled = true;
+        }
+        if (body.expiryDate !== undefined) {
+          settings.canvaProExpiry = String(body.expiryDate).trim();
+        }
+        if (typeof body.isEnabled === 'boolean') {
+          settings.canvaProEnabled = body.isEnabled;
+        }
+        if (body.resetClaims) {
+          settings.canvaProClaims = 0;
+          settings.canvaProClaimers = [];
+        }
+        if (body.deleteLink) {
+          settings.canvaProLink = '';
+        }
+        await saveSettingsToR2(env, settings);
+        return new Response(JSON.stringify({ ok: true, success: true, settings }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ ok: false, success: false, error: e.message }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
     // TELEGRAM WEBHOOK HANDLER
     if (request.method === 'POST') {
       try {
@@ -539,6 +661,24 @@ async function handleTelegramUpdate(update, env) {
         }
         return;
       }
+
+      // /setcanva or /canvapro command
+      if ((text.startsWith('/setcanva') || text.startsWith('/canvapro')) && userId === superAdminId) {
+        const parts = text.split(/\s+/);
+        const newLink = parts.slice(1).join(' ').trim();
+        if (!newLink) {
+          await tgSendMessage(botToken, chatId, '⚠️ Format: <code>/setcanva https://www.canva.com/brand/join?token=...</code>', { parse_mode: 'HTML' });
+          return;
+        }
+        const settings = await getSettingsFromR2(env);
+        let clean = newLink;
+        if (!clean.startsWith('http://') && !clean.startsWith('https://')) clean = `https://${clean}`;
+        settings.canvaProLink = clean;
+        settings.canvaProEnabled = true;
+        await saveSettingsToR2(env, settings);
+        await tgSendMessage(botToken, chatId, `✅ <b>Canva Pro taklif havolasi saqlandi va faollashtirildi!</b>\n\n🔗 <code>${clean}</code>\n\nKanal a'zolari "👑 Canva Pro olish" tugmasi orqali jamoaga qo'shila oladilar.`, { parse_mode: 'HTML' });
+        return;
+      }
     }
 
     // 2. Process Callback Queries
@@ -566,6 +706,56 @@ async function handleTelegramUpdate(update, env) {
         } else {
           await tgAnswerCallbackQuery(botToken, q.id, '⚠️ Siz hali homiy kanallarga a\'zo bo\'lmadingiz!', true);
         }
+        return;
+      }
+
+      // User: Canva Pro Claim
+      if (data === 'get_canva_pro' || data === 'check_sub_and_canva') {
+        const settings = await getSettingsFromR2(env);
+        const isSub = await checkSubscription(botToken, userId, settings.forceChannels, settings.forceSubActive);
+
+        if (!isSub.subscribed) {
+          await tgAnswerCallbackQuery(botToken, q.id, "⚠️ Canva Pro faqat kanalimiz a'zolariga bepul! Avval kanalga obuna bo'ling.", true);
+          let channelButtons = isSub.missing.map((ch, idx) => {
+            const cleanName = ch.replace('@', '');
+            const url = ch.startsWith('-100') ? `https://t.me/c/${ch.replace('-100', '')}` : `https://t.me/${cleanName}`;
+            return [{ text: `📢 ${idx + 1}-kanalga a'zo bo'lish`, url: url }];
+          });
+          channelButtons.push([{ text: '✅ A\'zo bo\'ldim / Canva Pro olish', callback_data: 'check_sub_and_canva' }]);
+
+          const promptText = `🛑 <b>Canva Pro (Team) olish uchun homiy kanalimizga obuna bo'ling!</b>\n\n` +
+            `Kanallarga a'zo bo'lgach, <b>"A'zo bo'ldim / Canva Pro olish"</b> tugmasini bosing:`;
+
+          await tgSendMessage(botToken, chatId, promptText, {
+            parse_mode: 'HTML',
+            reply_markup: { inline_keyboard: channelButtons }
+          });
+          return;
+        }
+
+        await tgAnswerCallbackQuery(botToken, q.id);
+
+        if (!settings.canvaProEnabled || !settings.canvaProLink) {
+          await tgSendMessage(botToken, chatId, `😔 <b>Hozircha Canva Pro (Team) jamoamizda bo'sh o'rinlar qolmagan!</b>\n\nTez orada yangi havola qo'shiladi. Kanalimizni kuzatib boring! 💖`, { parse_mode: 'HTML' });
+          return;
+        }
+
+        // Record claim
+        settings.canvaProClaims = (settings.canvaProClaims || 0) + 1;
+        await saveSettingsToR2(env, settings);
+
+        const successText = `🎉 <b>TABRIKLAYMIZ! Siz kanalimizning faol a'zosisiz!</b> ✨\n\n` +
+          `Siz uchun bepul <b>Canva Pro (Team)</b> jamoamiz ochiq!\n\n` +
+          `👇 <b>Canva jamoasiga qo'shilish uchun pastdagi tugmani bosing:</b>`;
+
+        await tgSendMessage(botToken, chatId, successText, {
+          parse_mode: 'HTML',
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '🚀 Canva Team-ga qo\'shilish', url: settings.canvaProLink }]
+            ]
+          }
+        });
         return;
       }
 
@@ -807,15 +997,22 @@ async function sendWelcome(botToken, chatId, userId, firstName, webAppUrl, isAdm
     `• ✨ <b>3D elementlar</b>\n` +
     `• 🌷 <b>Estetik bezaklar</b>\n` +
     `• 🎯 <b>SMM elementlari</b>\n` +
-    `• 🎬 <b>Animatsiyali elementlar</b>\n\n` +
+    `• 🎬 <b>Animatsiyali elementlar</b>\n` +
+    `• 👑 <b>Canva Pro (Team)</b> — kanalimiz a'zolariga bepul!\n\n` +
     `⚡ <b>Tezkor qidiruv</b> • 📋 <b>Oson nusxalash</b>\n\n` +
-    `👇 <b>Mini App’ni ochish uchun pastdagi tugmani bosing!</b>`;
+    `👇 <b>Kerakli bo'limni tanlash uchun pastdagi tugmalardan foydalaning:</b>`;
 
   const inlineKeyboard = [
     [
       {
         text: '🎨 Canva Element Kodlari (Mini App)',
         web_app: { url: appUrl }
+      }
+    ],
+    [
+      {
+        text: '👑 Canva Pro (Team) olish',
+        callback_data: 'get_canva_pro'
       }
     ]
   ];
@@ -879,7 +1076,11 @@ async function getSettingsFromR2(env) {
     forceChannels: [],
     forceSubActive: false,
     webAppUrl: env.WEB_APP_URL || 'https://canva-elements.pages.dev',
-    banners: []
+    banners: [],
+    canvaProLink: '',
+    canvaProEnabled: true,
+    canvaProClaims: 0,
+    canvaProClaimers: []
   };
 
   if (env.R2_BUCKET) {
