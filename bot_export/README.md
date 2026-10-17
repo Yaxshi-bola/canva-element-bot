@@ -14,8 +14,8 @@ Ushbu papkada (`bot_export`) Canva Element Kodlari Telegram botining barcha kera
    - [admins.json](file:///d:/talaba/bot_export/bot/admins.json) — Adminlar ro'yxati
    - [db.json](file:///d:/talaba/bot_export/bot/db.json) — Baza namunasi
 
-2. **`frontend/` papkasi (Vercel Mini App):**
-   - `index.html`, `styles.css`, `app.js`, `data.js`, `vercel.json`
+2. **`frontend/` papkasi (Cloudflare Pages Mini App):**
+   - `index.html`, `styles.css`, `app.js`, `data.js`
 
 3. **`JAMLANGAN_BOT_KODLARI.md`:**
    - Claudega bitta fayl sifatini o'zida berish / nusxalash uchun tayyor yagona kodlar to'plami.
