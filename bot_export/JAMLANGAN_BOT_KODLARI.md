@@ -1,6 +1,6 @@
-# 🤖 Canva Element Kodlari — Secure Telegram Bot & API Code Bundle
+﻿# 🤖 Canva Element Kodlari — Secure Telegram Bot & API Code Bundle
 > **Tavsif:** Canva Element Kodlari Telegram boti, Express Backend API va Telegram WebApp HMAC Authentication jamlanmasi.
-> **Muallif:** Zuhra Olimova & Yaxshi Bola
+> **Muallif:** Hammaga Yetadi & Yaxshi Bola
 > **Xavfsizlik darajasi:** 🟢 Oliy (Hardcode tokenlarsiz, HMAC SHA-256 va Avto Telegram Backup bilan)
 
 ---
@@ -21,7 +21,7 @@
 {
   "name": "canva-element-bot",
   "version": "1.0.0",
-  "description": "Canva Element Kodlari Telegram Bot and Admin Panel by Zuhra Olimova",
+  "description": "Canva Element Kodlari Telegram Bot and Admin Panel by Hammaga Yetadi",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -65,7 +65,7 @@ services:
 /* -------------------------------------------------------------
  * Render Web Service Entrypoint
  * Express Server + Telegram Bot + Custom Elements API + Backup Cron
- * Author: Zuhra Olimova & Yaxshi Bola
+ * Author: Hammaga Yetadi & Yaxshi Bola
  * ------------------------------------------------------------- */
 
 const express = require('express');
@@ -144,7 +144,7 @@ app.get('/', (req, res) => {
   res.json({
     status: 'ok',
     app: 'Canva Element Kodlari Telegram Bot & Admin API',
-    author: 'Zuhra Olimova',
+    author: 'Hammaga Yetadi',
     uptime: process.uptime()
   });
 });
@@ -311,7 +311,7 @@ app.listen(PORT, () => {
  * Canva Element Kodlari Telegram Bot & Admin Panel
  * Token: 8914431726:AAEsGTEXLUCLaL0gSq9ztAt7EBubh1Ge27o
  * Super Admin ID: 8544023815
- * Author: Zuhra Olimova & Yaxshi Bola
+ * Author: Hammaga Yetadi & Yaxshi Bola
  * ------------------------------------------------------------- */
 
 const TelegramBot = require('node-telegram-bot-api');
@@ -421,13 +421,13 @@ const PREMIUM_EMOJIS = {
   DOWN_ARROW: '5406745015365943482',
   CROWN: '5229011542011299168',
   BLUE_HEART: '5433856365061746058',
-  ZUHRA_HEART: '5213147217015122287'
+  Hammaga Yetadi_HEART: '5213147217015122287'
 };
 
 // Get User Keyboards
 function getUserKeyboard(userId) {
   const settings = db.getSettings();
-  const webAppUrl = settings.webAppUrl || 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+  const webAppUrl = settings.webAppUrl || 'https://canva-elements.pages.dev';
   const isAdm = db.isAdmin(userId);
   const ts = Date.now();
   const targetUrl = isAdm ? `${webAppUrl}?admin=1&user_id=${userId}&v=${ts}` : `${webAppUrl}?user_id=${userId}&v=${ts}`;
@@ -548,7 +548,7 @@ bot.onText(/\/start/, async (msg) => {
   // Activate Mini App Chat Menu Button for Subscribed User
   try {
     const settings = db.getSettings();
-    const webAppUrl = settings.webAppUrl || 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+    const webAppUrl = settings.webAppUrl || 'https://canva-elements.pages.dev';
     const isAdm = db.isAdmin(userId);
     const ts = Date.now();
     const targetUrl = isAdm ? `${webAppUrl}?admin=1&user_id=${userId}&v=${ts}` : `${webAppUrl}?user_id=${userId}&v=${ts}`;
@@ -569,7 +569,7 @@ bot.onText(/\/start/, async (msg) => {
 function sendWelcomeMessage(chatId, userId) {
   const { inlineKeyboard, replyKeyboard } = getUserKeyboard(userId);
 
-  const welcomeText = `<tg-emoji emoji-id="5440354006335495210">🌸</tg-emoji> <b>Canva Element Kodlari — Zuhra Olimova</b>\n\n` +
+  const welcomeText = `<tg-emoji emoji-id="5440354006335495210">🌸</tg-emoji> <b>Canva Element Kodlari — Hammaga Yetadi</b>\n\n` +
     `Assalomu alaykum! <tg-emoji emoji-id="5465540480538254161">💖</tg-emoji>\n\n` +
     `Ushbu bot orqali siz Canva dizaynlaringiz uchun 400+ saralangan element kodlarini bir bosishda topishingiz mumkin:\n\n` +
     `• <tg-emoji emoji-id="5472164874886846699">✨</tg-emoji> <b>3D elementlar</b>\n` +
@@ -590,7 +590,7 @@ function sendWelcomeMessage(chatId, userId) {
     const isSuper = isSuperAdmin(userId);
     const adminTag = isSuper 
       ? `Yaxshi Bola <tg-emoji emoji-id="5433856365061746058">🩵</tg-emoji>` 
-      : `Zuhra <tg-emoji emoji-id="5213147217015122287">🩷</tg-emoji>`;
+      : `Hammaga Yetadi <tg-emoji emoji-id="5213147217015122287">🩷</tg-emoji>`;
 
     bot.sendMessage(chatId, `<tg-emoji emoji-id="5229011542011299168">👑</tg-emoji> Assalomu alaykum, <b>${adminTag}</b>! Siz <b>Admin</b> hisoblanasiz. Boshqaruv paneli menyuda faollashtirildi.`, {
       parse_mode: 'HTML',
@@ -679,7 +679,7 @@ bot.on('callback_query', async (query) => {
       // Activate Mini App Chat Menu Button for Subscribed User
       try {
         const settings = db.getSettings();
-        const webAppUrl = settings.webAppUrl || 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+        const webAppUrl = settings.webAppUrl || 'https://canva-elements.pages.dev';
         const isAdm = db.isAdmin(userId);
         const ts = Date.now();
         const targetUrl = isAdm ? `${webAppUrl}?admin=1&user_id=${userId}&v=${ts}` : `${webAppUrl}?user_id=${userId}&v=${ts}`;
@@ -714,7 +714,7 @@ bot.on('callback_query', async (query) => {
       `Har bir tugmani yangi qatordan quyidagi formatda yozing:\n` +
       `\`Tugma matni - https://link.com\`\n\n` +
       `Misol:\n` +
-      `\`Bizning Kanal - https://t.me/zuhracanva_official\`\n` +
+      `\`Bizning Kanal - https://t.me/hammagayetadi\`\n` +
       `\`Vebsaytga o'tish - https://canva.com\``,
       { parse_mode: 'Markdown' }
     );
@@ -981,7 +981,7 @@ bot.on('message', async (msg) => {
     const isSuper = isSuperAdmin(userId);
     const adminTag = isSuper 
       ? `Yaxshi Bola <tg-emoji emoji-id="5433856365061746058">🩵</tg-emoji>` 
-      : `Zuhra <tg-emoji emoji-id="5213147217015122287">🩷</tg-emoji>`;
+      : `Hammaga Yetadi <tg-emoji emoji-id="5213147217015122287">🩷</tg-emoji>`;
 
     return bot.sendMessage(chatId, `<tg-emoji emoji-id="5229011542011299168">👑</tg-emoji> <b>${adminTag} Admin Paneli</b>\n\nBoshqaruv bo'limini tanlang:`, {
       parse_mode: 'HTML',
@@ -1279,7 +1279,7 @@ module.exports = bot;
 /* -------------------------------------------------------------
  * Supabase & Local DB Manager for Telegram Bot & Mini App
  * Supabase URL: https://mjenunxgakcvyzcikjmi.supabase.co
- * Author: Zuhra Olimova & Yaxshi Bola
+ * Author: Hammaga Yetadi & Yaxshi Bola
  * ------------------------------------------------------------- */
 
 const urllib = require('https');
@@ -1344,7 +1344,7 @@ function detectUzbekGender(firstName = '', lastName = '') {
   // Female suffixes and indicators
   const femaleSuffixes = ['xon', 'xonim', 'oy', 'niso', 'bonu', 'begim', 'guli', 'gul', 'moh', 'parvona', 'bika', 'bibi', 'zoda'];
   const femaleNames = [
-    'madina', 'malika', 'marjona', 'sabina', 'rayhon', 'zuhra', 'fatima', 'fotima',
+    'madina', 'malika', 'marjona', 'sabina', 'rayhon', 'Hammaga Yetadi', 'fatima', 'fotima',
     'shohsanam', 'firuza', 'kamola', 'nilufar', 'sevinch', 'shahnoza', 'shaxnoza',
     'dilnoza', 'gulnoza', 'munisa', 'surayyo', 'nozima', 'saida', 'nigora', 'dilafruz',
     'dilbar', 'durdona', 'mahliyo', 'feruza', 'aziza', 'laylo', 'gulasal', 'nargiz',
@@ -1401,9 +1401,9 @@ class DB {
     this.memoryUsers = new Map(); // id -> userData
     this.forceChannels = [];
     this.forceSubActive = true;
-    this.webAppUrl = 'https://canva-element-kodlari-zuhra-olimova.vercel.app';
+    this.webAppUrl = 'https://canva-elements.pages.dev';
     this.superAdminId = 8544023815;
-    this.zuhraAdminId = 8112688757;
+    this.Hammaga YetadiAdminId = 8112688757;
     this.adminsList = [8544023815, 8112688757];
     this.blockedUsers = new Set();
     this.joinRequestMode = 'approve_all'; // 'approve_all' | 'female_only' | 'male_only' | 'manual'
@@ -1521,12 +1521,12 @@ class DB {
         const raw = fs.readFileSync(ADMINS_FILE, 'utf-8');
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          this.adminsList = Array.from(new Set([this.superAdminId, this.zuhraAdminId, ...parsed]));
+          this.adminsList = Array.from(new Set([this.superAdminId, this.Hammaga YetadiAdminId, ...parsed]));
           return;
         }
       }
     } catch (e) {}
-    this.adminsList = [this.superAdminId, this.zuhraAdminId];
+    this.adminsList = [this.superAdminId, this.Hammaga YetadiAdminId];
     this.saveAdminsToFile();
   }
 
@@ -1550,9 +1550,9 @@ class DB {
     if (!userId) return false;
     const numId = Number(userId);
     const strId = String(userId).toLowerCase().trim();
-    const validUsernames = ['yomonbola', 'yomonboia', 'zuhraolimova', 'zuhra_olimova', 'sokin_notalar'];
+    const validUsernames = ['yomonbola', 'yomonboia', 'hammagayetadi', 'hammagayetadi', 'sokin_notalar'];
 
-    if (numId === this.superAdminId || numId === this.zuhraAdminId || validUsernames.includes(strId)) {
+    if (numId === this.superAdminId || numId === this.Hammaga YetadiAdminId || validUsernames.includes(strId)) {
       return true;
     }
 
@@ -1572,7 +1572,7 @@ class DB {
 
   removeAdmin(idOrUsername) {
     const numId = Number(idOrUsername);
-    if (numId === this.superAdminId || numId === this.zuhraAdminId) {
+    if (numId === this.superAdminId || numId === this.Hammaga YetadiAdminId) {
       return false; // Cannot remove core super admins
     }
     const lenBefore = this.adminsList.length;
@@ -1587,7 +1587,7 @@ class DB {
   // Blocking System
   blockUser(userId) {
     const numId = Number(userId);
-    if (numId === this.superAdminId || numId === this.zuhraAdminId) return false;
+    if (numId === this.superAdminId || numId === this.Hammaga YetadiAdminId) return false;
     this.blockedUsers.add(numId);
     if (this.memoryUsers.has(numId)) {
       const u = this.memoryUsers.get(numId);
@@ -1914,7 +1914,7 @@ module.exports.detectUzbekGender = detectUzbekGender;
 ```javascript
 /* -------------------------------------------------------------
  * Automatic Daily Backup System (Local Disk + Telegram Dispatch)
- * Author: Zuhra Olimova
+ * Author: Hammaga Yetadi
  * ------------------------------------------------------------- */
 
 const fs = require('fs');

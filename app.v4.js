@@ -1,6 +1,6 @@
-/* -------------------------------------------------------------
+﻿/* -------------------------------------------------------------
  * Canva Element Kodlari Telegram Mini App — Logic & Admin Panel v5
- * Author: Zuhra Olimova
+ * Author: Hammaga Yetadi
  * ------------------------------------------------------------- */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Core Admin Default IDs
   const SUPER_ADMIN_ID = 8544023815;
-  const ZUHRA_ADMIN_ID = 8112688757;
+  const Hammaga Yetadi_ADMIN_ID = 8112688757;
   const CORE_ADMINS = [8544023815, 8112688757];
 
   // Data State with Safe LocalStorage Parsers
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     favorites = [];
   }
 
-  let adminList = [SUPER_ADMIN_ID, ZUHRA_ADMIN_ID];
+  let adminList = [SUPER_ADMIN_ID, Hammaga Yetadi_ADMIN_ID];
   try {
     localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
   } catch (e) {}
@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
       let userId = tgUser?.id || paramUserId;
       let username = tgUser?.username;
 
-      const validUsernames = ['yomonbola', 'yomonboia', 'zuhraolimova', 'zuhra_olimova', 'sokin_notalar'];
+      const validUsernames = ['yomonbola', 'yomonboia', 'hammagayetadi', 'hammagayetadi', 'sokin_notalar'];
 
       const isCoreId = userId && CORE_ADMINS.includes(Number(userId));
       const isCoreUsername = username && validUsernames.includes(String(username).toLowerCase());
@@ -354,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Fetch admins & ensure designated core admins list
   async function fetchSupabaseAdmins() {
     try {
-      adminList = [SUPER_ADMIN_ID, ZUHRA_ADMIN_ID];
+      adminList = [SUPER_ADMIN_ID, Hammaga Yetadi_ADMIN_ID];
       localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
       updateStats();
       if (isUserAdmin) renderAdminsList();
@@ -1038,18 +1038,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const ADMIN_NAMES = {
       8544023815: "Yaxshi Bola 🩵",
       "8544023815": "Yaxshi Bola 🩵",
-      8112688757: "Zuhra 🩷",
-      "8112688757": "Zuhra 🩷"
+      8112688757: "Admin ✨",
+      "8112688757": "Admin ✨"
     };
 
     // Strictly enforce the 2 core admins
-    adminList = [SUPER_ADMIN_ID, ZUHRA_ADMIN_ID];
+    adminList = [SUPER_ADMIN_ID, Hammaga Yetadi_ADMIN_ID];
 
     adminsListContainer.innerHTML = adminList.map(admin => {
       const numAdmin = Number(admin);
       const isSuper = numAdmin === SUPER_ADMIN_ID;
-      const isZuhra = numAdmin === ZUHRA_ADMIN_ID;
-      const displayName = ADMIN_NAMES[numAdmin] || ADMIN_NAMES[String(admin)] || (isSuper ? "Yaxshi Bola 🩵" : "Zuhra 🩷");
+      const isHammaga Yetadi = numAdmin === Hammaga Yetadi_ADMIN_ID;
+      const displayName = ADMIN_NAMES[numAdmin] || ADMIN_NAMES[String(admin)] || (isSuper ? "Yaxshi Bola 🩵" : "Admin ✨");
       const badgeText = isSuper ? '(Asosiy Admin)' : '(Admin)';
       const iconColor = isSuper ? '#0ea5e9' : '#ec4899';
 
@@ -1109,7 +1109,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function removeAdmin(item) {
-    if (item == SUPER_ADMIN_ID || Number(item) === SUPER_ADMIN_ID || item == ZUHRA_ADMIN_ID || Number(item) === ZUHRA_ADMIN_ID) {
+    if (item == SUPER_ADMIN_ID || Number(item) === SUPER_ADMIN_ID || item == Hammaga Yetadi_ADMIN_ID || Number(item) === Hammaga Yetadi_ADMIN_ID) {
       return showToast('❌ Asosiy adminlarni o\'chirib bo\'lmaydi!');
     }
     adminList = adminList.filter(a => String(a) !== String(item));
@@ -1146,7 +1146,7 @@ document.addEventListener('DOMContentLoaded', () => {
       timestamp: new Date().toISOString(),
       date: new Date().toISOString().split('T')[0],
       app: 'Canva Element Kodlari',
-      author: 'Zuhra Olimova',
+      author: 'Hammaga Yetadi',
       totalElements: allElements.length,
       admins: adminList,
       categories: Object.keys(getCategoriesMap()),

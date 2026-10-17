@@ -1,7 +1,7 @@
 {
   "name": "canva-element-bot",
   "version": "1.0.0",
-  "description": "Canva Element Kodlari Telegram Bot by Zuhra Olimova",
+  "description": "Canva Element Kodlari Telegram Bot — Hammaga Yetadi",
   "main": "bot/server.js",
   "scripts": {
     "start": "node bot/server.js",

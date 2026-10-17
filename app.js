@@ -1,6 +1,6 @@
 /* -------------------------------------------------------------
- * Canva Element Kodlari — Apple VisionOS / iOS 18 Main JS (v6.0)
- * Zuhra Olimova & Yaxshi Bola
+ * Canva Element Kodlari — Apple VisionOS / Modern Tech JS
+ * Hammaga Yetadi
  * ------------------------------------------------------------- */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,14 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
     tg.ready();
     tg.expand();
     try {
-      tg.setHeaderColor('#FFF9FC');
-      tg.setBackgroundColor('#FFF9FC');
+      tg.setHeaderColor('#F8FAFC');
+      tg.setBackgroundColor('#F8FAFC');
     } catch (e) {}
   }
 
   // Core App State
   let allElements = Array.isArray(window.CANVA_DATA) ? window.CANVA_DATA : [];
-  let favorites = JSON.parse(localStorage.getItem('zo_canva_favs') || '[]');
+  let favorites = JSON.parse(localStorage.getItem('hy_canva_favs') || localStorage.getItem('zo_canva_favs') || '[]');
   let currentCategory = 'all';
   let currentSearchQuery = '';
   let currentTag = '';
@@ -26,8 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let isUserAdmin = false;
 
   const SUPER_ADMIN_ID = 8544023815;
-  const ZUHRA_ADMIN_ID = 8112688757;
-  let adminList = JSON.parse(localStorage.getItem('zo_canva_admins') || `[${SUPER_ADMIN_ID}, ${ZUHRA_ADMIN_ID}]`);
+  let adminList = JSON.parse(localStorage.getItem('hy_canva_admins') || localStorage.getItem('zo_canva_admins') || `[${SUPER_ADMIN_ID}]`);
 
   const API_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? ''
@@ -230,8 +229,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     triggerHaptic('light');
 
-    const shareText = `🎨 Canva Element Kodi: ${code}\n📌 Tavsif: ${description || 'Canva elementi'}\n\n✨ Bot: @zuhracanva_bot`;
-    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/zuhracanva_bot')}&text=${encodeURIComponent(shareText)}`;
+    const shareText = `🎨 Canva Element Kodi: ${code}\n📌 Tavsif: ${description || 'Canva elementi'}\n\n✨ Mini App: Hammaga Yetadi`;
+    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent('https://canva-elements.pages.dev')}&text=${encodeURIComponent(shareText)}`;
 
     try {
       if (tg && typeof tg.openTelegramLink === 'function') {
@@ -264,13 +263,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let adminUnlocked = false;
     try {
-      adminUnlocked = localStorage.getItem('zo_admin_unlocked') === 'true';
+      adminUnlocked = localStorage.getItem('hy_admin_unlocked') === 'true' || localStorage.getItem('zo_admin_unlocked') === 'true';
     } catch(e) {}
 
     const uId = currentUserId ? Number(currentUserId) : null;
-    const isIdAdmin = uId && (uId === SUPER_ADMIN_ID || uId === ZUHRA_ADMIN_ID || adminList.includes(uId) || adminList.includes(String(uId)));
-    const isNameAdmin = currentUsername && (currentUsername === 'yaxshibola' || currentUsername === 'zuhra_olimova' || adminList.includes(`@${currentUsername}`) || adminList.includes(currentUsername));
-    const isExplicitAdminUrl = adminParam === '1' && (uId === SUPER_ADMIN_ID || uId === ZUHRA_ADMIN_ID || isIdAdmin);
+    const isIdAdmin = uId && (uId === SUPER_ADMIN_ID || adminList.includes(uId) || adminList.includes(String(uId)));
+    const isNameAdmin = currentUsername && (currentUsername === 'yaxshibola' || currentUsername === 'yomonbola' || adminList.includes(`@${currentUsername}`) || adminList.includes(currentUsername));
+    const isExplicitAdminUrl = adminParam === '1' && (uId === SUPER_ADMIN_ID || isIdAdmin);
 
     if (isIdAdmin || isNameAdmin || isExplicitAdminUrl || adminUnlocked) {
       isUserAdmin = true;
@@ -317,9 +316,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btnSubmitLogin?.addEventListener('click', () => {
     const passcode = adminPasscodeInput?.value?.trim();
-    if (passcode === '777' || passcode === '2026' || passcode === 'zuhra') {
+    if (passcode === '777' || passcode === '2026' || passcode === 'yetadi') {
       isUserAdmin = true;
-      try { localStorage.setItem('zo_admin_unlocked', 'true'); } catch(e) {}
+      try { 
+        localStorage.setItem('hy_admin_unlocked', 'true'); 
+      } catch(e) {}
       checkAdminPermissions();
       modalAdminLogin?.classList.add('hidden');
       document.getElementById('sub-gate-overlay')?.classList.add('hidden');
@@ -337,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   adminLockBtn?.addEventListener('click', () => {
     isUserAdmin = false;
-    try { localStorage.setItem('zo_admin_unlocked', 'false'); } catch(e) {}
+    try { localStorage.setItem('hy_admin_unlocked', 'false'); } catch(e) {}
     checkAdminPermissions();
     switchTab('home');
     showToast('🔒 Admin rejimidan chiqildi');
@@ -423,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast('🗑️ Saqlanganlardan olindi');
     }
     try {
-      localStorage.setItem('zo_canva_favs', JSON.stringify(favorites));
+      localStorage.setItem('hy_canva_favs', JSON.stringify(favorites));
     } catch (e) {}
 
     renderElements();
@@ -938,30 +939,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!adminsListContainer) return;
     const ADMIN_NAMES = {
       8544023815: "Yaxshi Bola 🩵",
-      "8544023815": "Yaxshi Bola 🩵",
-      8112688757: "Zuhra 🩷",
-      "8112688757": "Zuhra 🩷"
+      "8544023815": "Yaxshi Bola 🩵"
     };
 
-    const uniqueAdmins = Array.from(new Set([SUPER_ADMIN_ID, ZUHRA_ADMIN_ID, ...adminList]));
+    const uniqueAdmins = Array.from(new Set([SUPER_ADMIN_ID, ...adminList]));
     adminList = uniqueAdmins;
 
     adminsListContainer.innerHTML = adminList.map(admin => {
       const numAdmin = Number(admin);
-      const isSuper = numAdmin === SUPER_ADMIN_ID || numAdmin === ZUHRA_ADMIN_ID;
-      const displayName = ADMIN_NAMES[numAdmin] || (isSuper ? (numAdmin === SUPER_ADMIN_ID ? "Yaxshi Bola 🩵" : "Zuhra 🩷") : `Admin (${admin})`);
+      const isSuper = numAdmin === SUPER_ADMIN_ID;
+      const displayName = ADMIN_NAMES[numAdmin] || (isSuper ? "Asosiy Administrator 🩵" : `Admin (${admin})`);
 
       return `
         <div class="admin-user-row" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--card-bg); margin-bottom:8px; border-radius:var(--radius-md); border:1px solid var(--card-border);">
           <div class="admin-user-info" style="display:flex; align-items:center; gap:10px;">
-            <i class="fa-solid ${isSuper ? 'fa-crown' : 'fa-user-shield'}" style="color: ${isSuper ? '#0ea5e9' : '#ec4899'}; font-size: 16px;"></i>
+            <i class="fa-solid ${isSuper ? 'fa-crown' : 'fa-user-shield'}" style="color: ${isSuper ? '#0ea5e9' : '#6366F1'}; font-size: 16px;"></i>
             <div>
               <strong style="color:var(--text-primary); font-size:13px; display:block;">${displayName}</strong>
               <small style="font-size:11px; color:var(--text-secondary);">ID / User: ${admin}</small>
             </div>
           </div>
           ${isSuper 
-            ? `<span style="font-size:10px; color:${numAdmin === SUPER_ADMIN_ID ? '#0ea5e9' : '#ec4899'}; font-weight:700; background:rgba(14,165,233,0.1); padding:3px 10px; border-radius:12px;">ASOSIY ADMIN</span>`
+            ? `<span style="font-size:10px; color:#0ea5e9; font-weight:700; background:rgba(14,165,233,0.1); padding:3px 10px; border-radius:12px;">ASOSIY ADMIN</span>`
             : `<button class="btn-remove-admin" data-admin="${admin}" style="padding:4px 10px; border-radius:12px; background:rgba(239,68,68,0.1); color:#ef4444; border:none; font-size:11px; font-weight:700; cursor:pointer;">O'chirish</button>`
           }
         </div>
@@ -980,7 +979,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!adminList.includes(item) && !adminList.includes(String(item))) {
       adminList.push(item);
       try {
-        localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
+        localStorage.setItem('hy_canva_admins', JSON.stringify(adminList));
       } catch (e) {}
 
       if (input) input.value = '';
@@ -1004,13 +1003,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function removeAdmin(item) {
     const numAdmin = Number(item);
-    if (numAdmin === SUPER_ADMIN_ID || numAdmin === ZUHRA_ADMIN_ID) {
-      return showToast("❌ Asosiy adminlarni o'chirib bo'lmaydi!");
+    if (numAdmin === SUPER_ADMIN_ID) {
+      return showToast("❌ Asosiy adminni o'chirib bo'lmaydi!");
     }
 
     adminList = adminList.filter(a => String(a) !== String(item) && Number(a) !== numAdmin);
     try {
-      localStorage.setItem('zo_canva_admins', JSON.stringify(adminList));
+      localStorage.setItem('hy_canva_admins', JSON.stringify(adminList));
     } catch (e) {}
 
     renderAdminsList();
@@ -1041,8 +1040,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const backupData = {
       timestamp: new Date().toISOString(),
       date: dateStr,
-      app: 'Canva Element Kodlari',
-      author: 'Zuhra Olimova',
+      app: 'Canva Element Kodlari — Hammaga Yetadi',
+      author: 'Hammaga Yetadi',
       totalElements: allElements.length,
       admins: adminList,
       categories: Object.keys(getCategoriesMap()),
@@ -1089,13 +1088,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const channelInput = document.getElementById('settings-channel-input');
     const forceSubToggle = document.getElementById('settings-force-sub-toggle');
 
-    let savedSettings = { channel: '@zuhracanva_official', forceSub: true };
+    let savedSettings = { channel: '@hammagayetadi', forceSub: true };
     try {
-      const stored = localStorage.getItem('zo_canva_settings');
+      const stored = localStorage.getItem('hy_canva_settings') || localStorage.getItem('zo_canva_settings');
       if (stored) savedSettings = JSON.parse(stored);
     } catch(e) {}
 
-    if (channelInput) channelInput.value = savedSettings.channel || '@zuhracanva_official';
+    if (channelInput) channelInput.value = savedSettings.channel || '@hammagayetadi';
     if (forceSubToggle) forceSubToggle.checked = !!savedSettings.forceSub;
 
     modalSettings?.classList.remove('hidden');
@@ -1118,12 +1117,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const channelInput = document.getElementById('settings-channel-input');
     const forceSubToggle = document.getElementById('settings-force-sub-toggle');
 
-    const channelVal = channelInput ? channelInput.value.trim() : '@zuhracanva_official';
+    const channelVal = channelInput ? channelInput.value.trim() : '@hammagayetadi';
     const isEnabled = forceSubToggle ? forceSubToggle.checked : true;
 
     const settingsObj = { channel: channelVal, forceSub: isEnabled };
     try {
-      localStorage.setItem('zo_canva_settings', JSON.stringify(settingsObj));
+      localStorage.setItem('hy_canva_settings', JSON.stringify(settingsObj));
     } catch(e) {}
 
     const API_BASE = `${API_HOST}/api`;
@@ -1333,7 +1332,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (confirm('Barcha saqlangan elementlarni o\'chirmoqchimisiz?')) {
       favorites = [];
-      try { localStorage.removeItem('zo_canva_favs'); } catch (e) {}
+      try { 
+        localStorage.removeItem('hy_canva_favs'); 
+        localStorage.removeItem('zo_canva_favs'); 
+      } catch (e) {}
       renderFavoritesElements();
       renderElements();
       showToast('🗑️ Saqlanganlar tozalandi');
@@ -1618,7 +1620,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const userId = getTelegramUserId();
       const adminId = getActiveAdminId();
-      const isAdm = isUserAdmin || (adminId && (adminId === SUPER_ADMIN_ID || adminId === ZUHRA_ADMIN_ID || adminList.includes(Number(adminId))));
+      const isAdm = isUserAdmin || (adminId && (adminId === SUPER_ADMIN_ID || adminList.includes(Number(adminId))));
 
       const queryParams = new URLSearchParams();
       if (userId) queryParams.set('user_id', String(userId));
@@ -1695,7 +1697,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const userId = getTelegramUserId();
     if (!userId) {
       showToast('⚠️ Iltimos, Telegram boti orqali kiring!');
-      showSubscriptionGateOverlay(['@zuhracanva_official'], true);
+      showSubscriptionGateOverlay(['@hammagayetadi'], true);
       return;
     }
 
@@ -1955,7 +1957,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Admins always bypass lock immediately
     const uId = userId ? Number(userId) : null;
-    const isLocalAdmin = isUserAdmin || (uId && (uId === SUPER_ADMIN_ID || uId === ZUHRA_ADMIN_ID || adminList.includes(uId) || adminList.includes(String(uId))));
+    const isLocalAdmin = isUserAdmin || (uId && (uId === SUPER_ADMIN_ID || adminList.includes(uId) || adminList.includes(String(uId))));
     if (isLocalAdmin) {
       revealMainAppContent();
       return;
@@ -2035,8 +2037,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (desc) desc.textContent = "Ushbu Mini App faqat rasmiy Telegram boti orqali to'liq ishlaydi. Iltimos, bot orqali oching:";
       if (channelsContainer) {
         channelsContainer.innerHTML = `
-          <a href="https://t.me/zuhracanva_bot" class="sub-gate-channel-btn" style="background: linear-gradient(135deg, #FF6B8B, #FF8E53);">
-            <i class="fa-brands fa-telegram"></i> @zuhracanva_bot orqali ochish
+          <a href="https://t.me/hammagayetadibot" class="sub-gate-channel-btn" style="background: var(--brand-gradient);">
+            <i class="fa-brands fa-telegram"></i> Telegram boti orqali ochish
           </a>
         `;
       }
@@ -2046,12 +2048,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (desc) {
-      desc.textContent = "Canva element kodlaridan to'liq va bepul foydalanish uchun homiy kanalimizga a'zo bo'ling:";
+      desc.textContent = "Canva element kodlaridan to'liq va bepul foydalanish uchun rasmiy kanalimizga a'zo bo'ling:";
     }
 
     const chList = Array.isArray(missingChannels) && missingChannels.length > 0 
       ? missingChannels 
-      : ['@zuhracanva_official'];
+      : ['@hammagayetadi'];
 
     if (channelsContainer) {
       channelsContainer.innerHTML = chList.map((ch, idx) => {

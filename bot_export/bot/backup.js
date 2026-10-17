@@ -1,6 +1,6 @@
 /* -------------------------------------------------------------
  * Automatic Daily Backup System (Local Disk + Telegram Dispatch)
- * Author: Zuhra Olimova
+ * Author: Hammaga Yetadi & Yaxshi Bola
  * ------------------------------------------------------------- */
 
 const fs = require('fs');
@@ -71,6 +71,31 @@ async function sendBackupToTelegram(filePath, fileName) {
   }
 }
 
+// Upload backup JSON directly to Cloudflare R2 bucket
+async function uploadBackupToR2(filePath, fileName) {
+  const accountId = process.env.R2_ACCOUNT_ID;
+  const apiToken = process.env.R2_API_TOKEN;
+  if (!accountId || !apiToken) return;
+
+  try {
+    const fileContent = fs.readFileSync(filePath);
+    const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/r2/buckets/canva-elements/objects/backups/${fileName}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${apiToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: fileContent
+    });
+    const json = await res.json();
+    if (json.success) {
+      console.log(`☁️ [Cloudflare R2] Daily backup saved to R2: backups/${fileName}`);
+    }
+  } catch (err) {
+    console.error('⚠️ [Cloudflare R2 Backup Error]:', err.message);
+  }
+}
+
 async function createDailyBackup(forceTelegramSend = false) {
   try {
     const dateStr = new Date().toISOString().split('T')[0];
@@ -102,6 +127,9 @@ async function createDailyBackup(forceTelegramSend = false) {
 
     fs.writeFileSync(filePath, JSON.stringify(backupData, null, 2), 'utf-8');
     console.log(`✅ [Daily Backup] Automated backup saved successfully: ${fileName}`);
+
+    // Upload to Cloudflare R2 Cloud Storage
+    await uploadBackupToR2(filePath, fileName);
 
     // Send to Telegram ONLY if it hasn't been sent today or explicitly requested
     if (forceTelegramSend || !alreadyExists) {

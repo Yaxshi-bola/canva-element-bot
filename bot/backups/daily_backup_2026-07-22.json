@@ -1,4 +1,4 @@
-{
+﻿{
   "timestamp": "2026-07-22T08:47:28.536Z",
   "date": "2026-07-22",
   "version": "1.0.0",
@@ -14,7 +14,7 @@
     "forceChannel": "",
     "forceChannelLink": "",
     "forceSubActive": false,
-    "webAppUrl": "https://canva-element-kodlari-zuhra-olimova.vercel.app",
+    "webAppUrl": "https://canva-elements.pages.dev",
     "superAdminId": 8544023815,
     "admins": [
       8544023815

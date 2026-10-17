@@ -2,7 +2,7 @@
  * Canva Element Kodlari Telegram Bot & Admin Panel
  * Token: 8914431726:AAEsGTEXLUCLaL0gSq9ztAt7EBubh1Ge27o
  * Super Admin ID: 8544023815
- * Author: Zuhra Olimova & Yaxshi Bola
+ * Author: Hammaga Yetadi & Yaxshi Bola
  * ------------------------------------------------------------- */
 
 const path = require('path');
@@ -123,7 +123,7 @@ const PREMIUM_EMOJIS = {
   DOWN_ARROW: '5406745015365943482',
   CROWN: '5229011542011299168',
   BLUE_HEART: '5433856365061746058',
-  ZUHRA_HEART: '5213147217015122287'
+  BRAND_STAR: '5472164874886846699'
 };
 
 // Get User Keyboards
@@ -467,8 +467,8 @@ bot.onText(/\/start/, async (msg) => {
 function sendWelcomeMessage(chatId, userId) {
   const { inlineKeyboard, replyKeyboard } = getUserKeyboard(userId);
 
-  const welcomeText = `<tg-emoji emoji-id="5440354006335495210">🌸</tg-emoji> <b>Canva Element Kodlari — Zuhra Olimova</b>\n\n` +
-    `Assalomu alaykum! <tg-emoji emoji-id="5465540480538254161">💖</tg-emoji>\n\n` +
+  const welcomeText = `<tg-emoji emoji-id="5472164874886846699">✨</tg-emoji> <b>Canva Element Kodlari — Hammaga Yetadi</b>\n\n` +
+    `Assalomu alaykum!\n\n` +
     `Ushbu bot orqali siz Canva dizaynlaringiz uchun 400+ saralangan element kodlarini bir bosishda topishingiz mumkin:\n\n` +
     `• <tg-emoji emoji-id="5472164874886846699">✨</tg-emoji> <b>3D elementlar</b>\n` +
     `• <tg-emoji emoji-id="5404835520150773707">🌷</tg-emoji> <b>Estetik bezaklar</b>\n` +
@@ -489,7 +489,7 @@ function sendWelcomeMessage(chatId, userId) {
     const isSuper = isSuperAdmin(userId);
     const adminTag = isSuper 
       ? `Yaxshi Bola <tg-emoji emoji-id="5433856365061746058">🩵</tg-emoji>` 
-      : `Zuhra <tg-emoji emoji-id="5213147217015122287">🩷</tg-emoji>`;
+      : `Admin <tg-emoji emoji-id="5433856365061746058">✨</tg-emoji>`;
 
     bot.sendMessage(chatId, `<tg-emoji emoji-id="5229011542011299168">👑</tg-emoji> Assalomu alaykum, <b>${adminTag}</b>! Siz <b>Admin</b> hisoblanasiz. Boshqaruv paneli menyuda faollashtirildi.`, {
       parse_mode: 'HTML',
@@ -718,7 +718,7 @@ bot.on('callback_query', async (query) => {
       `Har bir tugmani yangi qatordan quyidagi formatda yozing:\n` +
       `\`Tugma matni - https://link.com\`\n\n` +
       `Misol:\n` +
-      `\`Bizning Kanal - https://t.me/zuhracanva_official\`\n` +
+      `\`Bizning Kanal - https://t.me/hammagayetadi\`\n` +
       `\`Vebsaytga o'tish - https://canva.com\``,
       { parse_mode: 'Markdown' }
     );
@@ -990,7 +990,7 @@ bot.on('message', async (msg) => {
     const isSuper = isSuperAdmin(userId);
     const adminTag = isSuper 
       ? `Yaxshi Bola <tg-emoji emoji-id="5433856365061746058">🩵</tg-emoji>` 
-      : `Zuhra <tg-emoji emoji-id="5213147217015122287">🩷</tg-emoji>`;
+      : `Admin <tg-emoji emoji-id="5433856365061746058">✨</tg-emoji>`;
 
     return bot.sendMessage(chatId, `<tg-emoji emoji-id="5229011542011299168">👑</tg-emoji> <b>${adminTag} Admin Paneli</b>\n\nBoshqaruv bo'limini tanlang:`, {
       parse_mode: 'HTML',

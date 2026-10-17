@@ -1,7 +1,7 @@
 {
   "name": "canva-element-bot",
   "version": "1.0.0",
-  "description": "Canva Element Kodlari Telegram Bot and Admin Panel by Zuhra Olimova",
+  "description": "Canva Element Kodlari Telegram Bot and Admin Panel — Hammaga Yetadi",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

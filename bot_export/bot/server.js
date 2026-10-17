@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------
  * Render Web Service Entrypoint
  * Express Server + Telegram Bot + Custom Elements API + Backup Cron
- * Author: Zuhra Olimova & Yaxshi Bola
+ * Author: Hammaga Yetadi & Yaxshi Bola
  * ------------------------------------------------------------- */
 
 const path = require('path');
@@ -91,7 +91,7 @@ app.get('/', (req, res) => {
   res.json({
     status: 'ok',
     app: 'Canva Element Kodlari Telegram Bot & Admin API',
-    author: 'Zuhra Olimova',
+    author: 'Hammaga Yetadi',
     uptime: process.uptime()
   });
 });

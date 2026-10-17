@@ -26,7 +26,7 @@ export default {
       return new Response(JSON.stringify({
         ok: true,
         service: 'Canva Element Bot Worker',
-        bot: '@Zuhracanva_bot',
+        bot: '@hammagayetadibot',
         status: 'Online 24/7 (Edge Webhook)',
         r2_connected: !!env.R2_BUCKET,
         timestamp: new Date().toISOString()
@@ -42,7 +42,6 @@ export default {
       const userId = url.searchParams.get('user_id') || url.searchParams.get('userId') || request.headers.get('x-user-id');
       const settings = await getSettingsFromR2(env);
       const superAdminId = Number(env.SUPER_ADMIN_ID || 8544023815);
-      const zuhraId = 8112688757;
 
       // 1. If forceSub is disabled or no channels exist
       if (!settings.forceSubActive || !Array.isArray(settings.forceChannels) || settings.forceChannels.length === 0) {
@@ -57,7 +56,7 @@ export default {
 
       // 2. Admins always bypass lock
       const admins = Array.isArray(settings.admins) ? settings.admins.map(Number) : [];
-      if (userId && (Number(userId) === superAdminId || Number(userId) === zuhraId || admins.includes(Number(userId)))) {
+      if (userId && (Number(userId) === superAdminId || admins.includes(Number(userId)))) {
         return new Response(JSON.stringify({
           ok: true,
           forceSubActive: settings.forceSubActive,
@@ -86,7 +85,7 @@ export default {
       // If user is verified, dynamically activate their chat menu button
       if (checkResult.subscribed) {
         try {
-          const isUserAdm = userId && (Number(userId) === superAdminId || Number(userId) === zuhraId || admins.includes(Number(userId)));
+          const isUserAdm = userId && (Number(userId) === superAdminId || admins.includes(Number(userId)));
           const targetUrl = isUserAdm 
             ? `${env.WEB_APP_URL || 'https://canva-elements.pages.dev'}?admin=1&user_id=${userId}`
             : `${env.WEB_APP_URL || 'https://canva-elements.pages.dev'}?user_id=${userId}`;
@@ -221,8 +220,7 @@ export default {
     if (url.pathname === '/api/admins') {
       const settings = await getSettingsFromR2(env);
       const superAdminId = Number(env.SUPER_ADMIN_ID || 8544023815);
-      const zuhraId = 8112688757;
-      let admins = Array.isArray(settings.admins) ? settings.admins : [superAdminId, zuhraId];
+      let admins = Array.isArray(settings.admins) ? settings.admins : [superAdminId];
 
       if (request.method === 'GET') {
         return new Response(JSON.stringify({ ok: true, success: true, admins }), {
@@ -254,8 +252,7 @@ export default {
       const delAdmin = decodeURIComponent(url.pathname.replace('/api/admins/', '')).trim();
       const settings = await getSettingsFromR2(env);
       const superAdminId = Number(env.SUPER_ADMIN_ID || 8544023815);
-      const zuhraId = 8112688757;
-      let admins = Array.isArray(settings.admins) ? settings.admins : [superAdminId, zuhraId];
+      let admins = Array.isArray(settings.admins) ? settings.admins : [superAdminId];
       admins = admins.filter(a => String(a) !== String(delAdmin) && Number(a) !== Number(delAdmin));
       settings.admins = admins;
       await saveSettingsToR2(env, settings);
@@ -1208,8 +1205,8 @@ async function sendWelcome(botToken, chatId, userId, firstName, webAppUrl, isAdm
     await setChatMenuButton(botToken, chatId, appUrl);
   } catch (e) {}
 
-  const welcomeText = `🌸 <b>Canva Element Kodlari — Zuhra Olimova</b>\n\n` +
-    `Assalomu alaykum, <b>${escapeHtml(firstName)}</b>! 💖\n\n` +
+  const welcomeText = `✨ <b>Canva Element Kodlari — Hammaga Yetadi</b>\n\n` +
+    `Assalomu alaykum, <b>${escapeHtml(firstName)}</b>!\n\n` +
     `Ushbu bot orqali siz Canva dizaynlaringiz uchun <b>400+</b> saralangan element kodlarini bir bosishda topishingiz mumkin:\n\n` +
     `• ✨ <b>3D elementlar</b>\n` +
     `• 🌷 <b>Estetik bezaklar</b>\n` +

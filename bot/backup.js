@@ -1,6 +1,6 @@
 /* -------------------------------------------------------------
  * Automatic Daily Backup System (Local Disk + Telegram Dispatch)
- * Author: Zuhra Olimova
+ * Author: Hammaga Yetadi & Yaxshi Bola
  * ------------------------------------------------------------- */
 
 const fs = require('fs');
